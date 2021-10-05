@@ -1,1 +1,1 @@
-print("test auto commit in discord")
+print("test commit in discord")
