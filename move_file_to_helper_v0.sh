@@ -1,0 +1,3 @@
+echo "TRANSFERRING FILE ..."
+scp $1 pi@192.168.137.247:/$2
+echo "FILE TRANSFER COMPLETE"
