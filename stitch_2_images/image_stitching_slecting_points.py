@@ -41,5 +41,5 @@ kp, des = sift.detectAndCompute(gray, None)
 img = cv.drawKeypoints(gray, kp, img, flags=cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 
 # Save the image
-cv.imwrite('../mergeImages/sift_with_features.jpg', img)
+cv.imwrite('../mergeImages/corners/sift_with_features.jpg', img)
 

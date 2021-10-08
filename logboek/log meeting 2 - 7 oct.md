@@ -8,7 +8,7 @@ _**This file is unfinished.**_
 ## Finished Tasks
 * Enable pi's to access repository via Git
 * Establish pi-to-pi SSH connection
-* ...
+* 
 
 ## Future Tasks
 * Find and code method for pi-to-pi file transfer via Python
