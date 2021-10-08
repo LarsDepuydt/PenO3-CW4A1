@@ -23,7 +23,7 @@ _**This file is unfinished.**_
 ## Running Tasks (individual)
 Person | Hour 1 | Hour 2 | Hour 3 | Hour 4 | After hours (specify time)
 ------ | ------ | ------ | ------ | ------ | -------------
-Jasper Laitem | task1 | = | task2 | task3
+Jasper Laitem |    |     |      | 
 Jonas Buts    |    |     |      |
 Lars Depuydt  |    |     |      |
 Robin Anné    | Install, test pi repository acces via Git | Establish pi-to-pi SSH connection | = | Perform rudimentary SSH file transfers (using SCP) | Create log template (20m)
