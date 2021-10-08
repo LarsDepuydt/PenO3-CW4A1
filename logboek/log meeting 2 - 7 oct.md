@@ -1,5 +1,5 @@
 # Log Team Meeting 2
-08 October 2021
+07 October 2021
 
 _**This file is unfinished.**_
 ## Decisions
