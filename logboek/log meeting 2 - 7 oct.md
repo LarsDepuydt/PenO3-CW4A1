@@ -26,7 +26,7 @@ Person | Hour 1 | Hour 2 | Hour 3 | Hour 4 | After hours (specify time)
 Jasper Laitem |    |     |      | 
 Jonas Buts    |    |     |      |
 Lars Depuydt  |    |     |      |
-Robin Anné    | Install, test pi repository acces via Git | Establish pi-to-pi SSH connection | = | Perform rudimentary SSH file transfers (using SCP) | Create log template (20m)
+Robin Anné    | Install, test pi repository access via Git | Establish pi-to-pi SSH connection | = | Perform rudimentary SSH file transfers (using SCP) | Create log template (20m)
 Ruben Janssen |    |     |      |
-Wout Bergmans |    |     |      |
+Wout Bergmans | Research of image stitching | Setup of second pi | = |Same as Robin
 
