@@ -27,6 +27,6 @@ Jasper Laitem |    |     |      |
 Jonas Buts    |    |     |      |
 Lars Depuydt  |    |     |      |
 Robin Anné    | Install, test pi repository access via Git | Establish pi-to-pi SSH connection | = | Perform rudimentary SSH file transfers (using SCP) | Create log template (20m)
-Ruben Janssen |    |     |      |
+Ruben Janssen | Research of image stitching | Research of image stitching | writing first code for image stitching | trying out first code for image stitching
 Wout Bergmans | Research of image stitching | Setup of second pi | = |Same as Robin
 
