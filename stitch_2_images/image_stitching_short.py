@@ -5,16 +5,20 @@ from random import randrange
 
 # towardsdatascience is the source
 
-img_ = cv2.imread('../stitch_2_images/RightSide.jpg')
+img_ = cv2.imread('../testing_images_pi/image_for_testing_3.jpg')
+#img_ = cv2.imread('../mergeImages/RightSide.jpg')
 img1 = cv2.cvtColor(img_, cv2.COLOR_BGR2GRAY)
 
-img = cv2.imread('../stitch_2_images/LeftSide.jpg')
+img = cv2.imread('../testing_images_pi/image_for_testing_2.jpg')
+#img = cv2.imread('../mergeImages/LeftSide.jpg')
 img2 = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-sift = cv2.xfeatures2d.SIFT_create()
+
+orb = cv2.ORB_create(nfeatures=2000)
+
 # find the keypoints and descriptors with SIFT
-kp1, des1 = sift.detectAndCompute(img1, None)
-kp2, des2 = sift.detectAndCompute(img2, None)
+kp1, des1 = orb.detectAndCompute(img1, None)
+kp2, des2 = orb.detectAndCompute(img2, None)
 # BFMatcher with default params
 bf = cv2.BFMatcher()
 matches = bf.knnMatch(des1, des2, k=2)

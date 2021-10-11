@@ -30,10 +30,11 @@ cv.waitKey(0)
 """
 
 
-stitcher = cv2.createStitcher(False)
-one = cv2.imread("../mergeImages/panorama/panorama1.jpg")
-two = cv2.imread("../mergeImages/panorama/panorama2.jpg")
+stitcher = cv2.Stitcher_create()
+one = cv2.imread("../testing_images_pi/image_for_testing_1.jpg")
+two = cv2.imread("../testing_images_pi/image_for_testing_2.jpg")
 result = stitcher.stitch((one,two))
 
+cv2.imwrite('auto_function_result.jpg', result[1])
 cv2.imshow("test", result[1])
 cv2.waitKey(0)
