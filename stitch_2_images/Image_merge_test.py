@@ -7,9 +7,8 @@ import time
 t_start = time.perf_counter()
 
 # Load images
-img1 = cv2.imread("testing_images_pi/lokaal/image_for_testing_2.jpg")
-img2 = cv2.imread("testing_images_pi/lokaal/image_for_testing_1.jpg")
-print(time.perf_counter()-t_start)
+img1 = cv2.imread("../testing_images_pi/lokaal/image_for_testing_1.jpg")
+img2 = cv2.imread("../testing_images_pi/lokaal/image_for_testing_2.jpg")
 
 # Create our ORB detector and detect keypoints and descriptors
 orb = cv2.ORB_create(nfeatures=2000)
@@ -17,7 +16,6 @@ orb = cv2.ORB_create(nfeatures=2000)
 # Find the key points and descriptors with ORB
 keypoints1, descriptors1 = orb.detectAndCompute(img1, None)
 keypoints2, descriptors2 = orb.detectAndCompute(img2, None)
-print(time.perf_counter()-t_start)
 
 # Create a BFMatcher object.
 # It will find all of the matching keypoints on two images
@@ -31,6 +29,7 @@ good = []
 for m, n in matches:
     if m.distance < 0.6 * n.distance:
         good.append(m)
+print(len(matches), len(good))
 
 def warpImages(img1, img2, H):
     rows1, cols1 = img1.shape[:2]
@@ -56,8 +55,6 @@ def warpImages(img1, img2, H):
     output_img[translation_dist[1]:rows1 + translation_dist[1], translation_dist[0]:cols1 + translation_dist[0]] = img1
 
     return output_img
-print(time.perf_counter()-t_start)
-
 
 # Set minimum match condition
 MIN_MATCH_COUNT = 10
@@ -71,8 +68,9 @@ if len(good) > MIN_MATCH_COUNT:
     M, _ = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
 
     result = warpImages(img2, img1, M)
-    print("hey")
-    cv2.imshow("test", result)
-    cv2.imwrite("test_kleur.jpg", result)
+    cv2.imwrite("Lowe_treshold_0.6.jpg", result)
+
+else:
+    print("Overlap was not good enough")
     
 print(time.perf_counter()-t_start)
