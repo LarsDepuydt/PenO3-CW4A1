@@ -37,7 +37,8 @@ def warpImages(img1, img2, H):
 
     list_of_points_1 = np.float32([[0, 0], [0, rows1], [cols1, rows1], [cols1, 0]]).reshape(-1, 1, 2)
     temp_points = np.float32([[0, 0], [0, rows2], [cols2, rows2], [cols2, 0]]).reshape(-1, 1, 2)
-
+    print(list_of_points_1)
+    print(temp_points)
     # When we have established a homography we need to warp perspective
     # Change field of view
     list_of_points_2 = cv2.perspectiveTransform(temp_points, H)
@@ -68,7 +69,7 @@ if len(good) > MIN_MATCH_COUNT:
     M, _ = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
 
     result = warpImages(img2, img1, M)
-    cv2.imwrite("Lowe_treshold_0.6.jpg", result)
+    cv2.imwrite("../Stitched_images/image_size_test.jpg", result)
 
 else:
     print("Overlap was not good enough")
