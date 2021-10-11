@@ -1,5 +1,5 @@
 #Image Stitching
-You will have to follow several steps to stitch images.
+You will have to follow several steps to stitch images
 
 ##1. Selecting corresponding points
 In order to stitch two images successfully, first you will need a good selection of corresponding points between your input images. For this purpose, you are allowed to use ginput function (under matplotlib.pyplot) which will operate on images and provide you to select these point pairs (x,y) with mouse clicks. You can use any other function if you know a good replacement as well.
