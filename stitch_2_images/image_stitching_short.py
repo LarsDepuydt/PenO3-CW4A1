@@ -5,12 +5,12 @@ from random import randrange
 
 # towardsdatascience is the source
 
-img_ = cv2.imread('../testing_images_pi/image_for_testing_3.jpg')
-#img_ = cv2.imread('../mergeImages/RightSide.jpg')
+#img_ = cv2.imread('../testing_images_pi/image_for_testing_3.jpg')
+img_ = cv2.imread('../mergeImages/RightSide.jpg')
 img1 = cv2.cvtColor(img_, cv2.COLOR_BGR2GRAY)
 
-img = cv2.imread('../testing_images_pi/image_for_testing_2.jpg')
-#img = cv2.imread('../mergeImages/LeftSide.jpg')
+#img = cv2.imread('../testing_images_pi/image_for_testing_2.jpg')
+img = cv2.imread('../mergeImages/LeftSide.jpg')
 img2 = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 
