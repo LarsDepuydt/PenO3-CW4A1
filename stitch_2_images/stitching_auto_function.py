@@ -30,7 +30,7 @@ cv.waitKey(0)
 """
 
 
-stitcher = cv2.Stitcher_create()
+stitcher = cv2.createStitcher(False)
 one = cv2.imread("../testing_images_pi/image_for_testing_1.jpg")
 two = cv2.imread("../testing_images_pi/image_for_testing_2.jpg")
 result = stitcher.stitch((one,two))

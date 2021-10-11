@@ -3,10 +3,13 @@ import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 from PIL import Image
+import time
+t_start = time.perf_counter()
 
 # Load images
-img1 = cv2.imread("testing_images_pi/image_for_testing_2.jpg")
-img2 = cv2.imread("testing_images_pi/image_for_testing_3.jpg")
+img1 = cv2.imread("testing_images_pi/lokaal/image_for_testing_2.jpg")
+img2 = cv2.imread("testing_images_pi/lokaal/image_for_testing_1.jpg")
+print(time.perf_counter()-t_start)
 
 # Create our ORB detector and detect keypoints and descriptors
 orb = cv2.ORB_create(nfeatures=2000)
@@ -14,7 +17,7 @@ orb = cv2.ORB_create(nfeatures=2000)
 # Find the key points and descriptors with ORB
 keypoints1, descriptors1 = orb.detectAndCompute(img1, None)
 keypoints2, descriptors2 = orb.detectAndCompute(img2, None)
-
+print(time.perf_counter()-t_start)
 
 # Create a BFMatcher object.
 # It will find all of the matching keypoints on two images
@@ -53,6 +56,7 @@ def warpImages(img1, img2, H):
     output_img[translation_dist[1]:rows1 + translation_dist[1], translation_dist[0]:cols1 + translation_dist[0]] = img1
 
     return output_img
+print(time.perf_counter()-t_start)
 
 
 # Set minimum match condition
@@ -67,4 +71,8 @@ if len(good) > MIN_MATCH_COUNT:
     M, _ = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
 
     result = warpImages(img2, img1, M)
+    print("hey")
+    cv2.imshow("test", result)
     cv2.imwrite("test_kleur.jpg", result)
+    
+print(time.perf_counter()-t_start)
