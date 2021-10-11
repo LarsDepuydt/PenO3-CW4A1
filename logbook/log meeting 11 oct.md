@@ -1,20 +1,21 @@
-# Log Team Meeting 2
+# Log Team Meeting 4 
 11 October 2021
-
+**_This file is unfinished._**
 ## Decisions
-...
+* Use of ZMQ with PyZMQ for networking
 
 ## Finished Tasks
-* first draft of stitching program
-
+* Working first draft of basic stitching program
 
 ## Future Tasks
-* optimizing stitching program
-* ...
+* Optimizing stitching program
+* Explore PyZMQ capabilities and draft image transfer program
+* Complete transition to shared Python virtual environment
   
-## Running Tasks (general)
-* optimizing stitching program
-* ...
+## Running Tasks (general)/ Executed Activities (everyone)
+* Brainstorm direction and limitations of project (real-time video stitching, panorama pictures, limited pi graphical power, etc.)
+* Optimizing stitching program
+* Transitioning to a shared Python virtual environment
 
 ## Running Tasks (individual)
 Person | Hour 1 | Hour 2 | Hour 3 | Hour 4 | After hours (specify time)
@@ -22,6 +23,6 @@ Person | Hour 1 | Hour 2 | Hour 3 | Hour 4 | After hours (specify time)
 Jasper Laitem | task1 | = | task2 | task3
 Jonas Buts    |    |     |      |
 Lars Depuydt  |    |     |      |
-Robin Anné    |    |     |      |
+Robin Anné    | Explore basic camera functionality in terminal | Research networking libraries | = (settle on ZMQ) | Begin transition to shared Python 3.9.7 virtual environment
 Ruben Janssen | finishing stitching program draft | = | testing and optimizing stitching program | =
 Wout Bergmans |    |     |      |
