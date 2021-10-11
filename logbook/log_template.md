@@ -1,6 +1,6 @@
 # Log Team Meeting 2
 dd Month yyyy
-
+**_This file is unfinished._**
 ## Decisions
 * item1
 
