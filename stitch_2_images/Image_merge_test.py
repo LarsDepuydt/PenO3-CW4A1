@@ -37,8 +37,7 @@ def warpImages(img1, img2, H):
 
     list_of_points_1 = np.float32([[0, 0], [0, rows1], [cols1, rows1], [cols1, 0]]).reshape(-1, 1, 2)
     temp_points = np.float32([[0, 0], [0, rows2], [cols2, rows2], [cols2, 0]]).reshape(-1, 1, 2)
-    print(list_of_points_1)
-    print(temp_points)
+
     # When we have established a homography we need to warp perspective
     # Change field of view
     list_of_points_2 = cv2.perspectiveTransform(temp_points, H)
