@@ -29,6 +29,7 @@ for folder in myFolders:
 cv.waitKey(0)
 """
 
+
 stitcher = cv2.createStitcher(False)
 one = cv2.imread("../mergeImages/panorama/panorama1.jpg")
 two = cv2.imread("../mergeImages/panorama/panorama2.jpg")
