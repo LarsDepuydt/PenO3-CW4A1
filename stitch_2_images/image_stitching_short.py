@@ -3,6 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from random import randrange
 
+# towardsdatascience
+
 img_ = cv2.imread('../stitch_2_images/RightSide.jpg')
 img1 = cv2.cvtColor(img_, cv2.COLOR_BGR2GRAY)
 
