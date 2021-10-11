@@ -5,8 +5,8 @@ from matplotlib import pyplot as plt
 from PIL import Image
 
 # Load images
-img1 = cv2.imread("mergeImages/panorama/panorama1.jpg")
-img2 = cv2.imread("mergeImages/panorama/panorama2.jpg")
+img1 = cv2.imread("testing_images_pi/image_for_testing_2.jpg")
+img2 = cv2.imread("testing_images_pi/image_for_testing_3.jpg")
 
 # Create our ORB detector and detect keypoints and descriptors
 orb = cv2.ORB_create(nfeatures=2000)
@@ -68,5 +68,3 @@ if len(good) > MIN_MATCH_COUNT:
 
     result = warpImages(img2, img1, M)
     cv2.imwrite("test_kleur.jpg", result)
-    plt.imshow(result)
-    plt.show()
