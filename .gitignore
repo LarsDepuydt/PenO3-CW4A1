@@ -1,2 +1,3 @@
 .idea
 pyvenv.cfg
+venv/pyvenv.cfg
