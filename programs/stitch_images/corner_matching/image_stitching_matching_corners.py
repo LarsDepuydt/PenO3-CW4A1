@@ -29,7 +29,7 @@ output_img = cv2.resize(output_img, (1200, 650))
 
 # Save the final image
 cv2.imshow("Output Image", output_img)
-cv2.imwrite("../mergeImages/matching/feature_matching_result.jpg", output_img)
+cv2.imwrite("../images/testing_images_online/matching/feature_matching_result.jpg", output_img)
 print("done")
 
 # Close OpenCV upon keypress

@@ -1,9 +1,9 @@
 import cv as cv
 from PIL import Image
 #Read the two images
-image1 = Image.open('../images/testing_images_online/lokaal/mergePart1.jpg')
+image1 = Image.open('../../../images/testing_images_online/lokaal/mergePart1.jpg')
 #image1.show()
-image2 = Image.open('../images/testing_images_online/lokaal/mergePart2.jpg')
+image2 = Image.open('../../../images/testing_images_online/lokaal/mergePart2.jpg')
 #image2.show()
 
 ########################
