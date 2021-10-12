@@ -1,3 +1,14 @@
 .idea
 pyvenv.cfg
 venv/pyvenv.cfg
+
+venv/Scripts/activate
+venv/Scripts/acticate.bat
+
+
+venv/bin/activate
+venv/bin/acticate_this.py
+venv/bin/activate.csh
+venv/bin/activate.fish
+venv/bin/activate.ps1
+venv/bin/activate.xsh
