@@ -1,9 +1,10 @@
-import sys
+import sys, os
 spacer = "======================"
 
-print("CURRENT PYTHON VERSION: ", sys.version)
-print("GLOBAL PYTHON INSTALL : ", sys.base_prefix)
-print("ACTIVE ENVIRONMENT IS : ", sys.prefix)
+print("CURRENT PYTHON VERSION      : ", sys.version)
+print("GLOBAL PYTHON INSTALL       : ", sys.base_prefix)
+print("ACTIVE ENVIRONMENT IS       : ", sys.prefix)
+print("ACTIVE ENVIRONMENT SHOULD BE: ", str(os.path.dirname(os.path.realpath(__file__)))+ "\\venv")
 
 print(spacer)
 print("INSTALLED PACKAGES: ", "\n")
