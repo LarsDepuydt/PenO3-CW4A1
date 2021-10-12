@@ -1,6 +1,7 @@
 import cv2 as cv
-import numpy as np
 from matplotlib import pyplot as plt
+import time
+t_start = time.perf_counter()
 
 def harris(img_dir):
     img = cv.imread(img_dir)
@@ -17,7 +18,8 @@ def harris(img_dir):
     plt.figure("Harris detector")
     plt.imshow(cv.cvtColor(img, cv.COLOR_BGR2RGB)), plt.title("Harris")
     plt.xticks([]), plt.yticks([])
-    plt.savefig('../mergeImages/Harris_detector', bbox_inches='tight')
-    plt.show()
+    plt.savefig('../../../images/testing_images_online/corners/harris_detector_pi.jpg', bbox_inches='tight')
 
-harris("../mergeImages/mergePart1.jpg")  # Change this path to one that will lead to your image
+harris("../../../images/testing_images_pi/lokaal/image_for_testing_1.jpg")  # Change this path to one that will lead to your image
+print(time.perf_counter() - t_start)
+print("done")

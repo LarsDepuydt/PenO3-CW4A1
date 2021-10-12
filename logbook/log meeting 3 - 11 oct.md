@@ -25,4 +25,4 @@ Jonas Buts    |    |     |      |
 Lars Depuydt  |    |     |      |
 Robin Anné    | Explore basic camera functionality in terminal | Research networking libraries | = (settle on ZMQ) | Begin transition to shared Python 3.9.7 virtual environment
 Ruben Janssen | finishing stitching program draft | = | testing and optimizing stitching program | =
-Wout Bergmans |    |     |      |
+Wout Bergmans | Researching Raspberry cam module output format | Testing of cam module functionalities via Python | Merging & capturing 2 pictures using 1 python program | = 
