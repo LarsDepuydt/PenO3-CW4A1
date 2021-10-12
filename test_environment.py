@@ -1,10 +1,12 @@
 import sys
 spacer = "======================"
 
-print("ENVIRONMENT IS: ", sys.prefix)
+print("CURRENT PYTHON VERSION: ", sys.version)
+print("GLOBAL PYTHON INSTALL : ", sys.base_prefix)
+print("ACTIVE ENVIRONMENT IS : ", sys.prefix)
 
 print(spacer)
-print("INSTALLED PACKAGES: ")
+print("INSTALLED PACKAGES: ", "\n")
 import pkg_resources
 installed_packages = pkg_resources.working_set
 installed_packages_list = sorted(["%s==%s" % (i.key, i.version)
