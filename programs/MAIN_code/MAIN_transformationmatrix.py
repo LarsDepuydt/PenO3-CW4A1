@@ -1,5 +1,7 @@
 import cv2
 import numpy as np
+import time
+t_start = time.perf_counter()
 
 # VARIABLES
 
@@ -8,6 +10,7 @@ PATH2 = "../../images/testing_images_pi/lokaal/image_for_testing_2.jpg"
 
 AANTAL_KEYPOINTS = 2000 # set number of keypoints
 MIN_MATCH_COUNT = 10    # Set minimum match condition
+MATRIX_DATA = "matrix_data.txt"
 
 
 # Load images
@@ -45,7 +48,9 @@ if len(good) > MIN_MATCH_COUNT:
     M, _ = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
 
     print(M)
-    np.savetxt("matrix_data.txt", M)
+    np.savetxt(MATRIX_DATA, M)
 
 else:
     print("Overlap was not good enough")
+
+print(time.perf_counter() - t_start)
