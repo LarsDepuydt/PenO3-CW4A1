@@ -42,11 +42,13 @@ def warpImages(img1, img2, H):
 
     panorama1 = np.zeros((height_panorama, width_panorama, 3))
     mask1 = create_mask(img1, img2, height_panorama, width_panorama, version='left_image')
-    panorama1[0:img1.shape[0], 0:img1.shape[1], :] = img1
+    panorama1[0:height_panorama, 0:width_img1, :] = img1
     panorama1 *= mask1
+    cv2.imwrite("panorama1.jpg", panorama1)
     mask2 = create_mask(img1, img2, height_panorama, width_panorama, version='right_image')
     smt = cv2.warpPerspective(img2, H, (width_panorama, height_panorama))
     panorama2 = smt * mask2
+    cv2.imwrite("panorama2.jpg", panorama2)
     output_img = panorama1 + panorama2
 
 
