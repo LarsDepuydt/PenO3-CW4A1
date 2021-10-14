@@ -1,60 +1,87 @@
 import cv2
 import numpy as np
-#import matplotlib.pyplot as plt
+import time
 
 # VARIABLES
 
 PATH1 = "../images/testing_images_pi/lokaal/image_for_testing_2.jpg"
 PATH2 = "../images/testing_images_pi/lokaal/image_for_testing_3.jpg"
-AANTAL_KEYPOINTS = 2000
+PATH_RESULT = "../images/stitched_images/stitchted.jpg"
+AANTAL_KEYPOINTS = 2000 # set number of keypoints
+MIN_MATCH_COUNT = 10    # Set minimum match condition
 
 
-# import images
-img1_import = cv2.imread('../mergeImages/RightSide.jpg')
-img2_import = cv2.imread('../mergeImages/LeftSide.jpg')
+# Load images
+img1 = cv2.imread(PATH1)
+img2 = cv2.imread(PATH2)
 
-# color images to grey
-img1 = cv2.cvtColor(img1_import, cv2.COLOR_BGR2GRAY)
-img2 = cv2.cvtColor(img2_import, cv2.COLOR_BGR2GRAY)
-
-
-# create ORB with number of keypoints
+# Create our ORB detector and detect keypoints and descriptors
 orb = cv2.ORB_create(nfeatures=AANTAL_KEYPOINTS)
 
-# find the keypoints and descriptors with SIFT
-kp1, des1 = orb.detectAndCompute(img1, None)
-kp2, des2 = orb.detectAndCompute(img2, None)
-# BFMatcher with default params
-bf = cv2.BFMatcher()
-matches = bf.knnMatch(des1, des2, k=2)
+# Find the key points and descriptors with ORB
+keypoints1, descriptors1 = orb.detectAndCompute(img1, None)
+keypoints2, descriptors2 = orb.detectAndCompute(img2, None)
 
-# print matches
-# Apply ratio test
+# Create a BFMatcher object.
+# It will find all of the matching keypoints on two images
+bf = cv2.BFMatcher_create(cv2.NORM_HAMMING)
+
+# Find matching points
+matches = bf.knnMatch(descriptors1, descriptors2, k=2)
+
+# Finding the best matches
 good = []
-for m in matches:
-    if m[0].distance < 0.5 * m[1].distance:
+for m, n in matches:
+    if m.distance < 0.6 * n.distance:
         good.append(m)
-matches = np.asarray(good)
+print(len(matches), len(good))
 
-'''print matches[2,0].queryIdx
-print matches[2,0].trainIdx
-print matches[2,0].distance'''
 
-if len(matches[:, 0]) >= 4:
-    src = np.float32([kp1[m.queryIdx].pt for m in matches[:, 0]]).reshape(-1, 1, 2)
-    dst = np.float32([kp2[m.trainIdx].pt for m in matches[:, 0]]).reshape(-1, 1, 2)
+if len(good) > MIN_MATCH_COUNT:
+    # Convert keypoints to an argument for findHomography
+    src_pts = np.float32([keypoints1[m.queryIdx].pt for m in good]).reshape(-1, 1, 2)
+    dst_pts = np.float32([keypoints2[m.trainIdx].pt for m in good]).reshape(-1, 1, 2)
 
-    H, masked = cv2.findHomography(src, dst, cv2.RANSAC, 5.0)
-    print(H)
+    # Establish a homography
+    M, _ = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
+
+    print(M)
+
 else:
-    raise AssertionError("Can't find enough keypoints.")
+    print("Overlap was not good enough")
 
-dst = cv2.warpPerspective(img_, H, (img.shape[1] + img_.shape[1], img.shape[0]))
-plt.subplot(122), plt.imshow(dst), plt.title('Warped Image')
-plt.show()
-plt.figure()
-dst[0:img.shape[0], 0:img.shape[1]] = img
-cv2.imwrite('resultant_stitched_panorama.jpg', dst)
-plt.imshow(dst)
-plt.show()
-cv2.imwrite('resultant_stitched_panorama.jpg', dst)
+################################
+# transformeren met matrix M
+################################
+
+def warpImages(img1, img2, H):
+    rows1, cols1 = img1.shape[:2]
+    rows2, cols2 = img2.shape[:2]
+
+    list_of_points_1 = np.float32([[0, 0], [0, rows1], [cols1, rows1], [cols1, 0]]).reshape(-1, 1, 2)
+    temp_points = np.float32([[0, 0], [0, rows2], [cols2, rows2], [cols2, 0]]).reshape(-1, 1, 2)
+
+    # When we have established a homography we need to warp perspective
+    # Change field of view
+    list_of_points_2 = cv2.perspectiveTransform(temp_points, H)
+
+    list_of_points = np.concatenate((list_of_points_1, list_of_points_2), axis=0)
+
+    [x_min, y_min] = np.int32(list_of_points.min(axis=0).ravel() - 0.5)
+    [x_max, y_max] = np.int32(list_of_points.max(axis=0).ravel() + 0.5)
+
+    translation_dist = [-x_min, -y_min]
+
+    H_translation = np.array([[1, 0, translation_dist[0]], [0, 1, translation_dist[1]], [0, 0, 1]])
+
+    output_img = cv2.warpPerspective(img2, H_translation.dot(H), (x_max - x_min, y_max - y_min))
+    output_img[translation_dist[1]:rows1 + translation_dist[1], translation_dist[0]:cols1 + translation_dist[0]] = img1
+
+    return output_img
+
+
+if len(M) > 0:
+    result = warpImages(img2, img1, M)
+    cv2.imwrite(PATH_RESULT, result)
+else:
+    print("No transformation matrix found")
