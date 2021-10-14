@@ -22,7 +22,7 @@ Person | Hour 1 | Hour 2 | Hour 3 | Hour 4 | After hours (specify time)
 ------ | ------ | ------ | ------ | ------ | -------------
 Jasper Laitem | task1 | = | task2 | task3
 Jonas Buts    |    |     |      |
-Lars Depuydt  |    |     |      |
+Lars Depuydt  | Research for corner detection and matching | = | general opencv research | added a new folder structure
 Robin Anné    | Explore basic camera functionality in terminal | Research networking libraries | = (settle on ZMQ) | Begin transition to shared Python 3.9.7 virtual environment
 Ruben Janssen | finishing stitching program draft | = | testing and optimizing stitching program | =
 Wout Bergmans | Researching Raspberry cam module output format | Testing of cam module functionalities via Python | Merging & capturing 2 pictures using 1 python program | = 

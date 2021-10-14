@@ -13,7 +13,8 @@
 * Linking everyones IDE with the repository
 
 ## Future Tasks
-/
+* Image stiching
+* connecting two rasberry pi's
   
 ## Running Tasks (general)
 /

@@ -22,7 +22,7 @@ Person | Hour 1 | Hour 2 | Hour 3 | Hour 4 | After hours (specify time)
 ------ | ------ | ------ | ------ | ------ | -------------
 Jasper Laitem | task1 | = | task2 | task3
 Jonas Buts    |    |     |      |
-Lars Depuydt  |    |     |      |
+Lars Depuydt  | Learning the image stitching code | Making one run file | Splitting making transformation matrix and transforming image code | Trying to install python envoirement on the pi
 Robin Anné    | Fix people's Python envs | write package sync scripts | = | 
 Ruben Janssen | code verbeteren   |  =   |   =   | =
 Wout Bergmans |    |     |      |
