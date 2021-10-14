@@ -1,7 +1,5 @@
 import cv2
 import numpy as np
-import time
-t_start = time.perf_counter()
 
 # variables
 PATH1 = "../../images/testing_images_pi/lokaal/image_for_testing_1.jpg"
@@ -41,7 +39,7 @@ img1 = cv2.imread(PATH1)
 img2 = cv2.imread(PATH2)
 
 # load tranformation matrix
-M = np.loadtxt(MATRIX_DATA)
+M = np.loadtxt("MAIN_code/matrix_data.txt")
 
 
 if len(M) > 0:
@@ -49,5 +47,3 @@ if len(M) > 0:
     cv2.imwrite(PATH_RESULT, result)
 else:
     print("No transformation matrix found")
-
-print(time.perf_counter() - t_start)
