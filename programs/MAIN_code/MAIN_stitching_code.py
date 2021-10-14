@@ -4,7 +4,7 @@ import numpy as np
 # variables
 PATH1 = "../images/testing_images_pi/lokaal/image_for_testing_1.jpg"
 PATH2 = "../images/testing_images_pi/lokaal/image_for_testing_2.jpg"
-PATH_RESULT = "../../images/stitched_images/stitchted.jpg"
+PATH_RESULT = "../images/stitched_images/stitchted.jpg"
 
 def warpImages(img1, img2, H):
     rows1, cols1 = img1.shape[:2]
@@ -43,6 +43,6 @@ M = np.loadtxt("MAIN_code/matrix_data.txt")
 
 if len(M) > 0:
     result = warpImages(img2, img1, M)
-    cv2.imwrite("stitchted.jpg", result)
+    cv2.imwrite(PATH_RESULT, result)
 else:
     print("No transformation matrix found")
