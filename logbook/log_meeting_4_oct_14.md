@@ -24,5 +24,5 @@ Jasper Laitem | task1 | = | task2 | task3
 Jonas Buts    |    |     |      |
 Lars Depuydt  |    |     |      |
 Robin Anné    | Fix people's Python envs | write package sync scripts | = | 
-Ruben Janssen |    |     |      |
+Ruben Janssen | code verbeteren   |  =   |   =   | =
 Wout Bergmans |    |     |      |
