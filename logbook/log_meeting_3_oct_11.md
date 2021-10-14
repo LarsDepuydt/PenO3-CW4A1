@@ -21,7 +21,7 @@
 Person | Hour 1 | Hour 2 | Hour 3 | Hour 4 | After hours (specify time)
 ------ | ------ | ------ | ------ | ------ | -------------
 Jasper Laitem | task1 | = | task2 | task3
-Jonas Buts    |    |     |      |
+Jonas Buts    | Working on stitching program   | = |   =   | =
 Lars Depuydt  |    |     |      |
 Robin Anné    | Explore basic camera functionality in terminal | Research networking libraries | = (settle on ZMQ) | Begin transition to shared Python 3.9.7 virtual environment
 Ruben Janssen | finishing stitching program draft | = | testing and optimizing stitching program | =

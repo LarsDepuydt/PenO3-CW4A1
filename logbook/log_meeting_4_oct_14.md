@@ -21,7 +21,7 @@
 Person | Hour 1 | Hour 2 | Hour 3 | Hour 4 | After hours (specify time)
 ------ | ------ | ------ | ------ | ------ | -------------
 Jasper Laitem | task1 | = | task2 | task3
-Jonas Buts    |    |     |      |
+Jonas Buts    |  Fixing Pyton env  |  Implementing blending in code   |  =    | Optimizing code
 Lars Depuydt  |    |     |      |
 Robin Anné    | Fix people's Python envs | write package sync scripts | = | 
 Ruben Janssen |    |     |      |
