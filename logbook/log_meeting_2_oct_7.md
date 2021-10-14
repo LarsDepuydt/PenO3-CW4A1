@@ -1,14 +1,14 @@
 # Log Team Meeting 2
 07 October 2021
 
-_**This file is unfinished.**_
+**_This file is unfinished._**
 ## Decisions
 * ...
 
 ## Finished Tasks
 * Enable pi's to access repository via Git
 * Establish pi-to-pi SSH connection
-* 
+* Corner detection on an image (displayed)
 
 ## Future Tasks
 * Find and code method for pi-to-pi file transfer via Python
@@ -29,4 +29,13 @@ Lars Depuydt  | Reaserach for image stitching  |  Reaserach for image stitching 
 Robin Anné    | Install, test pi repository access via Git | Establish pi-to-pi SSH connection | = | Perform rudimentary SSH file transfers (using SCP) | Create log template (20m)
 Ruben Janssen | Research of image stitching | Research of image stitching | writing first code for image stitching | trying out first code for image stitching
 Wout Bergmans | Research of image stitching | Setup of second pi | = |Same as Robin
+
+#
+#### Gelezen en goedgekeurd
+Jasper Laitem <br/>
+Jonas Buts <br/>
+Lars Depuydt <br/>
+Robin Anné <br/>
+Ruben Janssen <br/>
+Wout Bergmans
 

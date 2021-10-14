@@ -21,3 +21,12 @@
 
 ## Running Tasks (individual)
 N/A
+
+#
+#### Gelezen en goedgekeurd
+Jasper Laitem <br/>
+Jonas Buts <br/>
+Lars Depuydt <br/>
+Robin Anné <br/>
+Ruben Janssen <br/>
+Wout Bergmans
