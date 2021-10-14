@@ -9,8 +9,8 @@ t_start = time.perf_counter()
 smoothing_window_size = 800
 
 # Load images
-img1 = cv2.imread(r"C:\Users\jonas\PycharmProjects\PenO3-CW4A1\images\testing_images_pi\lokaal\image_for_testing_2.jpg")
-img2 = cv2.imread(r"C:\Users\jonas\PycharmProjects\PenO3-CW4A1\images\testing_images_pi\lokaal\image_for_testing_1.jpg")
+img1 = cv2.imread("../../images/testing_images_pi/lokaal/image_for_testing_2.jpg")
+img2 = cv2.imread("../../images/testing_images_pi/lokaal/image_for_testing_1.jpg")
 
 # Create our ORB detector and detect keypoints and descriptors
 orb = cv2.ORB_create(nfeatures=2000)
