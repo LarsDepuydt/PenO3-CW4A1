@@ -28,6 +28,7 @@ class Image_Stitching():
             image2_kp = np.float32(
                 [kp2[i].pt for (i, _) in good_points])
             H, status = cv2.findHomography(image2_kp, image1_kp, cv2.RANSAC,5.0)
+            print(H)
         return H
 
     def create_mask(self,img1,img2,version):

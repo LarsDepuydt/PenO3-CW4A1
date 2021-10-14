@@ -7,8 +7,8 @@ import time
 t_start = time.perf_counter()
 
 # Load images
-img1 = cv2.imread("../testing_images_pi/lokaal/image_for_testing_1.jpg")
-img2 = cv2.imread("../testing_images_pi/lokaal/image_for_testing_2.jpg")
+img1 = cv2.imread("../../images/testing_images_pi/lokaal/image_for_testing_1.jpg")
+img2 = cv2.imread("../../images/testing_images_pi/lokaal/image_for_testing_2.jpg")
 
 # Create our ORB detector and detect keypoints and descriptors
 orb = cv2.ORB_create(nfeatures=2000)
