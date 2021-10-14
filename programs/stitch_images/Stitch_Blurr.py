@@ -49,13 +49,13 @@ def warpImages(img1, img2, H):
     mask2 = create_mask(img1, img2, version='right_image')
     smt = cv2.warpPerspective(img2, H, (width_panorama, height_panorama))
     panorama2 = smt * mask2
-    result = panorama1 + panorama2
+    output_img = panorama1 + panorama2
 
-    rows, cols = np.where(result[:, :, 0] != 0)
+
+    '''rows, cols = np.where(result[:, :, 0] != 0)
     min_row, max_row = min(rows), max(rows) + 1
     min_col, max_col = min(cols), max(cols) + 1
-    output_img = result[min_row:max_row, min_col:max_col, :]
-    print(time.perf_counter() - t_start)
+    output_img = result[min_row:max_row, min_col:max_col, :]'''
     return output_img
 
 
@@ -64,6 +64,7 @@ MIN_MATCH_COUNT = 10
 
 
 def create_mask(img1, img2, version):
+
     height_img1 = img1.shape[0]
     width_img1 = img1.shape[1]
     width_img2 = img2.shape[1]
