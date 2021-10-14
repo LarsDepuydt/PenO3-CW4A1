@@ -21,6 +21,7 @@ img2 = cv2.cvtColor(img2_import, cv2.COLOR_BGR2GRAY)
 # create ORB with number of keypoints
 orb = cv2.ORB_create(nfeatures=AANTAL_KEYPOINTS)
 
+
 # find the keypoints and descriptors with SIFT
 kp1, des1 = orb.detectAndCompute(img1, None)
 kp2, des2 = orb.detectAndCompute(img2, None)
