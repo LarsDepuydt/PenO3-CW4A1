@@ -4,7 +4,7 @@ spacer = "======================"
 print("CURRENT PYTHON VERSION      : ", sys.version)
 print("GLOBAL PYTHON INSTALL       : ", sys.base_prefix)
 print("ACTIVE ENVIRONMENT IS       : ", sys.prefix)
-print("ACTIVE ENVIRONMENT SHOULD BE: ", str(os.path.dirname(os.path.realpath(__file__)))[:-10]+ "\\venv")
+print("ACTIVE ENVIRONMENT SHOULD BE: ", str(os.path.dirname(os.path.realpath(__file__)))[:-15]+ "\\venv")
 
 print(spacer)
 print("INSTALLED PACKAGES: ", "\n")
