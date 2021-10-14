@@ -1,10 +1,13 @@
 import cv2
 import numpy as np
+import time
+t_start = time.perf_counter()
 
 # variables
-PATH1 = "../images/testing_images_pi/lokaal/image_for_testing_1.jpg"
-PATH2 = "../images/testing_images_pi/lokaal/image_for_testing_2.jpg"
+PATH1 = "../../images/testing_images_pi/lokaal/image_for_testing_1.jpg"
+PATH2 = "../../images/testing_images_pi/lokaal/image_for_testing_2.jpg"
 PATH_RESULT = "../../images/stitched_images/stitchted.jpg"
+MATRIX_DATA = "matrix_data.txt"
 
 def warpImages(img1, img2, H):
     rows1, cols1 = img1.shape[:2]
@@ -38,11 +41,13 @@ img1 = cv2.imread(PATH1)
 img2 = cv2.imread(PATH2)
 
 # load tranformation matrix
-M = np.loadtxt("MAIN_code/matrix_data.txt")
+M = np.loadtxt(MATRIX_DATA)
 
 
 if len(M) > 0:
     result = warpImages(img2, img1, M)
-    cv2.imwrite("stitchted.jpg", result)
+    cv2.imwrite(PATH_RESULT, result)
 else:
     print("No transformation matrix found")
+
+print(time.perf_counter() - t_start)
