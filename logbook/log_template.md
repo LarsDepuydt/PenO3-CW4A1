@@ -19,9 +19,18 @@ dd Month yyyy
 ## Running Tasks (individual)
 Person | Hour 1 | Hour 2 | Hour 3 | Hour 4 | After hours (specify time)
 ------ | ------ | ------ | ------ | ------ | -------------
-Jasper Laitem | task1 | = | task2 | task3
-Jonas Buts    |    |     |      |
-Lars Depuydt  |    |     |      |
-Robin Anné    |    |     |      |
-Ruben Janssen |    |     |      |
-Wout Bergmans |    |     |      |
+**Jasper Laitem** | task1 | = | task2 | task3
+**Jonas Buts**    |    |     |      |
+**Lars Depuydt**  |    |     |      |
+**Robin Anné**    |    |     |      |
+**Ruben Janssen** |    |     |      |
+**Wout Bergmans** |    |     |      |
+
+#
+#### Gelezen en goedgekeurd
+Jasper Laitem <br/>
+Jonas Buts <br/>
+Lars Depuydt <br/>
+Robin Anné <br/>
+Ruben Janssen <br/>
+Wout Bergmans

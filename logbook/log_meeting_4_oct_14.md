@@ -6,23 +6,32 @@
 * item1
 
 ## Finished Tasks
-* item1
-* item2
+* First full transformationmatrix and stitching program
+* Everyone has the same venv
 
 ## Future Tasks
-* item1
-* item2
+* Explaining the code in the report and the operation
+* Better image recording: higher frame rate
   
 ## Running Tasks (general)
 * Finish scripts to share packages
-* item2
+* Making the stitching program faster
 
 ## Running Tasks (individual)
 Person | Hour 1 | Hour 2 | Hour 3 | Hour 4 | After hours (specify time)
 ------ | ------ | ------ | ------ | ------ | -------------
-Jasper Laitem | task1 | = | task2 | task3
+Jasper Laitem |  |  | | 
 Jonas Buts    |    |     |      |
-Lars Depuydt  |    |     |      |
+Lars Depuydt  | Learning the image stitching code | Making one run file | Splitting making transformation matrix and transforming image code | Trying to install python envoirement on the pi
 Robin Anné    | Fix people's Python envs | write package sync scripts | = | 
-Ruben Janssen |    |     |      |
-Wout Bergmans |    |     |      |
+Ruben Janssen | code verbeteren   |  =   |   =   | =
+Wout Bergmans | Raspberry pi image transfer with imagezmq | = | = | =
+
+#
+#### Gelezen en goedgekeurd
+Jasper Laitem <br/>
+Jonas Buts <br/>
+Lars Depuydt <br/>
+Robin Anné <br/>
+Ruben Janssen <br/>
+Wout Bergmans
