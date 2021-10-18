@@ -12,7 +12,7 @@ PATH1 = "../../images/testing_images_pi/lokaal/image_for_testing_1.jpg"
 PATH2 = "../../images/testing_images_pi/lokaal/image_for_testing_2.jpg"
 PATH_RESULT = "../../images/stitched_images/stitchted.jpg"
 MATRIX_DATA = "matrix_data.txt"
-smoothing_window_size = 200
+smoothing_window_size = 800
 
 
 def warpImages(img2, img1, H):
@@ -57,8 +57,8 @@ img1 = cv2.imread(PATH2)
 img2 = cv2.imread(PATH1)
 
 # load tranformation matrix
-
 M = np.loadtxt("../../programs/MAIN_code/matrix_data.txt")
+
 print(M)
 if len(M) > 0:
     result = warpImages(img1, img2, M)
