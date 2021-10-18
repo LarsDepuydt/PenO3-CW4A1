@@ -24,7 +24,7 @@ Jasper Laitem |  |  | |
 Jonas Buts    |  Fixing Pyton env  |  Implementing blending in code   |  =    | Optimizing code
 Lars Depuydt  | Learning the image stitching code | Making one run file | Splitting making transformation matrix and transforming image code | Trying to install python envoirement on the pi
 Robin Anné    | Fix people's and the pi's Python envs | = |write package sync scripts | =
-Ruben Janssen | code verbeteren   |  =   |   =   | =
+Ruben Janssen | Optimizing code  |  =   |   =   | =
 Wout Bergmans | Raspberry pi image transfer with imagezmq | = | = | =
 
 #
