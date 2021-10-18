@@ -53,4 +53,5 @@ if len(good) > MIN_MATCH_COUNT:
 else:
     print("Overlap was not good enough")
 
-print(time.perf_counter() - t_start)
+print("CPU tijd: ", time.perf_counter() - t_start)
+print("totale tijd: ", time.process_time())
