@@ -7,7 +7,7 @@ print(time.process_time())
 PATH1 = "../../images/testing_images_pi/lokaal/image_for_testing_1.jpg"
 PATH2 = "../../images/testing_images_pi/lokaal/image_for_testing_2.jpg"
 PATH_RESULT = "../../images/stitchted.jpg"
-MATRIX_DATA = "matrix_data.txt"
+MATRIX_DATA = "../MAIN_code/matrix_data.txt"
 HEIGHT_PANORAMA = 2464
 WIDTH_PANORAMA = 5000
 WIDTH_IMG1 = 3280
