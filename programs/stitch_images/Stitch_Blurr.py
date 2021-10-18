@@ -31,24 +31,22 @@ good = []
 for m, n in matches:
     if m.distance < 0.6 * n.distance:
         good.append(m)
-print(len(matches), len(good))
 
 
 def warpImages(img1, img2, H):
-    print(time.perf_counter() - t_start)
-    height_img1 = img1.shape[0]
-    width_img1 = img1.shape[1]
+    height_panorama, width_img1 = img1.shape[:2]
     width_img2 = img2.shape[1]
-    height_panorama = height_img1
     width_panorama = width_img1 + width_img2
 
     panorama1 = np.zeros((height_panorama, width_panorama, 3))
-    mask1 = create_mask(img1, img2, version='left_image')
-    panorama1[0:img1.shape[0], 0:img1.shape[1], :] = img1
+    mask1 = create_mask(img1, img2, height_panorama, width_panorama, version='left_image')
+    panorama1[0:height_panorama, 0:width_img1, :] = img1
     panorama1 *= mask1
-    mask2 = create_mask(img1, img2, version='right_image')
+    cv2.imwrite("panorama1.jpg", panorama1)
+    mask2 = create_mask(img1, img2, height_panorama, width_panorama, version='right_image')
     smt = cv2.warpPerspective(img2, H, (width_panorama, height_panorama))
     panorama2 = smt * mask2
+    cv2.imwrite("panorama2.jpg", panorama2)
     output_img = panorama1 + panorama2
 
 
@@ -63,15 +61,10 @@ def warpImages(img1, img2, H):
 MIN_MATCH_COUNT = 10
 
 
-def create_mask(img1, img2, version):
+def create_mask(img1, img2, height_panorama, width_panorama, version):
 
-    height_img1 = img1.shape[0]
-    width_img1 = img1.shape[1]
-    width_img2 = img2.shape[1]
-    height_panorama = height_img1
-    width_panorama = width_img1 + width_img2
     offset = int(smoothing_window_size / 2)
-    barrier = img1.shape[1] - int(smoothing_window_size / 2)
+    barrier = img1.shape[1] - offset
     mask = np.zeros((height_panorama, width_panorama))
     if version == 'left_image':
         mask[:, barrier - offset:barrier + offset] = np.tile(np.linspace(1, 0, 2 * offset).T, (height_panorama, 1))
@@ -81,17 +74,20 @@ def create_mask(img1, img2, version):
         mask[:, barrier + offset:] = 1
     return cv2.merge([mask, mask, mask])
 
-
+print(time.perf_counter() - t_start, 1)
 if len(good) > MIN_MATCH_COUNT:
     # Convert keypoints to an argument for findHomography
     src_pts = np.float32([keypoints1[m.queryIdx].pt for m in good]).reshape(-1, 1, 2)
     dst_pts = np.float32([keypoints2[m.trainIdx].pt for m in good]).reshape(-1, 1, 2)
 
     # Establish a homography
-    H, _ = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
 
+    H, _ = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
+    print(time.perf_counter() - t_start, 2)
     final_result = warpImages(img2, img1, H)
+    print(time.perf_counter() - t_start, 3)
     cv2.imwrite('Stitch_Blurr.jpg', final_result)
+    print(time.perf_counter() - t_start, 4)
 
 else:
     print("Overlap was not good enough")
