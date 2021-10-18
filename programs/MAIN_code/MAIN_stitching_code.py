@@ -6,10 +6,12 @@ t_start = time.perf_counter()
 # variables
 PATH1 = "../../images/testing_images_pi/lokaal/image_for_testing_1.jpg"
 PATH2 = "../../images/testing_images_pi/lokaal/image_for_testing_2.jpg"
-PATH_RESULT = "../../images/stitched_images/stitchted.jpg"
+PATH_RESULT = "../../images/stitchted.jpg"
 MATRIX_DATA = "matrix_data.txt"
 
 def warpImages(img1, img2, H):
+    print("warp")
+    print(time.process_time())
     rows1, cols1 = img1.shape[:2]
     rows2, cols2 = img2.shape[:2]
 
@@ -31,7 +33,7 @@ def warpImages(img1, img2, H):
 
     output_img = cv2.warpPerspective(img2, H_translation.dot(H), (x_max - x_min, y_max - y_min))
     output_img[translation_dist[1]:rows1 + translation_dist[1], translation_dist[0]:cols1 + translation_dist[0]] = img1
-
+    print(time.process_time())
     return output_img
 
 
@@ -42,13 +44,14 @@ img2 = cv2.imread(PATH2)
 
 # load tranformation matrix
 
-M = np.loadtxt("matrix_data.txt")
+M = np.loadtxt(MATRIX_DATA)
 
 if len(M) > 0:
     result = warpImages(img2, img1, M)
-    cv2.imwrite(PATH_RESULT, result)
+    #cv2.imwrite(PATH_RESULT, result)
 else:
     print("No transformation matrix found")
+print(time.perf_counter() - t_start)
 
 print("CPU tijd: ", time.perf_counter() - t_start)
 print("totale tijd: ", time.process_time())
