@@ -30,7 +30,7 @@ def main():
     img2 = cv2.imread(PATH2)
 
     # Establish a homography
-    H = np.loadtxt("../MAIN_code/matrix_data.txt")
+    H = np.loadtxt(MATRIX_DATA)
     final_result = warpImages(img2, img1, H, left_mask, right_mask)
     print(time.process_time())
     cv2.imwrite('Stitch_Blurr.jpg', final_result)
