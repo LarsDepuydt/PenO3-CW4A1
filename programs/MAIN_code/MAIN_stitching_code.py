@@ -42,11 +42,11 @@ img2 = cv2.imread(PATH2)
 
 # load tranformation matrix
 
-M = np.loadtxt("matrix_data.txt")
+M = np.loadtxt(MATRIX_DATA)
 
 if len(M) > 0:
     result = warpImages(img2, img1, M)
-    cv2.imwrite(PATH_RESULT, result)
+    #cv2.imwrite(PATH_RESULT, result)
 else:
     print("No transformation matrix found")
 
