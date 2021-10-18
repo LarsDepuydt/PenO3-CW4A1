@@ -16,6 +16,7 @@ width_panorama = 5000
 width_img1 = 3280
 offset = int(smoothing_window_size / 2)
 
+t_start = time.perf_counter()
 
 def warpImages(img2, img1, H):
     barrier = img1.shape[1] - offset
@@ -27,7 +28,6 @@ def warpImages(img2, img1, H):
     smt = cv2.warpPerspective(img2, H, (width_panorama, height_panorama))
     panorama2 = smt * mask2
     output_img = panorama1 + panorama2
-    print(time.perf_counter() - t_start)
 
     "output_img = result[0:2464, 0:5175, :]"
     return output_img
@@ -45,6 +45,7 @@ def create_mask(img1, img2, height_panorama, width_panorama, barrier, version):
     return cv2.merge([mask, mask, mask])
 
 # Load images
+
 img1 = cv2.imread(PATH1)
 img2 = cv2.imread(PATH2)
 
@@ -52,4 +53,6 @@ img2 = cv2.imread(PATH2)
 H = np.loadtxt("../MAIN_code/matrix_data.txt")
 final_result = warpImages(img2, img1, H)
 cv2.imwrite('Stitch_Blurr.jpg', final_result)
-print(time.process_time())
+
+print("CPU tijd: ", time.perf_counter() - t_start)
+print("totale tijd: ", time.process_time())
