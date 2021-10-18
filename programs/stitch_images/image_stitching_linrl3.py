@@ -40,7 +40,7 @@ class Image_Stitching():
         offset = int(self.smoothing_window_size / 2)
         barrier = img1.shape[1] - int(self.smoothing_window_size / 2)
         mask = np.zeros((height_panorama, width_panorama))
-        if version== 'left_image':
+        if version == 'left_image':
             mask[:, barrier - offset:barrier + offset ] = np.tile(np.linspace(1, 0, 2 * offset ).T, (height_panorama, 1))
             mask[:, :barrier - offset] = 1
         else:

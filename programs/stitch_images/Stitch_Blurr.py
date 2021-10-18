@@ -5,35 +5,17 @@ from matplotlib import pyplot as plt
 from PIL import Image
 import time
 
+
 t_start = time.perf_counter()
-smoothing_window_size = 800
-
-# Load images
-img1 = cv2.imread("../../images/testing_images_pi/lokaal/image_for_testing_2.jpg")
-img2 = cv2.imread("../../images/testing_images_pi/lokaal/image_for_testing_1.jpg")
-
-# Create our ORB detector and detect keypoints and descriptors
-orb = cv2.ORB_create(nfeatures=2000)
-
-# Find the key points and descriptors with ORB
-keypoints1, descriptors1 = orb.detectAndCompute(img1, None)
-keypoints2, descriptors2 = orb.detectAndCompute(img2, None)
-
-# Create a BFMatcher object.
-# It will find all of the matching keypoints on two images
-bf = cv2.BFMatcher_create(cv2.NORM_HAMMING)
-
-# Find matching points
-matches = bf.knnMatch(descriptors1, descriptors2, k=2)
-
-# Finding the best matches
-good = []
-for m, n in matches:
-    if m.distance < 0.6 * n.distance:
-        good.append(m)
+# variables
+PATH1 = "../../images/testing_images_pi/lokaal/image_for_testing_1.jpg"
+PATH2 = "../../images/testing_images_pi/lokaal/image_for_testing_2.jpg"
+PATH_RESULT = "../../images/stitched_images/stitchted.jpg"
+MATRIX_DATA = "matrix_data.txt"
+smoothing_window_size = 200
 
 
-def warpImages(img1, img2, H):
+def warpImages(img2, img1, H):
     height_panorama, width_img1 = img1.shape[:2]
     width_img2 = img2.shape[1]
     width_panorama = width_img1 + width_img2
@@ -48,6 +30,7 @@ def warpImages(img1, img2, H):
     panorama2 = smt * mask2
     cv2.imwrite("panorama2.jpg", panorama2)
     output_img = panorama1 + panorama2
+    print(time.perf_counter() - t_start)
 
 
     '''rows, cols = np.where(result[:, :, 0] != 0)
@@ -55,11 +38,6 @@ def warpImages(img1, img2, H):
     min_col, max_col = min(cols), max(cols) + 1
     output_img = result[min_row:max_row, min_col:max_col, :]'''
     return output_img
-
-
-# Set minimum match condition
-MIN_MATCH_COUNT = 10
-
 
 def create_mask(img1, img2, height_panorama, width_panorama, version):
 
@@ -74,22 +52,17 @@ def create_mask(img1, img2, height_panorama, width_panorama, version):
         mask[:, barrier + offset:] = 1
     return cv2.merge([mask, mask, mask])
 
-print(time.perf_counter() - t_start, 1)
-if len(good) > MIN_MATCH_COUNT:
-    # Convert keypoints to an argument for findHomography
-    src_pts = np.float32([keypoints1[m.queryIdx].pt for m in good]).reshape(-1, 1, 2)
-    dst_pts = np.float32([keypoints2[m.trainIdx].pt for m in good]).reshape(-1, 1, 2)
+# Load images
+img1 = cv2.imread(PATH2)
+img2 = cv2.imread(PATH1)
 
-    # Establish a homography
+# load tranformation matrix
 
-    H, _ = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
-    print(time.perf_counter() - t_start, 2)
-    final_result = warpImages(img2, img1, H)
-    print(time.perf_counter() - t_start, 3)
-    cv2.imwrite('Stitch_Blurr.jpg', final_result)
-    print(time.perf_counter() - t_start, 4)
-
+M = np.loadtxt("../../programs/MAIN_code/matrix_data.txt")
+print(M)
+if len(M) > 0:
+    result = warpImages(img1, img2, M)
+    cv2.imwrite(PATH_RESULT, result)
 else:
-    print("Overlap was not good enough")
-
+    print("No transformation matrix found")
 print(time.perf_counter() - t_start)
