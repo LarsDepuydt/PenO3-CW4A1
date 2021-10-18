@@ -23,7 +23,7 @@
 ## Running Tasks (individual)
 Person | Hour 1 | Hour 2 | Hour 3 | Hour 4 | After hours (specify time)
 ------ | ------ | ------ | ------ | ------ | -------------
-Jasper Laitem |    |     |      | 
+Jasper Laitem |   research image stitching |  =  |    setup of pi's  | = 
 Jonas Buts    | Research of image stitching   |  Research of image stitching   | Writing first code for image stitching    | Writing first code for image stitching | Trying out first code for image stitching (30min)
 Lars Depuydt  | Reaserach for image stitching  |  Reaserach for image stitching  |   Corner detection reasearch   | corner detection succes | research for corner matching
 Robin Anné    | Install, test pi repository access via Git | Establish pi-to-pi SSH connection | = | Perform rudimentary SSH file transfers (using SCP) | Create log template (20m)
