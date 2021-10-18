@@ -5,8 +5,8 @@ t_start = time.perf_counter()
 
 # VARIABLES
 
-PATH1 = "../../images/testing_images_pi/lokaal/image_for_testing_2.jpg"
-PATH2 = "../../images/testing_images_pi/lokaal/image_for_testing_1.jpg"
+PATH1 = "../../images/testing_images_pi/lokaal/image_for_testing_1.jpg"
+PATH2 = "../../images/testing_images_pi/lokaal/image_for_testing_2.jpg"
 
 AANTAL_KEYPOINTS = 2000 # set number of keypoints
 MIN_MATCH_COUNT = 10    # Set minimum match condition
