@@ -2,14 +2,13 @@ import sys
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
+from PIL import Image
 import time
-
 t_start = time.perf_counter()
 
 # Load images
 img1 = cv2.imread("../../images/testing_images_pi/lokaal/image_for_testing_1.jpg")
 img2 = cv2.imread("../../images/testing_images_pi/lokaal/image_for_testing_2.jpg")
-
 
 # Create our ORB detector and detect keypoints and descriptors
 orb = cv2.ORB_create(nfeatures=2000)
@@ -31,7 +30,6 @@ for m, n in matches:
     if m.distance < 0.6 * n.distance:
         good.append(m)
 print(len(matches), len(good))
-
 
 def warpImages(img1, img2, H):
     rows1, cols1 = img1.shape[:2]
@@ -58,7 +56,6 @@ def warpImages(img1, img2, H):
 
     return output_img
 
-
 # Set minimum match condition
 MIN_MATCH_COUNT = 10
 
@@ -71,9 +68,9 @@ if len(good) > MIN_MATCH_COUNT:
     M, _ = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
 
     result = warpImages(img2, img1, M)
-    cv2.imwrite("../../programs/stitch_images/grayscale_result.jpg", result)
+    cv2.imwrite("../Stitched_images/image_size_test.jpg", result)
 
 else:
     print("Overlap was not good enough")
-
-print(time.perf_counter() - t_start)
+    
+print(time.perf_counter()-t_start)

@@ -8,24 +8,22 @@ t_start = time.perf_counter()
 # variables
 PATH1 = "../../images/testing_images_pi/lokaal/image_for_testing_1.jpg"
 PATH2 = "../../images/testing_images_pi/lokaal/image_for_testing_2.jpg"
-PATH_RESULT = "../../images/stitched_images/stitchted.jpg"
+PATH_RESULT = "../../images/stitchted.jpg"
 MATRIX_DATA = "matrix_data.txt"
 smoothing_window_size = 800
 height_panorama = 2464
 width_panorama = 5000
 width_img1 = 3280
-
-# Load images
-img1 = cv2.imread("../../images/testing_images_pi/lokaal/image_for_testing_2.jpg")
-img2 = cv2.imread("../../images/testing_images_pi/lokaal/image_for_testing_1.jpg")
+offset = int(smoothing_window_size / 2)
 
 
-def warpImages(img1, img2, H):
+def warpImages(img2, img1, H):
+    barrier = img1.shape[1] - offset
     panorama1 = np.zeros((height_panorama, width_panorama, 3))
-    mask1 = create_mask(img1, img2, height_panorama, width_panorama, version='left_image')
+    mask1 = create_mask(img1, img2, height_panorama, width_panorama, barrier, version='left_image')
     panorama1[0:height_panorama, 0:width_img1, :] = img1
     panorama1 *= mask1
-    mask2 = create_mask(img1, img2, height_panorama, width_panorama, version='right_image')
+    mask2 = create_mask(img1, img2, height_panorama, width_panorama, barrier,version='right_image')
     smt = cv2.warpPerspective(img2, H, (width_panorama, height_panorama))
     panorama2 = smt * mask2
     output_img = panorama1 + panorama2
@@ -35,9 +33,8 @@ def warpImages(img1, img2, H):
     return output_img
 
 
-def create_mask(img1, img2, height_panorama, width_panorama, version):
-    offset = int(smoothing_window_size / 2)
-    barrier = img1.shape[1] - offset
+def create_mask(img1, img2, height_panorama, width_panorama, barrier, version):
+
     mask = np.zeros((height_panorama, width_panorama))
     if version == 'left_image':
         mask[:, barrier - offset:barrier + offset] = np.tile(np.linspace(1, 0, 2 * offset).T, (height_panorama, 1))
@@ -48,8 +45,8 @@ def create_mask(img1, img2, height_panorama, width_panorama, version):
     return cv2.merge([mask, mask, mask])
 
 # Load images
-img1 = cv2.imread(PATH2)
-img2 = cv2.imread(PATH1)
+img1 = cv2.imread(PATH1)
+img2 = cv2.imread(PATH2)
 
 # Establish a homography
 H = np.loadtxt("../MAIN_code/matrix_data.txt")
