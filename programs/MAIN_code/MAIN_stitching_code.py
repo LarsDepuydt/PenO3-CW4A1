@@ -49,3 +49,6 @@ if len(M) > 0:
     cv2.imwrite(PATH_RESULT, result)
 else:
     print("No transformation matrix found")
+
+print("CPU tijd: ", time.perf_counter() - t_start)
+print("totale tijd: ", time.process_time())
