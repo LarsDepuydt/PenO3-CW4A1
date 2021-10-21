@@ -1,13 +1,17 @@
 import time
 from imutils.video import VideoStream
+#import pyzmq
 import imagezmq
 import cv2
 import numpy as np
 from threading import *
 import socket
 
-RB_IP_HELPER = ""
-PC_IP = ""
+
+PC_IPs = {'whatever': 'tcp://169.254.165.116:5555'}
+RB_HELPER_IP = "tcp://helperraspberry:5555"
+PC_IP = PC_IPs['whatever']
+
 
 #
 # MOET EERST RUNNEN, MAIN STAAT RECHTS
@@ -67,6 +71,11 @@ if len(good) > MIN_MATCH_COUNT:
 else:
     print("Overlap was not good enough")
 
+# STUUR MATRIX
+
+sender = imagezmq.ImageSender(connect_to=RB_HELPER_IP)
+sender.send_image(RB_MAIN_IP, M)
+
 
 #
 # MOET HERHALEN
@@ -105,7 +114,7 @@ rpi_name, imageleft = image_hub.recv_image()
 image_hub.send_reply(b'OK')
 
 # send to server/host pc
-sender = imagezmq.ImageSender(connect_to='tcp://Laptop-Wout:5555')  # Input pc-ip (possibly webserver to sent to)
+sender = imagezmq.ImageSender(connect_to=PC_IP)  # Input pc-ip (possibly webserver to sent to)
 pc_name = PC_IP  # send RPi hostname with each image
 image = voeg_samen(imageleft, imageright, M).read()
 sender.send_image(rpi_name, image)

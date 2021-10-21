@@ -5,8 +5,12 @@ import cv2
 import numpy as np
 from threading import *
 import socket
+import pyzmq
 
-RB_IP_MAIN = ""
+
+PC_IPs = {'whatever': 'tcp://169.254.165.116:5555'}
+RB_MAIN_IP = "tcp://mainraspberry:5555"
+PC_IP = PC_IPs]['whatever']
 
 #
 # VOERT EEN KEER UIT
@@ -15,12 +19,15 @@ RB_IP_MAIN = ""
 # stuurt rechterfoto
 picam = VideoStream(usePiCamera=True).start()
 imageright = picam.read()
-sender = imagezmq.ImageSender(connect_to='tcp://Laptop-Wout:5555')  # Input pc-ip (possibly webserver to sent to)
-rb_name = RB_IP_MAIN  # send RPi hostname with each image
-sender.send_image(rb_name, imageright)
+sender = imagezmq.ImageSender(connect_to=RB_MAIN_IP) 
+sender.send_image(RB_IP_MAIN, imageright)
 
 # ontvangt matrix
-M = []
+image_hub = imagezmq.ImageHub()
+M = image_hub.recv_image()[1]
+image_hub.send_reply(b'OK')
+print(M)
+print(type(M))
 
 #
 # HERHAALT
