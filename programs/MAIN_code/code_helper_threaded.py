@@ -7,21 +7,21 @@ from time import sleep
 
 RB_IP_MAIN = ""
 #
-# VOERT EEN KEER UIT
+# One time only
 #
 
-# stuurt linkerfoto
+# Sends left image
 picam = VideoStream(usePiCamera=True).start()
 imageright = picam.read()
 sender = imagezmq.ImageSender(connect_to='tcp://Laptop-Wout:5555')  # Input pc-ip (possibly webserver to sent to)
 rb_name = RB_IP_MAIN  # send RPi hostname with each image
 sender.send_image(rb_name, imageright)
 
-# ontvangt matrix
+# Receives matrix
 M = []
 
 #
-# HERHAALT
+# Repeating
 #
 left_image = None
 output_image = None
@@ -66,7 +66,7 @@ class TransformImage(threading.Thread):
 
                 H_translation = np.array([[1, 0, translation_dist[0]], [0, 1, translation_dist[1]], [0, 0, 1]])
 
-                self.lijst[1] = cv2.warpPerspective(self.img1, H_translation.dot(H), (x_max - x_min, y_max - y_min))
+                self.lijst[1] = cv2.warpPerspective(self.img1, H_translation.dot(self.H), (x_max - x_min, y_max - y_min))
 
 
 class SendImageToMain(threading.Thread):
@@ -90,4 +90,3 @@ sleep(0.001)
 step_2.start()
 sleep(0.001)
 step_3.start()
-
