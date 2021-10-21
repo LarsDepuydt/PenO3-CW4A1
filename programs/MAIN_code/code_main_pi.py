@@ -1,6 +1,6 @@
 import time
 from imutils.video import VideoStream
-import pyzmq
+#import pyzmq
 import imagezmq
 import cv2
 import numpy as np
@@ -10,7 +10,7 @@ import socket
 
 PC_IPs = {'whatever': 'tcp://169.254.165.116:5555'}
 RB_HELPER_IP = "tcp://helperraspberry:5555"
-PC_IP = PC_IPs]['whatever']
+PC_IP = PC_IPs['whatever']
 
 
 #
