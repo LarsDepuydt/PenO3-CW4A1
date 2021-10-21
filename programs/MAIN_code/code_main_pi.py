@@ -1,19 +1,13 @@
 import time
 from imutils.video import VideoStream
-#import pyzmq
 import imagezmq
 import cv2
 import numpy as np
 from threading import *
 import socket
 
-
-PC_IPs = {'whatever': 'tcp://169.254.165.116:5555'}
-RB_HELPER_IP = "tcp://helperraspberry:5555"
-RB_MAIN_IP = "tcp://mainraspberry:5555"
-PC_IP = PC_IPs['whatever']
-
-
+RB_IP_HELPER = ""
+PC_IP = ""
 
 #
 # MOET EERST RUNNEN, MAIN STAAT RECHTS
@@ -24,12 +18,8 @@ image_hub = imagezmq.ImageHub()
 rpi_name, imageleft = image_hub.recv_image()
 image_hub.send_reply(b'OK')
 
-cv2.imshow('test', imageleft)
-cv2.waitKey(1)
-
 # maakt rechterfoto
 picam = VideoStream(usePiCamera=True).start()
-time.sleep(2.0)
 imageright = picam.read()
 
 
@@ -38,8 +28,6 @@ AANTAL_KEYPOINTS = 2000 # set number of keypoints
 MIN_MATCH_COUNT = 10    # Set minimum match condition
 MATRIX_DATA = "matrix_data.txt"
 
-print(type(imageleft))
-print(type(imageright))
 img1 = imageleft
 img2 = imageright
 
@@ -79,16 +67,12 @@ if len(good) > MIN_MATCH_COUNT:
 else:
     print("Overlap was not good enough")
 
-# STUUR MATRIX
 
-sender = imagezmq.ImageSender(connect_to=RB_HELPER_IP)
-sender.send_image(RB_MAIN_IP, M)
-
-
+#
+# MOET HERHALEN
+#
 
 
-
-"""
 def voeg_samen(img_l, img_r, H):
     rows1, cols1 = img_r.shape[:2]
     rows2, cols2 = img_l.shape[:2]
@@ -109,53 +93,19 @@ def voeg_samen(img_l, img_r, H):
     output_img = img_l
     output_img[translation_dist[1]:rows1 + translation_dist[1], translation_dist[0]:cols1 + translation_dist[0]] = img_r
 
-    return output_img"""
-
-def warpImages(img1, img2, H):
-    print("warp")
-    print(time.process_time())
-    rows1, cols1 = img1.shape[:2]
-    rows2, cols2 = img2.shape[:2]
-
-    list_of_points_1 = np.float32([[0, 0], [0, rows1], [cols1, rows1], [cols1, 0]]).reshape(-1, 1, 2)
-    temp_points = np.float32([[0, 0], [0, rows2], [cols2, rows2], [cols2, 0]]).reshape(-1, 1, 2)
-
-    # When we have established a homography we need to warp perspective
-    # Change field of view
-    list_of_points_2 = cv2.perspectiveTransform(temp_points, H)
-
-    list_of_points = np.concatenate((list_of_points_1, list_of_points_2), axis=0)
-
-    [x_min, y_min] = np.int32(list_of_points.min(axis=0).ravel() - 0.5)
-    [x_max, y_max] = np.int32(list_of_points.max(axis=0).ravel() + 0.5)
-
-    translation_dist = [-x_min, -y_min]
-
-    H_translation = np.array([[1, 0, translation_dist[0]], [0, 1, translation_dist[1]], [0, 0, 1]])
-
-    output_img = cv2.warpPerspective(img2, H_translation.dot(H), (x_max - x_min, y_max - y_min))
-    output_img[translation_dist[1]:rows1 + translation_dist[1], translation_dist[0]:cols1 + translation_dist[0]] = img1
-    print(time.process_time())
     return output_img
 
-#
-# MOET HERHALEN
-#
-
-# maakt rechterfoto 2
+# maakt rechterfoto
+picam = VideoStream(usePiCamera=True).start()
 imageright = picam.read()
 
-# ontvangt linkerfoto 2
-#image_hub = imagezmq.ImageHub()
-imageleft = image_hub.recv_image()[1]
+# ontvangt linkerfoto
+image_hub = imagezmq.ImageHub()
+rpi_name, imageleft = image_hub.recv_image()
 image_hub.send_reply(b'OK')
 
-image2 = warpImages(imageleft, imageright, M).read()
-
-'''
 # send to server/host pc
-sender = imagezmq.ImageSender(connect_to=PC_IP)  # Input pc-ip (possibly webserver to sent to)
+sender = imagezmq.ImageSender(connect_to='tcp://Laptop-Wout:5555')  # Input pc-ip (possibly webserver to sent to)
 pc_name = PC_IP  # send RPi hostname with each image
 image = voeg_samen(imageleft, imageright, M).read()
 sender.send_image(rpi_name, image)
-'''
