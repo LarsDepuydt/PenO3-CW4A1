@@ -22,7 +22,7 @@ Person | Hour 1 | Hour 2 | Hour 3 | Hour 4 | After hours (specify time)
 **Jasper Laitem** | task1 | = | task2 | task3
 **Jonas Buts**    |    |     |      |
 **Lars Depuydt**  |    |     |      |
-**Robin Anné**    |    |     |      |
+**Robin Anné**    | Fix Pi environments | Pi to pi streaming | = | =
 **Ruben Janssen** |  optimizing code  |  =   |   fixing broken code   | optimizing code and start report
 **Wout Bergmans** | Multithreading research & implementation | = | = | =
 
