@@ -1,4 +1,4 @@
-import pyzmq
+#import pyzmq
 import numpy
 import imagezmq
 
@@ -11,4 +11,4 @@ image_hub = imagezmq.ImageHub()
 rpi_name, recmatrix = image_hub.recv_image()
 image_hub.send_reply(b'OK')
 print(recmatrix)
-
+print(type(recmatrix))
