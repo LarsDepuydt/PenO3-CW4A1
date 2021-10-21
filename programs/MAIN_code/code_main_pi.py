@@ -73,7 +73,8 @@ else:
 
 # STUUR MATRIX
 
-pyzmq.send_pyobj(M)
+sender = imagezmq.ImageSender(connect_to=RB_HELPER_IP)
+sender.send_image(RB_MAIN_IP, M)
 
 
 #

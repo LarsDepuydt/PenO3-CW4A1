@@ -22,8 +22,11 @@ sender = imagezmq.ImageSender(connect_to=RB_MAIN_IP)
 sender.send_image(RB_IP_MAIN, imageright)
 
 # ontvangt matrix
-
-M = []
+image_hub = imagezmq.ImageHub()
+M = image_hub.recv_image()[1]
+image_hub.send_reply(b'OK')
+print(M)
+print(type(M))
 
 #
 # HERHAALT
