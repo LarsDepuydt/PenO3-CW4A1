@@ -10,11 +10,15 @@ import pyzmq
 
 PC_IPs = {'whatever': 'tcp://169.254.165.116:5555'}
 RB_MAIN_IP = "tcp://mainraspberry:5555"
-PC_IP = PC_IPs]['whatever']
+PC_IP = PC_IPs['whatever']
 
 #
 # VOERT EEN KEER UIT
 #
+
+'''
+Check if leaving videostream on affects performance
+'''
 
 # stuurt rechterfoto
 picam = VideoStream(usePiCamera=True).start()
@@ -34,7 +38,6 @@ print(type(M))
 #
 
 # maakt linkerfoto
-picam = VideoStream(usePiCamera=True).start()
 imageleft = picam.read()
 
 # transformeert foto

@@ -10,7 +10,9 @@ import socket
 
 PC_IPs = {'whatever': 'tcp://169.254.165.116:5555'}
 RB_HELPER_IP = "tcp://helperraspberry:5555"
+RB_MAIN_IP = "tcp://mainraspberry:5555"
 PC_IP = PC_IPs['whatever']
+
 
 
 #
@@ -22,8 +24,12 @@ image_hub = imagezmq.ImageHub()
 rpi_name, imageleft = image_hub.recv_image()
 image_hub.send_reply(b'OK')
 
+cv2.imshow('test', imageleft)
+cv2.waitKey(1)
+
 # maakt rechterfoto
 picam = VideoStream(usePiCamera=True).start()
+time.sleep(2.0)
 imageright = picam.read()
 
 
@@ -32,6 +38,8 @@ AANTAL_KEYPOINTS = 2000 # set number of keypoints
 MIN_MATCH_COUNT = 10    # Set minimum match condition
 MATRIX_DATA = "matrix_data.txt"
 
+print(type(imageleft))
+print(type(imageright))
 img1 = imageleft
 img2 = imageright
 
@@ -77,9 +85,8 @@ sender = imagezmq.ImageSender(connect_to=RB_HELPER_IP)
 sender.send_image(RB_MAIN_IP, M)
 
 
-#
-# MOET HERHALEN
-#
+
+
 
 
 def voeg_samen(img_l, img_r, H):
@@ -104,17 +111,25 @@ def voeg_samen(img_l, img_r, H):
 
     return output_img
 
-# maakt rechterfoto
-picam = VideoStream(usePiCamera=True).start()
+
+#
+# MOET HERHALEN
+#
+
+# maakt rechterfoto 2
 imageright = picam.read()
 
-# ontvangt linkerfoto
-image_hub = imagezmq.ImageHub()
-rpi_name, imageleft = image_hub.recv_image()
+# ontvangt linkerfoto 2
+#image_hub = imagezmq.ImageHub()
+imageleft = image_hub.recv_image()[1]
 image_hub.send_reply(b'OK')
 
+image2 = voeg_samen(imageleft, imageright, M).read()
+
+'''
 # send to server/host pc
 sender = imagezmq.ImageSender(connect_to=PC_IP)  # Input pc-ip (possibly webserver to sent to)
 pc_name = PC_IP  # send RPi hostname with each image
 image = voeg_samen(imageleft, imageright, M).read()
 sender.send_image(rpi_name, image)
+'''
