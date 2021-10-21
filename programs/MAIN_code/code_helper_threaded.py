@@ -27,27 +27,29 @@ left_image = None
 output_image = None
 image_list = [left_image, output_image]
 
-class take_left_image(threading.Thread):
+
+class TakeLeftImage(threading.Thread):
     def __init__(self, lijst):
         super().__init__()
         self.lijst = lijst
+
     def run(self):
         while True:
             picam = VideoStream(usePiCamera=True).start()
             self.lijst[0] = picam.read()
 
-class transform_image(threading.Thread):
+
+class TransformImage(threading.Thread):
     def __init__(self, lijst, H):
         super().__init__()
         self.img1 = lijst[0]
         self.lijst = lijst
         self.H = H
+
     def run(self):
         while True:
-            if self.img1 != None:
+            if self.img1 is not None:
                 rows1, cols1 = self.img1.shape[:2]
-
-
                 list_of_points_1 = np.float32([[0, 0], [0, rows1], [cols1, rows1], [cols1, 0]]).reshape(-1, 1, 2)
                 temp_points = np.float32([[0, 0], [0, rows1], [cols1, rows1], [cols1, 0]]).reshape(-1, 1, 2)
 
@@ -67,21 +69,21 @@ class transform_image(threading.Thread):
                 self.lijst[1] = cv2.warpPerspective(self.img1, H_translation.dot(H), (x_max - x_min, y_max - y_min))
 
 
-class send_image_to_main(threading.Thread):
+class SendImageToMain(threading.Thread):
     def __init__(self, lijst):
         super().__init__()
         self.lijst = lijst
 
     def run(self):
         while True:
-            sender = imagezmq.ImageSender(connect_to='tcp://Laptop-Wout:5555')  # Input pc-ip (possibly webserver to sent to)
+            sender = imagezmq.ImageSender(connect_to='tcp://Laptop-Wout:5555')  # Input pc-ip (possibly webserver)
             rpi_name = ""
             sender.send_image(rpi_name, self.lijst[1])
 
 
-step_1 = take_left_image(image_list)
-step_2 = transform_image(image_list, M)
-step_3 = send_image_to_main(image_list)
+step_1 = TakeLeftImage(image_list)
+step_2 = TransformImage(image_list, M)
+step_3 = SendImageToMain(image_list)
 
 step_1.start()
 sleep(0.001)
