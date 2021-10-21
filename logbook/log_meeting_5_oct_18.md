@@ -24,7 +24,7 @@ Person | Hour 1 | Hour 2 | Hour 3 | Hour 4 | After hours (specify time)
 **Lars Depuydt**  |    |     |      |
 **Robin Anné**    |    |     |      |
 **Ruben Janssen** |  optimizing code  |  =   |   fixing broken code   | optimizing code and start report
-**Wout Bergmans** |    |     |      |
+**Wout Bergmans** | Multithreading research & implementation | = | = | =
 
 #
 #### Gelezen en goedgekeurd
