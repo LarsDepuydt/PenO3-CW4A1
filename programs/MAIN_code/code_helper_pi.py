@@ -34,10 +34,9 @@ imageleft = picam.read()
 
 def warpImages(img1, H):
     rows1, cols1 = img1.shape[:2]
-    rows2, cols2 = img2.shape[:2]
 
     list_of_points_1 = np.float32([[0, 0], [0, rows1], [cols1, rows1], [cols1, 0]]).reshape(-1, 1, 2)
-    temp_points = np.float32([[0, 0], [0, rows2], [cols2, rows2], [cols2, 0]]).reshape(-1, 1, 2)
+    temp_points = np.float32([[0, 0], [0, rows1], [cols1, rows1], [cols1, 0]]).reshape(-1, 1, 2)
 
     # When we have established a homography we need to warp perspective
     # Change field of view
@@ -52,7 +51,7 @@ def warpImages(img1, H):
 
     H_translation = np.array([[1, 0, translation_dist[0]], [0, 1, translation_dist[1]], [0, 0, 1]])
 
-    transformed_image = cv2.warpPerspective(imageleft, H_translation.dot(H), (x_max - x_min, y_max - y_min))
+    transformed_image = cv2.warpPerspective(img1, H_translation.dot(H), (x_max - x_min, y_max - y_min))
     return transformed_image
 
 # stuurt foto naar andere pi
