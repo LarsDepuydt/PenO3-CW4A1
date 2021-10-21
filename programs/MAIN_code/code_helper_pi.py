@@ -16,6 +16,10 @@ PC_IP = PC_IPs['whatever']
 # VOERT EEN KEER UIT
 #
 
+'''
+Check if leaving videostream on affects performance
+'''
+
 # stuurt rechterfoto
 picam = VideoStream(usePiCamera=True).start()
 time.sleep(2.0)  # allow camera sensor to warm up
