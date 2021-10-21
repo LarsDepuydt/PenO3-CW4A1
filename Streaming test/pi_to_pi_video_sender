@@ -1,11 +1,11 @@
 import socket
 import time
-from imutils.video import VideoStream
+import imutils.video import VideoStream
 import imagezmq
 
 
-RECEIVER_NAMES=['tcp://helperraspberry:5555', 'tcp://mainraspberry:5555', 'tcp://Laptop-Wout:5555', 'tcp://169.254.165.116:5555']
-RECEIVER_NAME = RECEIVER_NAMES[3]
+SENDERS_NAMES=['tcp://helperraspberry:5555', 'tcp://mainraspberry:5555', 'tcp://Laptop-Wout:5555']
+SENDER_NAME = SENDER_NAMES[0]
 
 sender = imagezmq.ImageSender(connect_to= RECEIVER_NAME)
 rpi_name = socket.gethostname() #send RPi hostname with each image

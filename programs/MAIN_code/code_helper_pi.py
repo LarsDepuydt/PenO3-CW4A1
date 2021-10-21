@@ -5,49 +5,38 @@ import cv2
 import numpy as np
 from threading import *
 import socket
-import pyzmq
 
-
-PC_IPs = {'whatever': 'tcp://169.254.165.116:5555'}
-RB_MAIN_IP = "tcp://mainraspberry:5555"
-PC_IP = PC_IPs['whatever']
+RB_IP_MAIN = ""
 
 #
 # VOERT EEN KEER UIT
 #
 
-'''
-Check if leaving videostream on affects performance
-'''
-
 # stuurt rechterfoto
 picam = VideoStream(usePiCamera=True).start()
 imageright = picam.read()
-sender = imagezmq.ImageSender(connect_to=RB_MAIN_IP) 
-sender.send_image(RB_IP_MAIN, imageright)
+sender = imagezmq.ImageSender(connect_to='tcp://Laptop-Wout:5555')  # Input pc-ip (possibly webserver to sent to)
+rb_name = RB_IP_MAIN  # send RPi hostname with each image
+sender.send_image(rb_name, imageright)
 
 # ontvangt matrix
-image_hub = imagezmq.ImageHub()
-M = image_hub.recv_image()[1]
-image_hub.send_reply(b'OK')
-print(M)
-print(type(M))
+M = []
 
 #
 # HERHAALT
 #
 
 # maakt linkerfoto
+picam = VideoStream(usePiCamera=True).start()
 imageleft = picam.read()
 
 # transformeert foto
 
 def warpImages(img1, H):
     rows1, cols1 = img1.shape[:2]
-    rows2, cols2 = img2.shape[:2]
 
     list_of_points_1 = np.float32([[0, 0], [0, rows1], [cols1, rows1], [cols1, 0]]).reshape(-1, 1, 2)
-    temp_points = np.float32([[0, 0], [0, rows2], [cols2, rows2], [cols2, 0]]).reshape(-1, 1, 2)
+    temp_points = np.float32([[0, 0], [0, rows1], [cols1, rows1], [cols1, 0]]).reshape(-1, 1, 2)
 
     # When we have established a homography we need to warp perspective
     # Change field of view
@@ -62,7 +51,7 @@ def warpImages(img1, H):
 
     H_translation = np.array([[1, 0, translation_dist[0]], [0, 1, translation_dist[1]], [0, 0, 1]])
 
-    transformed_image = cv2.warpPerspective(imageleft, H_translation.dot(H), (x_max - x_min, y_max - y_min))
+    transformed_image = cv2.warpPerspective(img1, H_translation.dot(H), (x_max - x_min, y_max - y_min))
     return transformed_image
 
 # stuurt foto naar andere pi

@@ -13,12 +13,6 @@ RB_HELPER_IP = "tcp://helperraspberry:5555"
 RB_MAIN_IP = "tcp://mainraspberry:5555"
 PC_IP = PC_IPs['whatever']
 
-
-
-#
-# MOET EERST RUNNEN, MAIN STAAT RECHTS
-#
-
 # ontvangt linkerfoto
 image_hub = imagezmq.ImageHub()
 rpi_name, imageleft = image_hub.recv_image()
