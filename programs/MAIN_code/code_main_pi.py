@@ -38,10 +38,11 @@ AANTAL_KEYPOINTS = 2000 # set number of keypoints
 MIN_MATCH_COUNT = 10    # Set minimum match condition
 MATRIX_DATA = "matrix_data.txt"
 
-print(type(imageleft))
-print(type(imageright))
+
 img1 = imageleft
 img2 = imageright
+cv2.imwrite("./raspi_test_left.jpg", imageleft)
+cv2.imwrite("./raspi_test_right.jpg", imageright)
 
 # Create our ORB detector and detect keypoints and descriptors
 orb = cv2.ORB_create(nfeatures=AANTAL_KEYPOINTS)
@@ -150,7 +151,10 @@ imageright = picam.read()
 imageleft = image_hub.recv_image()[1]
 image_hub.send_reply(b'OK')
 
-image2 = warpImages(imageleft, imageright, M).read()
+image_out = warpImages(imageright, imageleft, M)
+cv2.imwrite("./raspi-test.jpg", image_out)
+cv2.imwrite("./raspi_test_left.jpg", imageleft)
+cv2.imwrite("./raspi_test_left.jpg", imageright)
 
 
 
@@ -161,3 +165,10 @@ pc_name = PC_IP  # send RPi hostname with each image
 image = voeg_samen(imageleft, imageright, M).read()
 sender.send_image(rpi_name, image)
 '''
+spacer = "============================================="
+print(spacer)
+print(spacer)
+print(spacer)
+print(spacer)
+print(spacer)
+print(spacer)

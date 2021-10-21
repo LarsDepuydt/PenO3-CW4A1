@@ -1,55 +1,70 @@
 import threading
 from time import sleep
 from imutils.video import VideoStream
+from picamera import PiCamera
 import imagezmq
 import cv2
 import numpy as np
 
-#
-# MOET EERST RUNNEN, MAIN STAAT RECHTS
-#
+ETHERNET = "tcp://169.254.165.116:5555"
+PC_IPs = {'whatever': 'tcp://169.254.165.116:5555', 'jasper': 'tcp://192.168.137.50'}
+RB_HELPER_IP = ETHERNET
+#RB_HELPER_IP = "tcp://helperraspberry:5555"
+ETHERNET2 = "tcp://169.254.222.67:5555"
+RB_MAIN_IP = ETHERNET2
+#RB_MAIN_IP = "tcp://mainraspberry:5555"
+PC_IP = PC_IPs['jasper']
 
-# ontvangt linkerfoto
+
+# RECEIVE LEFT PICTURE
 image_hub = imagezmq.ImageHub()
-rpi_name, imageleft = image_hub.recv_image()
+imageleft = image_hub.recv_image()[1]
 image_hub.send_reply(b'OK')
 
-# maakt rechterfoto
+# TAKE RIGHT PICTURE
 picam = VideoStream(usePiCamera=True).start()
+#picam.camera.resolution(640, 480)
+#print(picam.__dict__)
+sleep(2.0)
 imageright = picam.read()
 
+cv2.imwrite("./image_left.jpg", imageleft)
+cv2.imwrite("./image_right.jpg", imageright)
 
-# maakt transformatiematrix
-AANTAL_KEYPOINTS = 2000 # set number of keypoints
+
+KEYPOINTS_COUNT = 2000 # set number of keypoints
 MIN_MATCH_COUNT = 10    # Set minimum match condition
 MATRIX_DATA = "matrix_data.txt"
 
-img1 = imageleft
-img2 = imageright
+right_image = None
+left_image = None
+total_image = None
+imagelist = [right_image, left_image, total_image]
 
-# Create our ORB detector and detect keypoints and descriptors
-orb = cv2.ORB_create(nfeatures=AANTAL_KEYPOINTS)
+def trans_matrix_gen(imgleft, imgright, keypoints, min_mat, mat_data):
+    # Create our ORB detector and detect keypoints and descriptors
+    orb = cv2.ORB_create(nfeatures=keypoints)
 
-# Find the key points and descriptors with ORB
-keypoints1, descriptors1 = orb.detectAndCompute(img1, None)
-keypoints2, descriptors2 = orb.detectAndCompute(img2, None)
+    # Find the key points and descriptors with ORB
+    keypoints1, descriptors1 = orb.detectAndCompute(imageleft, None)
+    keypoints2, descriptors2 = orb.detectAndCompute(imageright, None)
 
-# Create a BFMatcher object.
-# It will find all of the matching key points on two images
-bf = cv2.BFMatcher_create(cv2.NORM_HAMMING)
+    # Create a BFMatcher object.
+    # It will find all of the matching key points on two images
+    bf = cv2.BFMatcher_create(cv2.NORM_HAMMING)
 
-# Find matching points
-matches = bf.knnMatch(descriptors1, descriptors2, k=2)
+    # Find matching points
+    matches = bf.knnMatch(descriptors1, descriptors2, k=2)
 
-# Finding the best matches
-good = []
-for m, n in matches:
-    if m.distance < 0.6 * n.distance:
-        good.append(m)
-print(len(matches), len(good))
+    # Finding the best matches
+    good = []
+    for m, n in matches:
+        if m.distance < 0.6 * n.distance:
+            good.append(m)
+    print("matches: ", len(matches), "good matches:", len(good))
 
-
-if len(good) > MIN_MATCH_COUNT:
+    assert len(good) >= MIN_MATCH_COUNT
+    
     # Convert keypoints to an argument for findHomography
     src_pts = np.float32([keypoints1[m.queryIdx].pt for m in good]).reshape(-1, 1, 2)
     dst_pts = np.float32([keypoints2[m.trainIdx].pt for m in good]).reshape(-1, 1, 2)
@@ -59,17 +74,7 @@ if len(good) > MIN_MATCH_COUNT:
 
     print(M)
     np.savetxt(MATRIX_DATA, M)
-
-else:
-    print("Overlap was not good enough")
-
-#
-# MOET HERHALEN
-#
-right_image = None
-left_image = None
-total_image = None
-imagelist = [right_image, left_image, total_image]
+    return M
 
 
 class TakeRightImage(threading.Thread):
@@ -90,7 +95,6 @@ class ReceiveLeftImage(threading.Thread):
 
     def run(self):
         while True:
-            image_hub = imagezmq.ImageHub()
             rpi_name, imageleft = image_hub.recv_image()
             image_hub.send_reply(b'OK')
             self.lijst[1] = imageleft
@@ -134,17 +138,21 @@ class SendToDisplay(threading.Thread):
     def __init__(self, output_img):
         super().__init__()
         self.output_img = output_img
-
+        
     def run(self):
         while True:
-            sender = imagezmq.ImageSender(
-            connect_to='tcp://Laptop-Wout:5555')  # Input pc-ip (possibly webserver to sent to)
-            sender.send_image(rpi_name, self.output_img)
+            sender = imagezmq.ImageSender(connect_to=PC_IP)  # Input pc-ip (possibly webserver to sent to)
+            sender.send_image(RB_MAIN_IP, self.output_img)
 
+
+M = trans_matrix_gen(imageleft, imageright, KEYPOINTS_COUNT, MIN_MATCH_COUNT, MATRIX_DATA)
+
+sender = imagezmq.ImageSender(connect_to=RB_HELPER_IP)
+sender.send_image(RB_MAIN_IP, M)
 
 step_1 = TakeRightImage(imagelist)
 step_2 = ReceiveLeftImage(imagelist)
-step_3 = MergeImages(imagelist[0], imagelist[1], M)
+step_3 = MergeImages(imagelist[0], imagelist[1], M, imagelist)
 step_4 = SendToDisplay(imagelist[2])
 
 
