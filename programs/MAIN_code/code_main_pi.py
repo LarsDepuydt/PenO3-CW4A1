@@ -126,6 +126,8 @@ image_hub.send_reply(b'OK')
 
 image2 = voeg_samen(imageleft, imageright, M).read()
 
+
+
 '''
 # send to server/host pc
 sender = imagezmq.ImageSender(connect_to=PC_IP)  # Input pc-ip (possibly webserver to sent to)
