@@ -8,7 +8,7 @@ from threading import *
 import socket
 
 
-PC_IPs = ['whatever': 'tcp://169.254.165.116:5555']
+PC_IPs = {'whatever': 'tcp://169.254.165.116:5555'}
 RB_HELPER_IP = "tcp://helperraspberry:5555"
 PC_IP = PC_IPs]['whatever']
 
