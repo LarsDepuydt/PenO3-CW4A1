@@ -106,27 +106,28 @@ class MergeImages(threading.Thread):
 
     def run(self):
         while True:
-            rows1, cols1 = self.img_r.shape[:2]
-            rows2, cols2 = self.img_l.shape[:2]
+            if self.img_r != None and self.img_l != None:
+                rows1, cols1 = self.img_r.shape[:2]
+                rows2, cols2 = self.img_l.shape[:2]
 
-            list_of_points_1 = np.float32([[0, 0], [0, rows1], [cols1, rows1], [cols1, 0]]).reshape(-1, 1, 2)
-            temp_points = np.float32([[0, 0], [0, rows2], [cols2, rows2], [cols2, 0]]).reshape(-1, 1, 2)
+                list_of_points_1 = np.float32([[0, 0], [0, rows1], [cols1, rows1], [cols1, 0]]).reshape(-1, 1, 2)
+                temp_points = np.float32([[0, 0], [0, rows2], [cols2, rows2], [cols2, 0]]).reshape(-1, 1, 2)
 
-            # When we have established a homography we need to warp perspective
-            # Change field of view
-            list_of_points_2 = cv2.perspectiveTransform(temp_points, self.H)
-            list_of_points = np.concatenate((list_of_points_1, list_of_points_2), axis=0)
+                # When we have established a homography we need to warp perspective
+                # Change field of view
+                list_of_points_2 = cv2.perspectiveTransform(temp_points, self.H)
+                list_of_points = np.concatenate((list_of_points_1, list_of_points_2), axis=0)
 
-            [x_min, y_min] = np.int32(list_of_points.min(axis=0).ravel() - 0.5)
-            # [x_max, y_max] = np.int32(list_of_points.max(axis=0).ravel() + 0.5)
+                [x_min, y_min] = np.int32(list_of_points.min(axis=0).ravel() - 0.5)
+                # [x_max, y_max] = np.int32(list_of_points.max(axis=0).ravel() + 0.5)
 
-            translation_dist = [-x_min, -y_min]
+                translation_dist = [-x_min, -y_min]
 
-            output_img = self.img_l
-            output_img[translation_dist[1]:rows1 + translation_dist[1],
-            translation_dist[0]:cols1 + translation_dist[0]] = self.img_r
+                output_img = self.img_l
+                output_img[translation_dist[1]:rows1 + translation_dist[1],
+                translation_dist[0]:cols1 + translation_dist[0]] = self.img_r
 
-            self.lijst[2] = output_img
+                self.lijst[2] = output_img
 
 
 class SendToDisplay(threading.Thread):
@@ -146,13 +147,11 @@ step_2 = ReceiveLeftImage(imagelist)
 step_3 = MergeImages(imagelist[0], imagelist[1], M)
 step_4 = SendToDisplay(imagelist[2])
 
-while True:
-    step_1.start()
-    sleep(0.001)
-    step_2.start()
-    sleep(0.001)
-    step_3.start()
-    step_3.join()
-    sleep(0.001)
-    step_4.start()
-    step_4.join()
+
+step_1.start()
+sleep(0.001)
+step_2.start()
+sleep(0.001)
+step_3.start()
+sleep(0.001)
+step_4.start()
