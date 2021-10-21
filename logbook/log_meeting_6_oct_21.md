@@ -1,0 +1,34 @@
+# Log Team Meeting 2
+21 October 2021
+**_This file is unfinished._**
+## Decisions
+* tasks for each pi
+
+## Finished Tasks
+* first prototype of working program (currently working on last errors)
+
+## Future Tasks
+* improve working program
+* make hardware
+  
+## Running Tasks (general)
+* improve all programs
+
+## Running Tasks (individual)
+Person | Hour 1 | Hour 2 | Hour 3 | Hour 4 | After hours (specify time)
+------ | ------ | ------ | ------ | ------ | -------------
+**Jasper Laitem** | task1 | = | task2 | task3
+**Jonas Buts**    |    |     |      |
+**Lars Depuydt**  |    |     |      |
+**Robin Anné**    |    |     |      |
+**Ruben Janssen** |  improve programs and find errors  |  run tests on efficiency |  run tests on efficiency  |  help with general program
+**Wout Bergmans** |    |     |      |
+
+#
+#### Gelezen en goedgekeurd
+Jasper Laitem <br/>
+Jonas Buts <br/>
+Lars Depuydt <br/>
+Robin Anné <br/>
+Ruben Janssen <br/>
+Wout Bergmans
