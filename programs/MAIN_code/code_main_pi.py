@@ -1,11 +1,10 @@
-import time
+
 from imutils.video import VideoStream
 #import pyzmq
 import imagezmq
 import cv2
 import numpy as np
-from threading import *
-import socket
+import threading
 
 
 PC_IPs = {'whatever': 'tcp://169.254.165.116:5555'}
@@ -158,6 +157,8 @@ sender = imagezmq.ImageSender(connect_to=PC_IP)  # Input pc-ip (possibly webserv
 pc_name = PC_IP  # send RPi hostname with each image
 image = voeg_samen(imageleft, imageright, M).read()
 sender.send_image(rpi_name, image)
+
+
 '''
 spacer = "============================================="
 print(spacer)

@@ -16,7 +16,7 @@ RB_IP_MAIN = ""
 # VOERT EEN KEER UIT
 #
 
-# stuurt rechterfoto
+# stuurt linkerfoto
 picam = VideoStream(usePiCamera=True).start()
 time.sleep(2.0)  # allow camera sensor to warm up
 imageright = picam.read()
