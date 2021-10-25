@@ -6,7 +6,7 @@ t_start = time.perf_counter()
 # variables
 PATH1 = "../../images/testing_images_pi/lokaal/image_for_testing_1.jpg"
 PATH2 = "../../images/testing_images_pi/lokaal/image_for_testing_2.jpg"
-PATH_RESULT = "../../images/stitchted.jpg"
+PATH_RESULT = "../../../images/stitchted.jpg"
 MATRIX_DATA = "matrix_data.txt"
 
 def warpImages(img1, img2, H):
