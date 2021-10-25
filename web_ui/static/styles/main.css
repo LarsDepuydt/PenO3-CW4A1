@@ -1,0 +1,247 @@
+:root {
+	--1: #ffffff;
+	--2: #333333;
+	--3: rgb(180,180, 180);
+	--4: #393939;
+	--5: rgb(0,0,0,0);
+}
+html {
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+* {
+	box-sizing: border-box;
+}
+body {
+	font-family: Roboto, Arial, Verdana, Geneva, sans-serif;
+	height: 100%;
+	width: 100%;
+	background-color: #F4F4F4;
+	padding: 0;
+	margin: 0;
+}
+ul {
+	margin:0;
+	padding:0;
+}
+li {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+a {
+	color: inherit;
+	text-decoration: none;
+}
+h1, h2, h3, h4, h5, h6 {
+	padding: 0;
+	margin: 0;
+}
+/*HEADER*/
+header {
+	position: relative;
+	top: 0px;
+	width: 100%;
+	background-color: var(--2);
+	color: var(--1);
+	height: 60px;
+	
+}
+#headercontainer {
+	height: 60px;
+	margin: 0px 300px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+#branding {
+	font-size: 28px;
+	font-weight: 500;
+}
+#navigation {
+	display: flex;
+	flex-direction: row;
+}
+#navlinks div {
+	display: inline-block;
+}
+#navlinks div a {
+	display: inline-block;
+	padding: 5px 20px;
+	margin: 0px 3px;
+	background-color: var(--4);
+}
+nav input,
+nav label {
+	display: none;
+}
+
+/*=======================
+MAIN
+*/
+
+#main_container {
+	top: 0;
+	width: 100%;
+	background-color: #FF00FF;
+	min-height: 860px;
+}
+
+#main_container > div {
+	position: relative;
+	margin-top: 32 px;
+	left: 5%;
+	width: 90%;
+	right: 5%;
+	background-color: #FF0000
+}
+
+#camera_feed {
+	display: block;
+	max-height: 760px;
+	width: auto;
+	height: auto;
+	margin-left: auto;
+	margin-right: auto;
+	height: 900px;
+}
+
+
+
+
+
+@media only screen and (max-width: 1250px) {
+	header {
+		height: 60px;
+	}
+	#headercontainer {
+		display: block;
+		height: 60px;
+		margin: 0px;
+	}
+	#branding {
+		display: inline-block;
+		position: absolute;
+		top: 16px;
+		left: 20px;
+	}
+	#navigation {
+		display: inline-block;
+		position: absolute;
+		top: 0px;
+		right: 0px;
+	}
+	#navlinks {
+		height: 100vh;
+		background-color: var(--2);
+		transform: translateX(120px);
+		transition: transform 300ms;
+	}
+	#navlinks div {
+  		display: block;
+  	}
+  	#navlinks div a {
+  		display: block;
+		margin: 0px;
+  		opacity: 0;
+  		background-color: var(--5);
+  		visibility: hidden;
+  		transform: translateX(100px);
+  		transition: transform 300ms;
+  	}
+	#navlinks div:first-child a {
+		margin-top: 60px;
+  	}
+	nav input[type="checkbox"] {
+	  	position: absolute;
+	  	opacity: 0;
+	  	visibility: hidden;
+	}
+	nav input[type="checkbox"]:checked + label {
+	  	border: 4px solid var(--3);
+	  	border-radius: 50%;
+	  	height: 28px;
+	  	top: 16px;
+	  	right: 16px;
+	  	width: 28px;
+	  	transform: rotate(-135deg);
+	}
+	nav input[type="checkbox"]:checked + label::before {
+	  	background: var(--3);
+	  	top: 8px;
+	  	right: 4px;
+	  	width: 12px;
+	}
+	nav input[type="checkbox"]:checked + label::after {
+	  	background: var(--3);
+	  	opacity: 1;
+	  	top: 8px;
+	  	left: 4px;
+	  	visibility: visible;
+	  	width: 12px;
+	}
+	nav input[type="checkbox"]:checked ~ #navlinks {
+		transform: translateX(0px);
+		transition: transform 300ms;
+	}
+	nav input[type="checkbox"]:checked ~ #navlinks::before {
+	  	opacity: 1;
+	  	visibility: visible;
+	}
+	nav input[type="checkbox"]:checked ~ #navlinks div a {
+	  	opacity: 1;
+	  	visibility: visible;
+	  	transform: translateX(0);
+	}
+	nav label {
+	  	background: none transparent;
+	  	border: 4px solid var(--3);
+	  	border-left: 0 solid transparent;
+	  	border-right: 0 solid transparent;
+	  	cursor: pointer;
+	  	display: block;
+	  	height: 24px;
+	  	position: absolute;
+	  	top: 18px;
+	  	right: 18px;
+	  	width: 24px;
+	  	transition: all .2s;
+	}
+	nav label::before {
+	  	background: var(--3);
+	  	content: '';
+	  	height: 4px;
+	  	right: 0;
+	  	position: absolute;
+	  	top: 6px;
+	  	width: 24px;
+	  	transition: all .2s;
+	}
+	nav label::after {
+	  background: var(--3);
+	  content: '';
+	  height: 4px;
+	  right: 0;
+	  position: absolute;
+	  top: 6px;
+	  opacity: 0;
+	  visibility: hidden;
+	  width: 100%;
+	  transform: rotate(90deg);
+	  transition: all .2s;
+	}
+	input[type="checkbox"]:checked ~ .nav-links div:nth-child(1) a {
+  		transition-delay: 0s;
+	}
+	input[type="checkbox"]:checked ~ .nav-links div:nth-child(2) a {
+  		transition-delay: 0.2s;
+	}
+	input[type="checkbox"]:checked ~ .nav-links div:nth-child(3) a {
+	  	transition-delay: 0.4s;
+	}
+	input[type="checkbox"]:checked ~ .nav-links div:nth-child(4) a {
+	  	transition-delay: 0.6s;
+	}
+}
+	

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width">
+	<meta name="description" content="">
+	<meta http-equiv="pragma" content="no-cache">
+	<meta http-equiv="Cache-Control" content="no-cache">
+	<meta name="keywords" content="">
+	<meta name="robots" content="index, follow">
+	<meta name="follow" content="all">
+	<meta name="revisit-after" content="14 days">
+	<meta name="author" content="Robin A.">
+	<link rel="icon" type="image/png" href="" sizes="32x32">
+	<link rel="icon" type="image/png" href="" sizes="16x16">
+	<link rel="stylesheet" href="{{ url_for('static',filename='styles/main.css') }}" type="text/css">
+	
+	<title>Raspberry Pi Panorama Camera</title>
+</head>
+<body>
+	<header>
+		<div id="headercontainer">
+			<div id="branding">
+                Raspberry Pi Panorama Camera
+			</div>
+			<nav id="navigation">
+				<input id="toggle" type="checkbox"/>
+        		<label for="toggle"></label>
+        		<div id="navlinks">
+	  				<div><a href="">Camera 1</a></div>
+                    <div><a href="">Camera 2</a></div>
+				</div>
+			</nav>
+		</div>
+	</header>
+
+	<section id="main_container">
+		<div>
+			<img id="camera_feed" src="{{ url_for('video_feed') }}" alt="">
+			<div id="camera_controls">
+				Controls
+			</div>
+		</div>
+	</section>
+
+	<footer>
+		
+	</footer>
+</body>
+</html>
