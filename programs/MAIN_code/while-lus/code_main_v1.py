@@ -6,26 +6,41 @@ import imagezmq
 import cv2
 import numpy as np
 
-ETHERNET = "tcp://169.254.165.116:5555"
-PC_IPs = {'whatever': 'tcp://169.254.165.116:5555', 'jasper': 'tcp://192.168.137.50'}
+NETWORKS = {"jasper": "192.168.137";
+           "robin": "...";
+           "wout": "...";}
+
+ETHERNET_HELPER_IP = '169.254.222.67'
+ETHERNET_MAIN_IP = '169.254.165.116'
+
+PC_IPs = {'whatever': 'tcp://169.254.165.116', 'jasper': '192.168.137.50'}
+ROBIN_IP_ON_JASP = 'tcp://192.168.137.230:5555'
+
 RB_HELPER_IP = ETHERNET
 # RB_HELPER_IP = "tcp://helperraspberry:5555"
 ETHERNET2 = "tcp://169.254.222.67:5555"
 RB_MAIN_IP = ETHERNET2
 # RB_MAIN_IP = "tcp://mainraspberry:5555"
-PC_IP = PC_IPs['jasper']
+#PC_IP = PC_IPs['jasper']
+PC_IP = ROBIN_IP_ON_JASP
+
+RESOLUTION = (720, 480)
+FPS = 24
+
+
+# TAKE RIGHT PICTURE
+picam = VideoStream(usePiCamera=True, resolution=RESOLUTION, framerate=FPS).start()
+# picam.camera.resolution(640, 480)
+# print(picam.__dict__)
+sleep(2.0)
+imageright = picam.read()
 
 # RECEIVE LEFT PICTURE
 image_hub = imagezmq.ImageHub()
 imageleft = image_hub.recv_image()[1]
 image_hub.send_reply(b'OK')
 
-# TAKE RIGHT PICTURE
-picam = VideoStream(usePiCamera=True).start()
-# picam.camera.resolution(640, 480)
-# print(picam.__dict__)
-sleep(2.0)
-imageright = picam.read()
+
 
 cv2.imwrite("./image_left.jpg", imageleft)
 cv2.imwrite("./image_right.jpg", imageright)
@@ -81,16 +96,19 @@ M = trans_matrix_gen(imageleft, imageright, KEYPOINTS_COUNT, MIN_MATCH_COUNT, MA
 sender = imagezmq.ImageSender(connect_to=RB_HELPER_IP)
 sender.send_image(RB_MAIN_IP, M)
 
+i = 0
 
 while True:
+    print("in while")
     #receive
     rpi_name, imageleft = image_hub.recv_image()
     image_hub.send_reply(b'OK')
     imagelist[1] = imageleft
-
+    print("received", i)
     #take
     picam = VideoStream(usePiCamera=True).start()
     imagelist[0] = picam.read()
+    print("take", i)
 
 
     #merge
@@ -99,6 +117,7 @@ while True:
 
     list_of_points_1 = np.float32([[0, 0], [0, rows1], [cols1, rows1], [cols1, 0]]).reshape(-1, 1, 2)
     temp_points = np.float32([[0, 0], [0, rows2], [cols2, rows2], [cols2, 0]]).reshape(-1, 1, 2)
+    print("merge", i)
 
     # When we have established a homography we need to warp perspective
     # Change field of view
