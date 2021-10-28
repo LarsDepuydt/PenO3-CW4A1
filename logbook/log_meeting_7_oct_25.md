@@ -23,7 +23,7 @@ Person | Hour 1 | Hour 2 | Hour 3 | Hour 4 | After hours (specify time)
 **Jonas Buts**    |    |     |      |
 **Lars Depuydt**  |    |     |      |
 **Robin Anné**    | Code first working Python Flask webserver and simple website with videofeed | = | Troubleshoot & Improve InterPi connectivity code | = 
-**Ruben Janssen** |    |     |      |
+**Ruben Janssen** |  Oefenzitting Analyse  |  =   |   Writing intermediate report  | =
 **Wout Bergmans** |    |     |      |
 
 #
