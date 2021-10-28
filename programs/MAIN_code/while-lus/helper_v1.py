@@ -3,29 +3,22 @@ from picamera import PiCamera
 import imagezmq
 import cv2
 import numpy as np
-import threading
 from time import sleep
 
-ETHERNET = 'tcp://169.254.222.67:5555'
-RB_IP_MAIN = ETHERNET
-ETHERNET2 = 'tcp://169.254.165.116:5555'
-RB_IP_HELPER = ETHERNET2
-# RB_IP_MAIN = "tcp://mainraspberry:5555"
+
+RB_IP_MAIN = 'tcp://169.254.222.67:5555'
+RB_IP_HELPER = 'tcp://169.254.165.116:5555'
 
 RESOLUTION = (720, 480)
-
-
 image_hub = imagezmq.ImageHub()
-M = image_hub.recv_image()[1]
-image_hub.send_reply(b'OK')
 
 # Sends left image
-#cam = PiCamera()
+
 picam = VideoStream(usePiCamera=True, resolution=RESOLUTION).start()
-#cam.resolution(640, 480)
+
 sleep(2.0)  # allow camera sensor to warm up
 imageleft = picam.read()
-sender = imagezmq.ImageSender(connect_to=RB_IP_HELPER)  # Input pc-ip (possibly webserver to sent to)
+sender = imagezmq.ImageSender(connect_to=RB_IP_MAIN)  # Input pc-ip (possibly webserver to sent to)
 sender.send_image(RB_IP_MAIN, imageleft)
 
 # Receives matrix
