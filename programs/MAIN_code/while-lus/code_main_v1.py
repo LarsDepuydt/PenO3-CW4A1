@@ -6,40 +6,43 @@ import imagezmq
 import cv2
 import numpy as np
 
-NETWORKS = {"jasper": "192.168.137";
-           "robin": "...";
-           "wout": "...";}
+NETWORKS = {"jasper": "192.168.137",
+           "robin": "...",
+           "wout": "..."}
 
-ETHERNET_HELPER_IP = '169.254.222.67'
-ETHERNET_MAIN_IP = '169.254.165.116'
+ETHERNET_HELPER_IP = 'tcp://169.254.222.67:5555'
+ETHERNET_HELPER_IP = 'tcp://169.254.165.116:5555'
 
 PC_IPs = {'whatever': 'tcp://169.254.165.116', 'jasper': '192.168.137.50'}
+JASPER_IP = "tcp://192.168.137.1:5555"
 ROBIN_IP_ON_JASP = 'tcp://192.168.137.230:5555'
 
-RB_HELPER_IP = ETHERNET
+RB_HELPER_IP = ETHERNET_HELPER_IP
 # RB_HELPER_IP = "tcp://helperraspberry:5555"
 ETHERNET2 = "tcp://169.254.222.67:5555"
 RB_MAIN_IP = ETHERNET2
 # RB_MAIN_IP = "tcp://mainraspberry:5555"
 #PC_IP = PC_IPs['jasper']
-PC_IP = ROBIN_IP_ON_JASP
+PC_IP = JASPER_IP
 
 RESOLUTION = (720, 480)
 FPS = 24
 
 
-# TAKE RIGHT PICTURE
+# INITIALIZE IMAGE HUB
+image_hub = imagezmq.ImageHub()
 picam = VideoStream(usePiCamera=True, resolution=RESOLUTION, framerate=FPS).start()
-# picam.camera.resolution(640, 480)
-# print(picam.__dict__)
-sleep(2.0)
+sleep(2.0) # allow camera sensor to warm up
+
+sender = imagezmq.ImageSender(connect_to=RB_HELPER_IP)
+sender.send_image(RB_MAIN_IP, np.array(['ready']))
+
+# TAKE RIGHT PICTURE
 imageright = picam.read()
 
 # RECEIVE LEFT PICTURE
-image_hub = imagezmq.ImageHub()
 imageleft = image_hub.recv_image()[1]
 image_hub.send_reply(b'OK')
-
 
 
 cv2.imwrite("./image_left.jpg", imageleft)
@@ -92,8 +95,6 @@ def trans_matrix_gen(imgleft, imgright, keypoints, min_mat, mat_data):
 
 
 M = trans_matrix_gen(imageleft, imageright, KEYPOINTS_COUNT, MIN_MATCH_COUNT, MATRIX_DATA)
-
-sender = imagezmq.ImageSender(connect_to=RB_HELPER_IP)
 sender.send_image(RB_MAIN_IP, M)
 
 i = 0
