@@ -21,7 +21,7 @@ Person | Hour 1 | Hour 2 | Hour 3 | Hour 4 | After hours (specify time)
 **Jonas Buts**    |    |     |      |
 **Lars Depuydt**  |    |     |      |
 **Robin Anné**    | Measuring, gathering data of overlap necessary for image stitching algorithm | = | Troubleshooting 'Backend Error' | = 
-**Ruben Janssen** |    |     |      |
+**Ruben Janssen** | Writing intermediate report  | = | = | = 
 **Wout Bergmans** | Writing and correcting of paper | = | = | =
 
 #
