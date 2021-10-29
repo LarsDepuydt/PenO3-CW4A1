@@ -24,7 +24,7 @@ Person | Hour 1 | Hour 2 | Hour 3 | Hour 4 | After hours (specify time)
 **Lars Depuydt**  |    |     |      |
 **Robin Anné**    | Code first working Python Flask webserver and simple website | = | Troubleshoot & Improve InterPi connectivity code | = 
 **Ruben Janssen** |    |     |      |
-**Wout Bergmans** |    |     |      |
+**Wout Bergmans** | Startup paper | = | = | =
 
 #
 #### Gelezen en goedgekeurd
