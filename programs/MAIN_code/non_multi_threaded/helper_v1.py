@@ -5,39 +5,32 @@ import cv2
 import numpy as np
 from time import sleep
 
-<<<<<<< HEAD
-
-RB_IP_MAIN = 'tcp://169.254.165.116:5555'
-RB_IP_HELPER = 'tcp://169.254.222.67:5555'
+# =================
+# CONSTANTS
+# =================
 
 RESOLUTION = (720, 480)
-=======
->>>>>>> d1ab157354edf460cd7ac2d685773fead657535a
 
 RB_IP_MAIN = 'tcp://169.254.222.67:5555'
 RB_IP_HELPER = 'tcp://169.254.165.116:5555'
 
-RESOLUTION = (720, 480)
-image_hub = imagezmq.ImageHub()
-<<<<<<< HEAD
-=======
 
-<<<<<<< HEAD
-=======
-# Sends left image
-
->>>>>>> d1ab157354edf460cd7ac2d685773fead657535a
->>>>>>> f99877c8343c4cabd9454e579e6548357d93fb2b
-picam = VideoStream(usePiCamera=True, resolution=RESOLUTION).start()
-
+# =================
+# INITIALIZATION
+# =================
+IMAGE_HUB = imagezmq.ImageHub()
+PICAM = VideoStream(usePiCamera=True, resolution=RESOLUTION).start()
 sleep(2.0)  # allow camera sensor to warm up
+
+# WAIT FOR 
 imageleft = picam.read()
-<<<<<<< HEAD
 sender = imagezmq.ImageSender(connect_to=RB_IP_MAIN)
+
+
 sender.send_image(RB_IP_HELPER, imageleft)
 print("Left calibration image sent.")
-=======
-<<<<<<< HEAD
+
+
 print('links')
 sender = imagezmq.ImageSender(connect_to=RB_IP_MAIN)  # Input pc-ip (possibly webserver to sent to)
 sender.send_image(RB_IP_HELPER, imageleft)
