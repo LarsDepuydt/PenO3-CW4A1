@@ -22,13 +22,21 @@ image_hub = imagezmq.ImageHub()
 <<<<<<< HEAD
 =======
 
+<<<<<<< HEAD
+=======
 # Sends left image
 
 >>>>>>> d1ab157354edf460cd7ac2d685773fead657535a
+>>>>>>> f99877c8343c4cabd9454e579e6548357d93fb2b
 picam = VideoStream(usePiCamera=True, resolution=RESOLUTION).start()
 
 sleep(2.0)  # allow camera sensor to warm up
 imageleft = picam.read()
+<<<<<<< HEAD
+sender = imagezmq.ImageSender(connect_to=RB_IP_MAIN)
+sender.send_image(RB_IP_HELPER, imageleft)
+print("Left calibration image sent.")
+=======
 <<<<<<< HEAD
 print('links')
 sender = imagezmq.ImageSender(connect_to=RB_IP_MAIN)  # Input pc-ip (possibly webserver to sent to)
@@ -38,21 +46,23 @@ print('verzonden')
 sender = imagezmq.ImageSender(connect_to=RB_IP_MAIN)  # Input pc-ip (possibly webserver to sent to)
 sender.send_image(RB_IP_MAIN, imageleft)
 >>>>>>> d1ab157354edf460cd7ac2d685773fead657535a
+>>>>>>> f99877c8343c4cabd9454e579e6548357d93fb2b
 
 # Receives matrix
+print("Waiting for tranformation matrix ...")
 M = image_hub.recv_image()[1]
+print("Received transformation matrix.")
 image_hub.send_reply(b'OK')
-print(M)
+print("Transformation matrix: \n", M)
 
-#
-# Repeating
-#
-left_image = None
-output_image = None
+
+left_image, output_image = None, None
 image_list = [left_image, output_image]
-
+i = 0
 
 while True:
+    print("In loop. Iteration ", i)
+    i += 1
     # take image
     print('in while')
     image_list[0] = picam.read()
