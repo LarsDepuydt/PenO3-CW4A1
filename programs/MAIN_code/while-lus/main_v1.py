@@ -10,21 +10,30 @@ NETWORKS = {"jasper": "192.168.137",
            "robin": "...",
            "wout": "..."}
 
+<<<<<<< HEAD
 RB_MAIN_IP = "tcp://169.254.165.116:5555"
 RB_HELPER_IP = "tcp://169.254.222.67:5555"
+=======
+RB_MAIN_IP = "tcp://169.254.222.67:5555"
+RB_HELPER_IP = "tcp://169.254.165.116:5555"
+
+>>>>>>> f99877c8343c4cabd9454e579e6548357d93fb2b
 
 RESOLUTION = (720, 480)
 FPS = 24
 
 
-# INITIALIZE IMAGE HUB
+# INITIALIZE IMAGE HUB & CAMERA
 image_hub = imagezmq.ImageHub()
 picam = VideoStream(usePiCamera=True, resolution=RESOLUTION, framerate=FPS).start()
 sleep(2.0) # allow camera sensor to warm up
 
+<<<<<<< HEAD
 sender = imagezmq.ImageSender(connect_to=RB_HELPER_IP)
 
 
+=======
+>>>>>>> f99877c8343c4cabd9454e579e6548357d93fb2b
 # TAKE RIGHT PICTURE
 imageright = picam.read()
 
@@ -32,17 +41,16 @@ imageright = picam.read()
 imageleft = image_hub.recv_image()[1]
 image_hub.send_reply(b'OK')
 
-
 cv2.imwrite("./image_left.jpg", imageleft)
 cv2.imwrite("./image_right.jpg", imageright)
+
 
 KEYPOINTS_COUNT = 2000  # set number of keypoints
 MIN_MATCH_COUNT = 10  # Set minimum match condition
 MATRIX_DATA = "matrix_data.txt"
 
-right_image = None
-left_image = None
-total_image = None
+
+right_image, left_image, total_image = None, None, None
 imagelist = [right_image, left_image, total_image]
 
 
@@ -62,22 +70,22 @@ def trans_matrix_gen(imgleft, imgright, keypoints, min_mat, mat_data):
     matches = bf.knnMatch(descriptors1, descriptors2, k=2)
 
     # Finding the best matches
-    good = []
+    good_matches = []
     for m, n in matches:
         if m.distance < 0.6 * n.distance:
-            good.append(m)
-    print("matches: ", len(matches), "good matches:", len(good))
-
-    assert len(good) >= min_mat
+            good_matches.append(m)
+    print("keypoints: ", keypoints, "| matches: ", len(matches), "| good matches:", len(good_matches))
+    
+    assert len(good_matches) >= min_mat
 
     # Convert keypoints to an argument for findHomography
-    src_pts = np.float32([keypoints1[m.queryIdx].pt for m in good]).reshape(-1, 1, 2)
-    dst_pts = np.float32([keypoints2[m.trainIdx].pt for m in good]).reshape(-1, 1, 2)
+    src_pts = np.float32([keypoints1[m.queryIdx].pt for m in good_matches]).reshape(-1, 1, 2)
+    dst_pts = np.float32([keypoints2[m.trainIdx].pt for m in good_matches]).reshape(-1, 1, 2)
 
     # Establish a homography
     M, _ = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
 
-    print(M)
+    print("Transformation Matrix : \n", M)
     np.savetxt(mat_data, M)
     return M
 
@@ -86,19 +94,20 @@ M = trans_matrix_gen(imageleft, imageright, KEYPOINTS_COUNT, MIN_MATCH_COUNT, MA
 sender.send_image(RB_MAIN_IP, M)
 
 i = 0
-
 while True:
-    print("in while")
-    #receive
+    print("In while, iteration: " i)
+    i += 1
+    
+    #receive left image
     rpi_name, imageleft = image_hub.recv_image()
     image_hub.send_reply(b'OK')
     imagelist[1] = imageleft
-    print("received", i)
+    print("received left image")
+    
     #take
-    picam = VideoStream(usePiCamera=True).start()
+    #picam = VideoStream(usePiCamera=True).start()
     imagelist[0] = picam.read()
-    print("take", i)
-
+    print("taken right image", i)
 
     #merge
     rows1, cols1 = imagelist[0].shape[:2]

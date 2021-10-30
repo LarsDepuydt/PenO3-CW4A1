@@ -10,15 +10,15 @@ ETHERNET = 'tcp://169.254.222.67:5555'
 RB_IP_MAIN = ETHERNET
 ETHERNET2 = 'tcp://169.254.165.116:5555'
 RB_IP_HELPER = ETHERNET2
-#RB_IP_MAIN = "tcp://mainraspberry:5555"
+# RB_IP_MAIN = "tcp://mainraspberry:5555"
 #
 # One time only
 #
 
 # Sends left image
-#cam = PiCamera()
+# cam = PiCamera()
 picam = VideoStream(usePiCamera=True).start()
-#cam.resolution(640, 480)
+# cam.resolution(640, 480)
 sleep(2.0)  # allow camera sensor to warm up
 imageright = picam.read()
 sender = imagezmq.ImageSender(connect_to=RB_IP_MAIN)  # Input pc-ip (possibly webserver to sent to)
@@ -93,7 +93,7 @@ class SendImageToMain(threading.Thread):
 
     def run(self):
         while True:
-            if self.lijst[1] != None: 
+            if self.lijst[1] is not None:
                 print("voor error")
                 sender.send_image(RB_IP_MAIN, self.lijst[1])
 
