@@ -8,8 +8,8 @@ from time import sleep
 # =================
 
 RESOLUTION = (720, 480)
-RB_IP_MAIN = 'tcp://mainraspberry:5555'
-RB_IP_HELPER = 'tcp://helperraspberry:5555'
+RB_IP_MAIN = 'tcp://169.254.222.67:5555'
+RB_IP_HELPER = 'tcp://169.254.165.116:5555'
 
 
 # =================
@@ -25,7 +25,7 @@ SENDER.send_image(RB_IP_MAIN, np.array(["ready"]))
 print("Ready message was received")
 
 left_image = IMAGE_HUB.recv_image()[1]
-image_hub.send_reply(b'OK')
+IMAGE_HUBgit .send_reply(b'OK')
 print("Received left calibration image")
 
 
