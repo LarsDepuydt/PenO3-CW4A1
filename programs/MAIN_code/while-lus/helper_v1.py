@@ -3,25 +3,41 @@ from picamera import PiCamera
 import imagezmq
 import cv2
 import numpy as np
-import threading
 from time import sleep
 
+<<<<<<< HEAD
 
 RB_IP_MAIN = 'tcp://169.254.165.116:5555'
 RB_IP_HELPER = 'tcp://169.254.222.67:5555'
 
 RESOLUTION = (720, 480)
+=======
+>>>>>>> d1ab157354edf460cd7ac2d685773fead657535a
 
+RB_IP_MAIN = 'tcp://169.254.222.67:5555'
+RB_IP_HELPER = 'tcp://169.254.165.116:5555'
 
+RESOLUTION = (720, 480)
 image_hub = imagezmq.ImageHub()
+<<<<<<< HEAD
+=======
+
+# Sends left image
+
+>>>>>>> d1ab157354edf460cd7ac2d685773fead657535a
 picam = VideoStream(usePiCamera=True, resolution=RESOLUTION).start()
 
 sleep(2.0)  # allow camera sensor to warm up
 imageleft = picam.read()
+<<<<<<< HEAD
 print('links')
 sender = imagezmq.ImageSender(connect_to=RB_IP_MAIN)  # Input pc-ip (possibly webserver to sent to)
 sender.send_image(RB_IP_HELPER, imageleft)
 print('verzonden')
+=======
+sender = imagezmq.ImageSender(connect_to=RB_IP_MAIN)  # Input pc-ip (possibly webserver to sent to)
+sender.send_image(RB_IP_MAIN, imageleft)
+>>>>>>> d1ab157354edf460cd7ac2d685773fead657535a
 
 # Receives matrix
 M = image_hub.recv_image()[1]
