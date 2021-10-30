@@ -12,29 +12,29 @@ RB_IP_HELPER = 'tcp://169.254.165.116:5555'
 RESOLUTION = (720, 480)
 image_hub = imagezmq.ImageHub()
 
-# Sends left image
-
 picam = VideoStream(usePiCamera=True, resolution=RESOLUTION).start()
 
 sleep(2.0)  # allow camera sensor to warm up
 imageleft = picam.read()
-sender = imagezmq.ImageSender(connect_to=RB_IP_MAIN)  # Input pc-ip (possibly webserver to sent to)
-sender.send_image(RB_IP_MAIN, imageleft)
+sender = imagezmq.ImageSender(connect_to=RB_IP_MAIN)
+sender.send_image(RB_IP_HELPER, imageleft)
+print("Left calibration image sent.")
 
 # Receives matrix
+print("Waiting for tranformation matrix ...")
 M = image_hub.recv_image()[1]
+print("Received transformation matrix.")
 image_hub.send_reply(b'OK')
-print(M)
+print("Transformation matrix: \n", M)
 
-#
-# Repeating
-#
-left_image = None
-output_image = None
+
+left_image, output_image = None, None
 image_list = [left_image, output_image]
-
+i = 0
 
 while True:
+    print("In loop. Iteration ", i)
+    i += 1
     # take image
     image_list[0] = picam.read()
 

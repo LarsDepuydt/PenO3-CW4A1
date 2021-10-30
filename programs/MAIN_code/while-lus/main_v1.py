@@ -10,20 +10,8 @@ NETWORKS = {"jasper": "192.168.137",
            "robin": "...",
            "wout": "..."}
 
-ETHERNET_HELPER_IP = 'tcp://169.254.222.67:5555'
-ETHERNET_HELPER_IP = 'tcp://169.254.165.116:5555'
-
-PC_IPs = {'whatever': 'tcp://169.254.165.116', 'jasper': '192.168.137.50'}
-JASPER_IP = "tcp://192.168.137.1:5555"
-ROBIN_IP_ON_JASP = 'tcp://192.168.137.230:5555'
-
-RB_HELPER_IP = ETHERNET_HELPER_IP
-# RB_HELPER_IP = "tcp://helperraspberry:5555"
-ETHERNET2 = "tcp://169.254.222.67:5555"
-RB_MAIN_IP = ETHERNET2
-# RB_MAIN_IP = "tcp://mainraspberry:5555"
-#PC_IP = PC_IPs['jasper']
-PC_IP = JASPER_IP
+RB_MAIN_IP = "tcp://169.254.165.116:5555"
+RB_HELPER_IP = "tcp://169.254.222.67:5555"
 
 RESOLUTION = (720, 480)
 FPS = 24
@@ -35,7 +23,7 @@ picam = VideoStream(usePiCamera=True, resolution=RESOLUTION, framerate=FPS).star
 sleep(2.0) # allow camera sensor to warm up
 
 sender = imagezmq.ImageSender(connect_to=RB_HELPER_IP)
-sender.send_image(RB_MAIN_IP, np.array(['ready']))
+
 
 # TAKE RIGHT PICTURE
 imageright = picam.read()
