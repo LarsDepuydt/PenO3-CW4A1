@@ -1,5 +1,4 @@
 from imutils.video import VideoStream
-from picamera import PiCamera
 import imagezmq
 import cv2
 import numpy as np
@@ -15,15 +14,16 @@ RB_IP_MAIN = 'tcp://169.254.222.67:5555'
 RB_IP_HELPER = 'tcp://169.254.165.116:5555'
 
 
-# =================
+# =============================
 # INITIALIZATION
-# =================
+# =============================
+
 IMAGE_HUB = imagezmq.ImageHub()
 PICAM = VideoStream(usePiCamera=True, resolution=RESOLUTION).start()
 sleep(2.0)  # allow camera sensor to warm up
 
 # WAIT FOR 
-imageleft = picam.read()
+imageleft = PICAM.read()
 sender = imagezmq.ImageSender(connect_to=RB_IP_MAIN)
 
 
@@ -35,17 +35,14 @@ print('links')
 sender = imagezmq.ImageSender(connect_to=RB_IP_MAIN)  # Input pc-ip (possibly webserver to sent to)
 sender.send_image(RB_IP_HELPER, imageleft)
 print('verzonden')
-=======
-sender = imagezmq.ImageSender(connect_to=RB_IP_MAIN)  # Input pc-ip (possibly webserver to sent to)
-sender.send_image(RB_IP_MAIN, imageleft)
->>>>>>> d1ab157354edf460cd7ac2d685773fead657535a
->>>>>>> f99877c8343c4cabd9454e579e6548357d93fb2b
+
+
 
 # Receives matrix
 print("Waiting for tranformation matrix ...")
-M = image_hub.recv_image()[1]
+M = IMAGE_HUB.recv_image()[1]
 print("Received transformation matrix.")
-image_hub.send_reply(b'OK')
+IMAGE_HUB.send_reply(b'OK')
 print("Transformation matrix: \n", M)
 
 
@@ -58,7 +55,7 @@ while True:
     i += 1
     # take image
     print('in while')
-    image_list[0] = picam.read()
+    image_list[0] = PICAM.read()
 
     #transform image
     print("erin transform")

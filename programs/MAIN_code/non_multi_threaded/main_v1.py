@@ -10,14 +10,9 @@ NETWORKS = {"jasper": "192.168.137",
            "robin": "...",
            "wout": "..."}
 
-<<<<<<< HEAD
-RB_MAIN_IP = "tcp://169.254.165.116:5555"
-RB_HELPER_IP = "tcp://169.254.222.67:5555"
-=======
 RB_MAIN_IP = "tcp://169.254.222.67:5555"
 RB_HELPER_IP = "tcp://169.254.165.116:5555"
 
->>>>>>> f99877c8343c4cabd9454e579e6548357d93fb2b
 
 RESOLUTION = (720, 480)
 FPS = 24
@@ -28,12 +23,6 @@ image_hub = imagezmq.ImageHub()
 picam = VideoStream(usePiCamera=True, resolution=RESOLUTION, framerate=FPS).start()
 sleep(2.0) # allow camera sensor to warm up
 
-<<<<<<< HEAD
-sender = imagezmq.ImageSender(connect_to=RB_HELPER_IP)
-
-
-=======
->>>>>>> f99877c8343c4cabd9454e579e6548357d93fb2b
 # TAKE RIGHT PICTURE
 imageright = picam.read()
 

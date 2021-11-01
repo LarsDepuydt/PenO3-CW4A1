@@ -1,33 +1,26 @@
-from flask import Response
-from flask import Flask
-from flask import render_template
-import time
-import cv2
-import os
-
-
-
-
-'''
-while True:
-    check, frame = cam.read()
-    #cv2.imshow('video', frame)
-    key = cv2.waitKey(1)
-    if key == 27:
-        break
-cam.release()
-cv2.destroyAllWindows()
-'''
-
+import flask, cv2, time
 
 # REFERENCE: https://www.pyimagesearch.com/2019/09/02/opencv-stream-video-to-web-browser-html-page/
 # REFERENCE: https://towardsdatascience.com/video-streaming-in-web-browsers-with-opencv-flask-93a38846fe00
 
-app = Flask(__name__)
+app = flask.Flask(__name__)
 
-#vs = VideoStream(usePiCamera=1).start()
-camera = cv2.VideoCapture(0)
+#vs = VideoStream(usePiCamera=1).start() # pi camera
 #time.sleep(2.0)
+
+camera = cv2.VideoCapture(0)    # laptop webcam
+
+'''
+    # Troubleshoot camera: show camera feed
+    while True:
+        check, frame = cam.read()
+        #cv2.imshow('video', frame)
+        key = cv2.waitKey(1)
+        if key == 27:
+            break
+    cam.release()
+    cv2.destroyAllWindows()
+'''
 
 def gen_frames():
     while True:
@@ -41,11 +34,11 @@ def gen_frames():
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return flask.render_template('index.html')
 
 @app.route('/video_feed')
 def video_feed():
-    return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    return flask.Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == "__main__":
     app.run(debug=True)

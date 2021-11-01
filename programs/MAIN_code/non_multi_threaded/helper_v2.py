@@ -3,19 +3,21 @@ import imagezmq
 import numpy as np
 from time import sleep
 
-# =================
+# =============================
 # CONSTANTS
-# =================
+# =============================
 
-RESOLUTION = (720, 480)
+CALIBRATION_RESOLUTION = (720, 480)
+STREAM_RESOLUTION = (480, 360)
 RB_IP_MAIN = 'tcp://169.254.222.67:5555'
 RB_IP_HELPER = 'tcp://169.254.165.116:5555'
 
-# =================
+# =============================
 # INITIALIZATION
-# =================
+# =============================
+
 IMAGE_HUB = imagezmq.ImageHub()
-PICAM = VideoStream(usePiCamera=True, resolution=RESOLUTION).start()
+PICAM = VideoStream(usePiCamera=True, resolution=CALIBRATION_RESOLUTION).start()
 sleep(2.0)  # allow camera sensor to warm up
 SENDER = imagezmq.ImageSender(connect_to=RB_IP_MAIN)
 
@@ -25,11 +27,19 @@ assert ready_message == np.array(["ready"])
 print("Received ready message")
 IMAGE_HUB.send_reply(b'OK')
 
+# CALIBRATION ---------------------
 
-# TAKE AND SEND LEFT CALIBRATION IMAGE
+# Take and send left calibration image
 SENDER.send_image(RB_IP_HELPER, PICAM.read())
-print("Left calibration image sent.")
+print("Sent left calibration image")
 
+M = IMAGE_HUB.recv_image()[1]
+print("Received transformation matrix")
+print("M = ", M)
+
+# =============================
+# STREAM
+# =============================
 
 
 print("helper_v2.py ENDED")
