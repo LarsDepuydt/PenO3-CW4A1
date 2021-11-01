@@ -8,6 +8,7 @@ from time import sleep
 # =================
 
 RESOLUTION = (720, 480)
+PORT = 'tcp://localhost:5556'
 RB_IP_MAIN = 'tcp://169.254.222.67:5555'
 RB_IP_HELPER = 'tcp://169.254.165.116:5555'
 
@@ -34,7 +35,7 @@ print("Left calibration image sent.")
 
 
 
-print("END")
+print("helper_v2.py ENDED")
 
 
 
