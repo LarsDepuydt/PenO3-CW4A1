@@ -43,8 +43,8 @@ print("M = ", M)
 # =============================
 # STREAM
 # =============================
-PICAM.stop()
-PICAM = VideoStream(usePiCamera=True, resolution=STREAM_RESOLUTION).start()
+#PICAM.stop()
+#PICAM = VideoStream(usePiCamera=True, resolution=STREAM_RESOLUTION).start()
 i = 0
 
 output_image = None
