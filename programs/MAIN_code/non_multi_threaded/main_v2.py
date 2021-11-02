@@ -13,7 +13,7 @@ CALIBRATION_RESOLUTION = (720, 480)
 STREAM_RESOLUTION =      (480, 360)
 RB_IP_MAIN =    'tcp://169.254.222.67:5555'
 RB_IP_HELPER =  'tcp://169.254.165.116:5555'
-PC_IP =         'tcp://192.168.255.255:5555'
+PC_IP =         'tcp://192.168.137.1:5555'
 INIT_HELPER_CMD = "sh ssh_conn_and_execute_cmd.sh 'cd Desktop/PenO3-CW4A1/programs/MAIN_code/non_multi_threaded;python3 ./helper_v2.py'"
 
 KEYPOINTS_COUNT = 2000  # set number of keypoints
