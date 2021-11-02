@@ -52,7 +52,7 @@ i = 0
 output_image = None
 image_list = [None, None]
 
-while i < 1:
+while i < 10:
     print("In loop. Iteration ", i)
     i += 1
     # take image
@@ -64,16 +64,9 @@ while i < 1:
     image_src_points = np.array([[0, 0], [0, deepcopy(rows1)], [deepcopy(cols1), deepcopy(rows1)], [deepcopy(cols1), 0]], dtype=np.float32).reshape(-1, 1, 2) #nested coordinates necessary: seperate channels see opencv documentation
 
     # When we have established a homography we need to warp perspective
-    print('image_src_points: ', image_src_points, type(image_src_points), "item type: ", type(image_src_points[0][0][0]))
-    print('M: ', M, type(M))
-    M = np.float32(M)
-    print('image_src_points: ', image_src_points, type(image_src_points))
-    print('M: ', M, type(M))
-    print(type(M[0]), type(M[0][0]))
-    print("Into perspectiveTransform")
-    # MAKE SURE BOTH IMAGE_SRC_POINTS AND M ARE HAVE np.float32 ENTRIES!
+    M = np.float32(M)   # MAKE SURE BOTH IMAGE_SRC_POINTS AND M ARE HAVE np.float32 ENTRIES!
     image_dst_points = cv2.perspectiveTransform(image_src_points, M)
-    print("Out perspectiveTransform")
+    print("Finished perspecive transfrom")
     
     list_of_points = np.concatenate((image_src_points, image_dst_points), axis=0)
     [x_min, y_min] = np.int32(list_of_points.min(axis=0).ravel() - 0.5)
@@ -83,7 +76,7 @@ while i < 1:
     image_list[1] = cv2.warpPerspective(image_list[0], H_translation.dot(M), (x_max - x_min, y_max - y_min))
 
     print('Sending warped image')
-    sender.send_image(RB_IP_MAIN, image_list[1])
+    SENDER.send_image(RB_IP_HELPER, image_list[1])
     print('Sent warped image')
     
 print("helper_v2.py ENDED")

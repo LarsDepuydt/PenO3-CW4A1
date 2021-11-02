@@ -10,9 +10,10 @@ import os
 # =============================
 
 CALIBRATION_RESOLUTION = (720, 480)
-STREAM_RESOLUTION = (480, 360)
-RB_IP_MAIN = 'tcp://169.254.222.67:5555'
-RB_IP_HELPER = 'tcp://169.254.165.116:5555'
+STREAM_RESOLUTION =      (480, 360)
+RB_IP_MAIN =    'tcp://169.254.222.67:5555'
+RB_IP_HELPER =  'tcp://169.254.165.116:5555'
+PC_IP =         'tcp://192.168.255.255:5555'
 INIT_HELPER_CMD = "sh ssh_conn_and_execute_cmd.sh 'cd Desktop/PenO3-CW4A1/programs/MAIN_code/non_multi_threaded;python3 ./helper_v2.py'"
 
 KEYPOINTS_COUNT = 2000  # set number of keypoints
@@ -84,13 +85,54 @@ def trans_matrix_gen(imgleft, imgright, keypoints, min_mat, mat_data):
 
 M = trans_matrix_gen(image_left, image_right, KEYPOINTS_COUNT, MIN_MATCH_COUNT, MATRIX_DATA)
 SENDER.send_image(RB_IP_MAIN, M)
-print("Transformation matrix sent")
+print("Transformation matrix sent & received")
 
 # =============================
 # STREAM
 # =============================
+#PICAM.close()
+#PICAM = VideoStream(usePiCamera=True, resolution=STREAM_RESOLUTION).start()
+SENDER = imagezmq.ImageSender(connect_to=PC_IP)
 
 
+i = 0
+while i < 10:
+    print("In while, iteration: ", i)
+    i += 1
+    
+    #receive left image
+    image_left = IMAGE_HUB.recv_image()[1]
+    IMAGE_HUB.send_reply(b'OK')
+    imagelist[1] = image_left
+    print("Received left image")
+    
+    #take right image
+    imagelist[0] = PICAM.read()
+    print("Took right image")
+
+    #merge
+    rows1, cols1 = imagelist[0].shape[:2]
+    rows2, cols2 = imagelist[1].shape[:2]
+
+    image_src_points = np.float32([[0, 0], [0, rows2], [cols2, rows2], [cols2, 0]]).reshape(-1, 1, 2)
+    print("merge")
+
+    # When we have established a homography we need to warp perspective
+    # Change field of view
+    image_dst_points = cv2.perspectiveTransform(image_src_points, M)
+    list_of_points = np.concatenate((image_src_points, image_dst_points), axis=0)
+
+    [x_min, y_min] = np.int32(list_of_points.min(axis=0).ravel() - 0.5)
+    # [x_max, y_max] = np.int32(list_of_points.max(axis=0).ravel() + 0.5)
+
+    translation_dist = [-x_min, -y_min]
+
+    output_img = imagelist[1]
+    output_img[translation_dist[1]:rows1 + translation_dist[1],
+    translation_dist[0]:cols1 + translation_dist[0]] = imagelist[0]
+    imagelist[2] = output_img
+
+    SENDER.send_image(RB_IP_MAIN, imagelist[2])
 
 
 print("main_v2.py ENDED")
