@@ -68,6 +68,9 @@ while True:
 
     # When we have established a homography we need to warp perspective
     # Change field of view
+    c= cv2.warpPerspective(image_list[0], M)
+    while True:
+        cv2.imshow("sss", c)
     print(M)
     print(temp_points)
     list_of_points_2 = cv2.perspectiveTransform(temp_points, M)
