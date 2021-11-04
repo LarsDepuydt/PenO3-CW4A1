@@ -14,6 +14,7 @@ CALIBRATION_RESOLUTION = (480, 360)
 STREAM_RESOLUTION = (480, 360)
 RB_IP_MAIN = 'tcp://169.254.222.67:5555'
 RB_IP_HELPER = 'tcp://169.254.165.116:5555'
+LOOP = 100
 
 
 
@@ -52,12 +53,12 @@ i = 0
 output_image = None
 image_list = [None, None]
 
-while i < 10:
-    print("In loop. Iteration ", i)
+while i < LOOP:
+    #print("In loop. Iteration ", i)
     i += 1
     # take image
     image_list[0] = PICAM.read()
-    print(image_list)
+    #print(image_list)
     
     #transform image
     rows1, cols1 = image_list[0].shape[:2] # width and height of image
@@ -66,7 +67,7 @@ while i < 10:
     # When we have established a homography we need to warp perspective
     M = np.float32(M)   # MAKE SURE BOTH IMAGE_SRC_POINTS AND M ARE HAVE np.float32 ENTRIES!
     image_dst_points = cv2.perspectiveTransform(image_src_points, M)
-    print("Finished perspecive transfrom")
+    #print("Finished perspecive transfrom")
     
     list_of_points = np.concatenate((image_src_points, image_dst_points), axis=0)
     [x_min, y_min] = np.int32(list_of_points.min(axis=0).ravel() - 0.5)
@@ -75,9 +76,9 @@ while i < 10:
     H_translation = np.array([[1, 0, translation_dist[0]], [0, 1, translation_dist[1]], [0, 0, 1]])
     image_list[1] = cv2.warpPerspective(image_list[0], H_translation.dot(M), (x_max - x_min, y_max - y_min))
 
-    print('Sending warped image')
+    #print('Sending warped image')
     SENDER.send_image(RB_IP_HELPER, image_list[1])
-    print('Sent warped image')
+    #print('Sent warped image')
     
 print("helper_v2.py ENDED")
 
