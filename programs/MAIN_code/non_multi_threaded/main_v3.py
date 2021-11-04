@@ -8,14 +8,14 @@ import os
 # =============================
 # CONSTANTS
 # =============================
-sleep(5)
-CALIBRATION_RESOLUTION = (480, 360)
+
+CALIBRATION_RESOLUTION = (480, 368)
 STREAM_RESOLUTION =      (480, 360)
 RB_IP_MAIN =    'tcp://169.254.222.67:5555'
 RB_IP_HELPER =  'tcp://169.254.165.116:5555'
 #PC_IP =         'tcp://192.168.137.1:5555'
 PC_IP = 'tcp://169.254.62.171:5555'
-INIT_HELPER_CMD = "sh ssh_conn_and_execute_cmd.sh 'cd Desktop/PenO3-CW4A1/programs/MAIN_code/non_multi_threaded;python3 ./helper_v2.py'"
+INIT_HELPER_CMD = "sh ssh_conn_and_execute_cmd.sh 'cd Desktop/PenO3-CW4A1/programs/MAIN_code/non_multi_threaded;python3 ./helper_v3.py'"
 
 KEYPOINTS_COUNT = 2000  # set number of keypoints
 MIN_MATCH_COUNT = 10  # Set minimum match condition
@@ -28,7 +28,7 @@ imagelist = [None, None, None]
 # INITIALIZATION
 # =============================
 
-os.system(INIT_HELPER_CMD)       # init helper pi
+#os.system(INIT_HELPER_CMD)       # init helper pi
 IMAGE_HUB = imagezmq.ImageHub()
 PICAM = VideoStream(usePiCamera=True, resolution=CALIBRATION_RESOLUTION).start()
 sleep(4.0)  # allow camera sensor to warm up and wait to make sure helper is running
@@ -44,7 +44,7 @@ image_right = PICAM.read()
 image_left = IMAGE_HUB.recv_image()[1]
 IMAGE_HUB.send_reply(b'OK')
 print("Received left calibration image")
-
+print(image_left)
 cv2.imwrite("./calibration_image_left.jpg", image_left)
 cv2.imwrite("./calibration_image_right.jpg", image_right)
 
@@ -95,6 +95,16 @@ print("Transformation matrix sent & received")
 #PICAM = VideoStream(usePiCamera=True, resolution=STREAM_RESOLUTION).start()
 SENDER = imagezmq.ImageSender(connect_to=PC_IP)
 
+cols_r, rows_r = CALIBRATION_RESOLUTION
+image_src_points = np.float32([[0, 0], [0, rows_r], [cols_r, rows_r], [cols_r, 0]]).reshape(-1, 1, 2)
+
+image_dst_points = cv2.perspectiveTransform(image_src_points, M)
+list_of_points = np.concatenate((image_src_points, image_dst_points), axis=0)
+[x_min, y_min] = np.int32(list_of_points.min(axis=0).ravel() - 0.5)
+# [x_max, y_max] = np.int32(list_of_points.max(axis=0).ravel() + 0.5)
+
+translation_dist = [-x_min, -y_min]
+
 i = 0
 while i < 1:
     print("In while, iteration: ", i)
@@ -103,28 +113,19 @@ while i < 1:
     #receive left image
     image_left = IMAGE_HUB.recv_image()[1]
     IMAGE_HUB.send_reply(b'OK')
-    imagelist[1] = image_left
+    print(image_left.shape)
+    j = 0
+    while j < image_left.shape[0]:
+        image_left[j] = np.concatenate(image_left[j], [np.array([0, 0, 0]) for x in range(0, 100)])
+        j += 1
+    print(image_left.shape)
     print("Received left image")
-    
+    imagelist[1] = image_left
+    cv2.imwrite("./left.jpg", imagelist[1])
     #take right image
     imagelist[0] = PICAM.read()
     print("Took right image")
 
-    #merge
-    rows_r, cols_r = imagelist[0].shape[:2]
-    rows_l, cols_l = imagelist[1].shape[:2]
-
-    image_src_points = np.float32([[0, 0], [0, rows_r], [cols_r, rows_r], [cols_r, 0]]).reshape(-1, 1, 2)
-    print("merge")
-
-    # 
-    image_dst_points = cv2.perspectiveTransform(image_src_points, M)
-    list_of_points = np.concatenate((image_src_points, image_dst_points), axis=0)
-
-    [x_min, y_min] = np.int32(list_of_points.min(axis=0).ravel() - 0.5)
-    # [x_max, y_max] = np.int32(list_of_points.max(axis=0).ravel() + 0.5)
-
-    translation_dist = [-x_min, -y_min]
 
     output_img = imagelist[1]
     print(cols_r)
@@ -140,7 +141,6 @@ while i < 1:
             ] = imagelist[0]
     
     imagelist[2] = output_img
-    cv2.imwrite("./left.jpg", imagelist[1])
     cv2.imwrite("./output.jpg", imagelist[2])
     print("Sending output_image to PC ...")
     SENDER.send_image(RB_IP_MAIN, imagelist[2])
