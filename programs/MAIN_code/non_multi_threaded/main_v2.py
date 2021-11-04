@@ -8,12 +8,13 @@ import os
 # =============================
 # CONSTANTS
 # =============================
-
-CALIBRATION_RESOLUTION = (720, 480)
+sleep(5)
+CALIBRATION_RESOLUTION = (480, 360)
 STREAM_RESOLUTION =      (480, 360)
 RB_IP_MAIN =    'tcp://169.254.222.67:5555'
 RB_IP_HELPER =  'tcp://169.254.165.116:5555'
-PC_IP =         'tcp://192.168.255.255:5555'
+#PC_IP =         'tcp://192.168.137.1:5555'
+PC_IP = 'tcp://169.254.62.171:5555'
 INIT_HELPER_CMD = "sh ssh_conn_and_execute_cmd.sh 'cd Desktop/PenO3-CW4A1/programs/MAIN_code/non_multi_threaded;python3 ./helper_v2.py'"
 
 KEYPOINTS_COUNT = 2000  # set number of keypoints
@@ -94,9 +95,8 @@ print("Transformation matrix sent & received")
 #PICAM = VideoStream(usePiCamera=True, resolution=STREAM_RESOLUTION).start()
 SENDER = imagezmq.ImageSender(connect_to=PC_IP)
 
-
 i = 0
-while i < 10:
+while i < 1:
     print("In while, iteration: ", i)
     i += 1
     
@@ -111,14 +111,13 @@ while i < 10:
     print("Took right image")
 
     #merge
-    rows1, cols1 = imagelist[0].shape[:2]
-    rows2, cols2 = imagelist[1].shape[:2]
+    rows_r, cols_r = imagelist[0].shape[:2]
+    rows_l, cols_l = imagelist[1].shape[:2]
 
-    image_src_points = np.float32([[0, 0], [0, rows2], [cols2, rows2], [cols2, 0]]).reshape(-1, 1, 2)
+    image_src_points = np.float32([[0, 0], [0, rows_r], [cols_r, rows_r], [cols_r, 0]]).reshape(-1, 1, 2)
     print("merge")
 
-    # When we have established a homography we need to warp perspective
-    # Change field of view
+    # 
     image_dst_points = cv2.perspectiveTransform(image_src_points, M)
     list_of_points = np.concatenate((image_src_points, image_dst_points), axis=0)
 
@@ -128,11 +127,23 @@ while i < 10:
     translation_dist = [-x_min, -y_min]
 
     output_img = imagelist[1]
-    output_img[translation_dist[1]:rows1 + translation_dist[1],
-    translation_dist[0]:cols1 + translation_dist[0]] = imagelist[0]
+    print(cols_r)
+    print(rows_r)
+    print(translation_dist[1])
+    print(translation_dist[0])
+    
+    print(imagelist[0].shape)
+    print(imagelist[1].shape)
+    output_img[
+            translation_dist[1] : rows_r+translation_dist[1],
+            translation_dist[0] : cols_r+translation_dist[0]
+            ] = imagelist[0]
     imagelist[2] = output_img
-
+    cv2.imwrite("./output_right.jpg", imagelist[2])
+    print("Sending output_image to PC ...")
     SENDER.send_image(RB_IP_MAIN, imagelist[2])
+    print("Output image sent")
+    
 
 
 print("main_v2.py ENDED")
