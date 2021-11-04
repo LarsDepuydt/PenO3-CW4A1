@@ -9,10 +9,10 @@ import numpy as np
 ETHERNET = "tcp://169.254.165.116:5555"
 PC_IPs = {'whatever': 'tcp://169.254.165.116:5555', 'jasper': 'tcp://192.168.137.50'}
 RB_HELPER_IP = ETHERNET
-#RB_HELPER_IP = "tcp://helperraspberry:5555"
+# RB_HELPER_IP = "tcp://helperraspberry:5555"
 ETHERNET2 = "tcp://169.254.222.67:5555"
 RB_MAIN_IP = ETHERNET2
-#RB_MAIN_IP = "tcp://mainraspberry:5555"
+# RB_MAIN_IP = "tcp://mainraspberry:5555"
 PC_IP = PC_IPs['jasper']
 
 
@@ -23,8 +23,8 @@ image_hub.send_reply(b'OK')
 
 # TAKE RIGHT PICTURE
 picam = VideoStream(usePiCamera=True).start()
-#picam.camera.resolution(640, 480)
-#print(picam.__dict__)
+# picam.camera.resolution(640, 480)
+# print(picam.__dict__)
 sleep(2.0)
 imageright = picam.read()
 
