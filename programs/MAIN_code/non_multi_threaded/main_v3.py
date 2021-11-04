@@ -138,8 +138,10 @@ while i < 1:
             translation_dist[1] : rows_r+translation_dist[1],
             translation_dist[0] : cols_r+translation_dist[0]
             ] = imagelist[0]
+    
     imagelist[2] = output_img
-    cv2.imwrite("./output_right.jpg", imagelist[2])
+    cv2.imwrite("./left.jpg", imagelist[1])
+    cv2.imwrite("./output.jpg", imagelist[2])
     print("Sending output_image to PC ...")
     SENDER.send_image(RB_IP_MAIN, imagelist[2])
     print("Output image sent")
