@@ -61,6 +61,9 @@ M = np.float32(M)   # MAKE SURE BOTH IMAGE_SRC_POINTS AND M ARE HAVE np.float32 
 image_dst_points = cv2.perspectiveTransform(image_src_points, M)
 list_of_points = np.concatenate((image_src_points, image_dst_points), axis=0)
 print(list_of_points)
+print(list_of_points.min(axis=0))
+print(list_of_points.min(axis=0).ravel())
+print(np.int32(list_of_points.min(axis=0).ravel() - 0.5))
 [x_min, y_min] = np.int32(list_of_points.min(axis=0).ravel() - 0.5)
 [x_max, y_max] = np.int32(list_of_points.max(axis=0).ravel() + 0.5)
 translation_dist = [-x_min, -y_min]
