@@ -3,7 +3,8 @@ from time import sleep
 
 camera = PiCamera()
 camera.start_preview()
-sleep(4.0)
-camera.capture('./foto10.jpg')
+for i in range(20):
+    sleep(5.0)
+    camera.capture('./foto'+str(i)+'.jpg')
 sleep(1.0)
 camera.stop_preview()
