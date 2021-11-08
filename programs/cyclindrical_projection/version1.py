@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 
 VERVORMING_PARAMETER = 2400
-FOCAL_LENGTH = 3.04     # in mm
 
 
 def cylindricalWarp(img, K):
@@ -30,9 +29,9 @@ def cylindricalWarp(img, K):
 
 
 if __name__ == '__main__':
-    img = cv2.imread("../../images/testing_images_pi/lokaal/image_for_testing_1.jpg")
+    img = cv2.imread("calibresult.png")
     h, w = img.shape[:2]
-    K = np.array([[VERVORMING_PARAMETER, 0, w / 2], [0, VERVORMING_PARAMETER, h / 2], [0, 0, 1]])  # mock intrinsics
+    K = np.array([[967.74494657, 0, 887.97740341], [0, 966.36607139, 563.71268567], [0, 0, 1]])  # mock intrinsics
     # [fx s x0; 0 fy y0; 0 0 1]
     img_cyl = cylindricalWarp(img, K)
-    cv2.imwrite("../../images/testing_images_pi/lokaal/image_for_testing_1_cyl.jpg", img_cyl)
+    cv2.imwrite("foto0_cyl.jpg", img_cyl)

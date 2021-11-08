@@ -77,18 +77,16 @@ h, w = image.shape[:2]
 # passing the value of above found out 3D points (threedpoints)
 # and its corresponding pixel coordinates of the
 # detected corners (twodpoints)
-ret, matrix, distortion, r_vecs, t_vecs = cv2.calibrateCamera(
+ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(
     threedpoints, twodpoints, grayColor.shape[::-1], None, None)
 
-# Displaying required output
-print(" Camera matrix:")
-print(matrix)
+img = cv2.imread('foto0.jpg')
+h,  w = img.shape[:2]
+newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w,h), 1, (w,h))
 
-print("\n Distortion coefficient:")
-print(distortion)
-
-print("\n Rotation Vectors:")
-print(r_vecs)
-
-print("\n Translation Vectors:")
-print(t_vecs)
+# undistort
+dst = cv2.undistort(img, mtx, dist, None, newcameramtx)
+# crop the image
+x, y, w, h = roi
+dst = dst[y:y+h, x:x+w]
+cv2.imwrite('calibresult.png', dst)
