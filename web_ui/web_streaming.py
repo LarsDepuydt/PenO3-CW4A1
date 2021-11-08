@@ -3,7 +3,7 @@ import flask, cv2, time, imagezmq
 # REFERENCE: https://www.pyimagesearch.com/2019/09/02/opencv-stream-video-to-web-browser-html-page/
 # REFERENCE: https://towardsdatascience.com/video-streaming-in-web-browsers-with-opencv-flask-93a38846fe00
 
-MODE = 1
+MODE = 3
 
 if MODE == 1:
     camera = cv2.VideoCapture(0)    # laptop webcam
@@ -33,7 +33,7 @@ app = flask.Flask(__name__)
 def gen_frames_webcam():
     frames_per_second, t_old = [], 0
     while True:
-        t = time.perf_counter()
+        t = time.perf_counter
         succes, frame = camera.read()
         if not succes:
             break
