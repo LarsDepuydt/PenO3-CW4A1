@@ -48,7 +48,7 @@ print("M = ", M)
 # =============================
 #PICAM.stop()
 #PICAM = VideoStream(usePiCamera=True, resolution=STREAM_RESOLUTION).start()
-i = 0
+
 output_image = None
 image_list = [None, None]
 
@@ -61,26 +61,27 @@ M = np.float32(M)   # MAKE SURE BOTH IMAGE_SRC_POINTS AND M ARE HAVE np.float32 
 image_dst_points = cv2.perspectiveTransform(image_src_points, M)
 list_of_points = np.concatenate((image_src_points, image_dst_points), axis=0)
 print(list_of_points)
-print(list_of_points.min(axis=0))
 print(list_of_points.min(axis=0).ravel())
+print(list_of_points.max(axis=0).ravel())
 print(np.int32(list_of_points.min(axis=0).ravel() - 0.5))
 [x_min, y_min] = np.int32(list_of_points.min(axis=0).ravel() - 0.5)
 [x_max, y_max] = np.int32(list_of_points.max(axis=0).ravel() + 0.5)
 translation_dist = [-x_min, -y_min]
 H_translation = np.array([[1, 0, translation_dist[0]], [0, 1, translation_dist[1]], [0, 0, 1]])
+R = H_translation.dot(M)
+S = (x_max - x_min + 196, y_max - y_min)
 
-while i < 1:
-    print("In loop. Iteration ", i)
-    i += 1
-    # take image
-    image_list[0] = PICAM.read()
-    #print(image_list)
+
+while True:
     
-    image_list[1] = cv2.warpPerspective(image_list[0], H_translation.dot(M), (x_max - x_min, y_max - y_min))
-
-    #print('Sending warped image')
+    SENDER.send_image(RB_IP_HELPER, cv2.warpPerspective(PICAM.read(), R, S))
+    
+    '''
+    SENDER.send_image(RB_IP_HELPER, np.array([0]))
+    image_list[0] = PICAM.read()
+    image_list[1] = cv2.warpPerspective(image_list[0], R, S)
     SENDER.send_image(RB_IP_HELPER, image_list[1])
-    #print('Sent warped image')
+    '''
     
 print("helper_v2.py ENDED")
 
