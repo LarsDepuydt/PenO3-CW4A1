@@ -24,7 +24,7 @@ Person | Hour 1 | Hour 2 | Hour 3 | Hour 4 | After hours (specify time)
 **Lars Depuydt**  |    |     |      |
 **Robin Anné**    |    |     |      |
 **Ruben Janssen** | Searching optimization for image stitching| = | = | =
-**Wout Bergmans** |    |     |      |
+**Wout Bergmans** | Threading reworking | = | = | =
 
 #
 #### Gelezen en goedgekeurd
