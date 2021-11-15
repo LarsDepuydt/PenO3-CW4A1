@@ -53,39 +53,37 @@ def gen_frames_webcam():
             print(sum(frames_per_second)/10)
             frames_per_second = []
 
-def gen_frames_imagehub():
-    image_hub_fps, webserver_fps, t_old = [], [], 0
+def gen_frames_imagehub_with_fps():
+    img_hub_fps, web_app_fps, t_old = [], [], 0
     IMAGE_HUB = imagezmq.ImageHub()#open_port='tcp://:5555')
     while True:
-        t = time.perf_counter()
-
         frame = IMAGE_HUB.recv_image()[1]
         IMAGE_HUB.send_reply(b'OK')
-        ret, buffer = cv2.imencode('.jpg', frame)
-        frame = buffer.tobytes()
-        yield(b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-
-        webserver_fps.append(1/(t-t_old))
-        t = time.perf_counter()
-        image_hub_fps.append(1/(t-t_old))
-        t_old = t
+        t_after_image = time.perf_counter()
+        '''
+            ret, buffer = cv2.imencode('.jpg', frame)
+            frame = buffer.tobytes()
+            yield(b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')'''
+        yield(b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + cv2.imencode('.jpg', frame)[1].tobytes() + b'\r\n')
+        
+        t_after_yield = time.perf_counter()
+        web_app_fps.append(1/(t_after_yield - t_after_image))
+        img_hub_fps.append(1/(t_after_image - t_old))
+        t_old = t_after_yield
 
         if len(webserver_fps) == 10:
-            print("Webserver fps 10avg: ", sum(webserver_fps)/10)
-            print("Imagehub fps 10avg: ", sum(image_hub_fps)/10)
-            print("Webserver fps instant: ", webserver_fps[-1])
-            print("Webserver fps instant: ", image_hub_fps[-1])
+            print("Webapp    fps 10avg  : ", sum(webserver_fps)/10)
+            print("Imagehub  fps 10avg  : ", sum(image_hub_fps)/10)
+            print("Webserver fps 1sample: ", webserver_fps[-1])
+            print("Webserver fps 1sample: ", image_hub_fps[-1])
             webserver_fps, image_hub_fps = [], []
 
-
-def gen_frame_counter():
-    i = 0
+def gen_frames_imagehub():
+    IMAGE_HUB = imagezmq.ImageHub()#open_port='tcp://:5555')
     while True:
-        j = str(i).to_bytes
-        yield(b'Content-Type: text' + j)
-        i += 1
-        time.sleep(0.2)
-        print(i)
+        frame = IMAGE_HUB.recv_image()[1]
+        IMAGE_HUB.send_reply(b'OK')
+        yield(b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + cv2.imencode('.jpg', frame)[1].tobytes() + b'\r\n')
 
 
 @app.route('/')
