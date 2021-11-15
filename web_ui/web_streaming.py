@@ -1,4 +1,7 @@
-import flask, cv2, time, imagezmq
+import cv2
+import time
+import imagezmq
+import flask
 
 # REFERENCE: https://www.pyimagesearch.com/2019/09/02/opencv-stream-video-to-web-browser-html-page/
 # REFERENCE: https://towardsdatascience.com/video-streaming-in-web-browsers-with-opencv-flask-93a38846fe00
