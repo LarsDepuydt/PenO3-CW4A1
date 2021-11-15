@@ -15,7 +15,7 @@ RB_IP_MAIN =    'tcp://169.254.222.67:5555'
 RB_IP_HELPER =  'tcp://169.254.165.116:5555'
 #PC_IP =         'tcp://192.168.137.1:5555'
 #PC_IP = 'tcp://169.254.62.171:5555'
-PC_IP = 'tcp://169.254.215.134:5555'
+PC_IP = 'tcp://169.254.236.78:5555'
 
 INIT_HELPER_CMD = "sh ssh_conn_and_execute_cmd.sh 'cd Desktop/PenO3-CW4A1/programs/MAIN_code/non_multi_threaded;python3 ./helper_v3.py'"
 
@@ -137,6 +137,7 @@ while True:
             translation_dist[1] : rows_r+translation_dist[1],
             translation_dist[0] : cols_r+translation_dist[0]
             ] = imagelist[0]
+    print("stuur")
     SENDER.send_image(RB_IP_MAIN, imagelist[1])
     IMAGE_HUB.send_reply(b'OK')
 
