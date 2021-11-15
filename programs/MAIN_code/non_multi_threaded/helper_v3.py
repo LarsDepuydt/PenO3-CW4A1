@@ -9,7 +9,7 @@ from copy import deepcopy
 # CONSTANTS
 # =============================
 
-
+CAMERAMODE = 1
 CALIBRATION_RESOLUTION = (480, 368)
 STREAM_RESOLUTION = (480, 360)
 RB_IP_MAIN = 'tcp://169.254.222.67:5555'
@@ -22,7 +22,12 @@ RB_IP_HELPER = 'tcp://169.254.165.116:5555'
 # =============================
 
 IMAGE_HUB = imagezmq.ImageHub()
-PICAM = VideoStream(usePiCamera=True, resolution=CALIBRATION_RESOLUTION).start()
+if CAMERAMODE == 1:
+    PICAM = VideoStream(usePiCamera=True, resolution=CALIBRATION_RESOLUTION).start()
+elif CAMERAMODE == 2:
+    PICAM = cv2.VideoCapture(0)
+    PICAM.set(cv2.CAP_PROP_FRAME_WIDTH, CALIBRATION_RESOLUTION[0])
+    PICAM.set(cv2.CAP_PROP_FRAME_HEIGHT, CALIBRATION_RESOLUTION[1])
 sleep(2.0)  # allow camera sensor to warm up
 SENDER = imagezmq.ImageSender(connect_to=RB_IP_MAIN)
 
@@ -35,7 +40,7 @@ IMAGE_HUB.send_reply(b'OK')
 # CALIBRATION ---------------------
 
 # Take and send left calibration image
-SENDER.send_image(RB_IP_HELPER, PICAM.read())
+SENDER.send_image(RB_IP_HELPER, PICAM.read()[1])
 print("Sent left calibration image")
 
 M = IMAGE_HUB.recv_image()[1]
@@ -69,12 +74,12 @@ print(np.int32(list_of_points.min(axis=0).ravel() - 0.5))
 translation_dist = [-x_min, -y_min]
 H_translation = np.array([[1, 0, translation_dist[0]], [0, 1, translation_dist[1]], [0, 0, 1]])
 R = H_translation.dot(M)
-S = (x_max - x_min + 196, y_max - y_min)
+S = (x_max - x_min + 512, y_max - y_min+128)
 
 
 while True:
     
-    SENDER.send_image(RB_IP_HELPER, cv2.warpPerspective(PICAM.read(), R, S))
+    SENDER.send_image(RB_IP_HELPER, cv2.warpPerspective(PICAM.read()[1], R, S))
     
     '''
     SENDER.send_image(RB_IP_HELPER, np.array([0]))
