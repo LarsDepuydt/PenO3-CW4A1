@@ -4,13 +4,13 @@ import numpy as np
 #CAMERA_MATRIX = [[1.36828815e+04, 0.00000000e+00, 9.04669375e+02],
 # [0.00000000e+00, 9.19228595e+03, 9.24908584e+02],
 # [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]]
-CAMERA_MATRIX = [[1.04252290e+03, 0.00000000e+00, 9.68415719e+02],
- [0.00000000e+00, 1.01924862e+03, 5.40869638e+02],
- [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]]
+CAMERA_MATRIX = [[320.68838395,   0, 315.79552501],
+ [0, 314.07165737, 251.72067641],
+ [ 0, 0, 1]]
 #INPUT_IMAGE = "./camera_images/calibration_image_left.jpg"
-INPUT_IMAGE = "calibration_images_far/cfoto0.jpg"
+INPUT_IMAGE = "sterio_vision/images/imageL0.png"
 #OUTPUT_IMAGE = "./cylindrical_projection_images/left_cyl.jpg"
-OUTPUT_IMAGE = "./cylindrical_projection_images/cfoto0_cyl.jpg"
+OUTPUT_IMAGE = "./cylindrical_projection_images/imageL0_cyl.jpg"
 
 
 def cylindricalWarp(img, K):
