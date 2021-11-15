@@ -4,8 +4,10 @@ import numpy as np
 import os
 import glob
 
-# Define the dimensions of checkerboard
+# values
 CHECKERBOARD = (9, 6)
+INPUT_IMAGE = "camera_images/calibration_image_right.jpg"
+OUTPUT_IMAGE = "undistorded_images/right_und.jpg"
 
 # stop the iteration when specified
 # accuracy, epsilon, is reached or
@@ -31,7 +33,7 @@ prev_img_shape = None
 # in a given directory. Since no path is
 # specified, it will take current directory
 # jpg files alone
-images = glob.glob('*.jpg')
+images = glob.glob('calibration_images_close/*.jpg')
 print(images)
 
 for filename in images:
@@ -80,7 +82,7 @@ h, w = image.shape[:2]
 ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(
     threedpoints, twodpoints, grayColor.shape[::-1], None, None)
 
-img = cv2.imread('foto11_cyl.jpg')
+img = cv2.imread(INPUT_IMAGE)
 h,  w = img.shape[:2]
 newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w,h), 1, (w,h))
 
@@ -89,4 +91,4 @@ dst = cv2.undistort(img, mtx, dist, None, newcameramtx)
 # crop the image
 x, y, w, h = roi
 dst = dst[y:y+h, x:x+w]
-cv2.imwrite('calibresult.png', dst)
+cv2.imwrite(OUTPUT_IMAGE, dst)

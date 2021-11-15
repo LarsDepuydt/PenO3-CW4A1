@@ -31,7 +31,7 @@ prev_img_shape = None
 # in a given directory. Since no path is
 # specified, it will take current directory
 # jpg files alone
-images = glob.glob('*.jpg')
+images = glob.glob('calibration_images_close/*.jpg')
 print(images)
 
 for filename in images:
