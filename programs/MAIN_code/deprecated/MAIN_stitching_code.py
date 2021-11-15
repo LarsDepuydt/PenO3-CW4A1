@@ -4,10 +4,11 @@ import time
 
 t_start = time.perf_counter()
 print(time.process_time())
+
 # variables
-PATH1 = "../../../images/testing_images_pi/lokaal/image_for_testing_1.jpg"
-PATH2 = "../../../images/testing_images_pi/lokaal/image_for_testing_2.jpg"
-PATH_RESULT = "../../../images/stitchted_normal.jpg"
+PATH1 = "../../cylindrical_projection/cylindrical_projection_images/left_cyl.jpg"
+PATH2 = "../../cylindrical_projection/cylindrical_projection_images/right_cyl.jpg"
+PATH_RESULT = "stitchted_normal.jpg"
 MATRIX_DATA = "matrix_data.txt"
 
 def warpImages(img1, img2, H):

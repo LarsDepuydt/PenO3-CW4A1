@@ -1,0 +1,11 @@
+Methode 1:
+    1. camera matrix berekenen met schaakbordfoto's
+    2. foto's cylindrische projecteren
+    3. in onze standaardfunctie steken
+==> weinige projectie, door distortion onmogelijke stitch
+
+Methode 2:
+    1. camera matrix berekenen met schaakbordfoto's
+    2. undistort images
+    3. in onze standaardfunctie steken
+==>

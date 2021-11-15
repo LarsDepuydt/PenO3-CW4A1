@@ -1,7 +1,13 @@
 import cv2
 import numpy as np
 
-VERVORMING_PARAMETER = 2400
+CAMERA_MATRIX = [[1.36828815e+04, 0.00000000e+00, 9.04669375e+02],
+ [0.00000000e+00, 9.19228595e+03, 9.24908584e+02],
+ [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]]
+#INPUT_IMAGE = "./camera_images/calibration_image_left.jpg"
+INPUT_IMAGE = "camera_images/calibration_image_right.jpg"
+#OUTPUT_IMAGE = "./cylindrical_projection_images/left_cyl.jpg"
+OUTPUT_IMAGE = "./cylindrical_projection_images/right_cyl.jpg"
 
 
 def cylindricalWarp(img, K):
@@ -29,9 +35,9 @@ def cylindricalWarp(img, K):
 
 
 if __name__ == '__main__':
-    img = cv2.imread("foto11.jpg")
+    img = cv2.imread(INPUT_IMAGE)
     h, w = img.shape[:2]
-    K = np.array([[2.08906061e+03, 0.00000000e+00, 7.44554926e+02], [0.00000000e+00, 2.24401570e+03, 1.88696534e+02], [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])  # mock intrinsics
+    K = np.array(CAMERA_MATRIX)  # mock intrinsics
     # [fx s x0; 0 fy y0; 0 0 1]
     img_cyl = cylindricalWarp(img, K)
-    cv2.imwrite("foto11_cyl.jpg", img_cyl)
+    cv2.imwrite(OUTPUT_IMAGE, img_cyl)
