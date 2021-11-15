@@ -6,14 +6,15 @@ import flask, cv2, time, imagezmq
 MODE = 3
 
 if MODE == 1:
-    #camera = cv2.VideoCapture(0)    # laptop webcam
+    camera = cv2.VideoCapture(0)    # laptop webcam
     pass
 elif MODE == 2: 
     import imutils
     vs = imutils.VideoStream(usePiCamera=True).start() # pi camera
     time.sleep(2.0)
 elif MODE == 3:
-    IMAGE_HUB = imagezmq.ImageHub()
+    # DO NOT OPEN IMAGEHUB BEFORE OPENING FLASK!!!!!!!!!!!!
+    pass
 
 app = flask.Flask(__name__)
 
@@ -51,10 +52,12 @@ def gen_frames_webcam():
 
 def gen_frames_imagehub():
     image_hub_fps, webserver_fps, t_old = [], [], 0
+    IMAGE_HUB = imagezmq.ImageHub()#open_port='tcp://:5555')
     while True:
         t = time.perf_counter()
 
         frame = IMAGE_HUB.recv_image()[1]
+        IMAGE_HUB.send_reply(b'OK')
         ret, buffer = cv2.imencode('.jpg', frame)
         frame = buffer.tobytes()
         yield(b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
@@ -90,7 +93,6 @@ if MODE == 1 or MODE == 2:
     @app.route('/video_feed')
     def video_feed():
         return flask.Response(gen_frames_webcam(), mimetype='multipart/x-mixed-replace; boundary=frame')
-    
 elif MODE == 3:
     @app.route('/video_feed')
     def video_feed():
