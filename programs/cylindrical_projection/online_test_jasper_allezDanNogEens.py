@@ -2,13 +2,14 @@
 import cv2
 import numpy as np
 
-DIM=(1920, 1080)
-K=np.array([[882.9706641599224, 0.0, 886.8464271188375], [0.0, 871.9774467716989, 648.1940900533385], [0.0, 0.0, 1.0]])
-D=np.array([[-0.05214776804512603], [0.0003246928229686672], [-0.06727664331462517], [0.03550588688174445]])
-def undistort(img_path, balance=0.0, dim2=None, dim3=None):
+DIM=(640, 480)
+K=np.array([[308.4274361323937, 0.0, 307.74004197343186], [0.0, 307.15971371728705, 251.85734467095995], [0.0, 0.0, 1.0]])
+D=np.array([[-0.02268523653207129], [-0.024552020182573187], [-4.141383624332057e-05], [0.011483828520533408]])
+
+def undistort(img_path, balance=1.0, dim2=None, dim3=None):
     img = cv2.imread(img_path)
     dim1 = img.shape[:2][::-1]  #dim1 is the dimension of input image to un-distort
-    assert dim1[0]/dim1[1] == DIM[0]/DIM[1], "Image to undistort needs to have same aspect ratio as the ones used in calibration"
+    #assert dim1[0]/dim1[1] == DIM[0]/DIM[1], "Image to undistort needs to have same aspect ratio as the ones used in calibration"
     if not dim2:
         dim2 = dim1
     if not dim3:
@@ -19,7 +20,7 @@ def undistort(img_path, balance=0.0, dim2=None, dim3=None):
     new_K = cv2.fisheye.estimateNewCameraMatrixForUndistortRectify(scaled_K, D, dim2, np.eye(3), balance=balance)
     map1, map2 = cv2.fisheye.initUndistortRectifyMap(scaled_K, D, np.eye(3), new_K, dim3, cv2.CV_16SC2)
     undistorted_img = cv2.remap(img, map1, map2, interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
-    cv2.imwrite("undistorted.jpg", undistorted_img)
+    cv2.imwrite("right.jpg", undistorted_img)
 
 if __name__ == '__main__':
-        undistort("calibration_images_far/cfoto0.jpg")
+    undistort( "sterio_vision/images/right/right3.png")
