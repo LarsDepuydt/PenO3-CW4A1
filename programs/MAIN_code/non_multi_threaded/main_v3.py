@@ -9,6 +9,7 @@ import os
 # CONSTANTS
 # =============================
 
+CAMERAMODE = 1 # 1: imutilsVideostream, 2: cv2.VideoCapture
 CALIBRATION_RESOLUTION = (480, 368)
 STREAM_RESOLUTION =      (480, 360)
 RB_IP_MAIN =    'tcp://169.254.222.67:5555'
@@ -31,8 +32,14 @@ imagelist = [None, None, None]
 # =============================
 
 #os.system(INIT_HELPER_CMD)       # init helper pi
+if CAMERAMODE == 1:
+    PICAM = VideoStream(usePiCamera=True, resolution=CALIBRATION_RESOLUTION).start()
+elif CAMERAMODE ==2:
+    PICAM = cv2.VideoCapture(0)
+    PICAM.set(cv2.CAP_PROP_FRAME_WIDTH, CALIBRATION_RESOLUTION[0])
+    PICAM.set(cv2.CAP_PROP_FRAME_HEIGHT, CALIBRATION_RESOLTION[1])
 IMAGE_HUB = imagezmq.ImageHub()
-PICAM = VideoStream(usePiCamera=True, resolution=CALIBRATION_RESOLUTION).start()
+PICAM = cv2.VideoCapture(0)
 sleep(4.0)  # allow camera sensor to warm up and wait to make sure helper is running
 SENDER = imagezmq.ImageSender(connect_to=RB_IP_HELPER)
 
@@ -42,7 +49,7 @@ print("Ready message was received by helper")
 
 
 # CALIBRATION -------------
-image_right = PICAM.read()
+image_right = PICAM.read()[1]
 image_left = IMAGE_HUB.recv_image()[1]
 IMAGE_HUB.send_reply(b'OK')
 print("Received left calibration image")
@@ -125,13 +132,14 @@ while True:
             ] = imagelist[0]
     
     imagelist[2] = output_img
-    #cv2.imwrite("./output.jpg", imagelist[2])
+    
+    cv2.imwrite("./output.jpg", imagelist[2])
     #print("Sending output_image to PC ...")
     SENDER.send_image(RB_IP_MAIN, imagelist[2])
     #print("Output image sent")
     IMAGE_HUB.send_reply(b'OK')
     '''
-    imagelist[0] = PICAM.read()
+    imagelist[0] = PICAM.read()[1]
     imagelist[1] = IMAGE_HUB.recv_image()[1]
     imagelist[1][
             translation_dist[1] : rows_r+translation_dist[1],
