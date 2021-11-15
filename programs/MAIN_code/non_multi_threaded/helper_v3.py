@@ -16,7 +16,6 @@ RB_IP_MAIN = 'tcp://169.254.222.67:5555'
 RB_IP_HELPER = 'tcp://169.254.165.116:5555'
 
 
-
 # =============================
 # INITIALIZATION
 # =============================
@@ -28,11 +27,13 @@ elif CAMERAMODE == 2:
     PICAM = cv2.VideoCapture(0)
     PICAM.set(cv2.CAP_PROP_FRAME_WIDTH, CALIBRATION_RESOLUTION[0])
     PICAM.set(cv2.CAP_PROP_FRAME_HEIGHT, CALIBRATION_RESOLUTION[1])
-sleep(2.0)  # allow camera sensor to warm up
+sleep(1.0)  # allow camera sensor to warm up
 SENDER = imagezmq.ImageSender(connect_to=RB_IP_MAIN)
 
 # WAIT FOR READY MESSAGE
+print('waiting for ready...')
 ready_message = IMAGE_HUB.recv_image()[1]
+print("gottem")
 assert ready_message == np.array(["ready"])
 print("Received ready message")
 IMAGE_HUB.send_reply(b'OK')
@@ -40,7 +41,7 @@ IMAGE_HUB.send_reply(b'OK')
 # CALIBRATION ---------------------
 
 # Take and send left calibration image
-SENDER.send_image(RB_IP_HELPER, PICAM.read()[1])
+SENDER.send_image(RB_IP_HELPER, PICAM.read())
 print("Sent left calibration image")
 
 M = IMAGE_HUB.recv_image()[1]
@@ -79,7 +80,7 @@ S = (x_max - x_min + 512, y_max - y_min+128)
 
 while True:
     
-    SENDER.send_image(RB_IP_HELPER, cv2.warpPerspective(PICAM.read()[1], R, S))
+    SENDER.send_image(RB_IP_HELPER, cv2.warpPerspective(PICAM.read(), R, S))
     
     '''
     SENDER.send_image(RB_IP_HELPER, np.array([0]))
