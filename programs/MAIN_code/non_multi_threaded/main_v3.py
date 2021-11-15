@@ -37,10 +37,9 @@ if CAMERAMODE == 1:
 elif CAMERAMODE ==2:
     PICAM = cv2.VideoCapture(0)
     PICAM.set(cv2.CAP_PROP_FRAME_WIDTH, CALIBRATION_RESOLUTION[0])
-    PICAM.set(cv2.CAP_PROP_FRAME_HEIGHT, CALIBRATION_RESOLTION[1])
+    PICAM.set(cv2.CAP_PROP_FRAME_HEIGHT, CALIBRATION_RESOLUTION[1])
 IMAGE_HUB = imagezmq.ImageHub()
-PICAM = cv2.VideoCapture(0)
-sleep(4.0)  # allow camera sensor to warm up and wait to make sure helper is running
+sleep(3.0)  # allow camera sensor to warm up and wait to make sure helper is running
 SENDER = imagezmq.ImageSender(connect_to=RB_IP_HELPER)
 
 # SEND READY MESSAGE
@@ -49,7 +48,7 @@ print("Ready message was received by helper")
 
 
 # CALIBRATION -------------
-image_right = PICAM.read()[1]
+image_right = PICAM.read()
 image_left = IMAGE_HUB.recv_image()[1]
 IMAGE_HUB.send_reply(b'OK')
 print("Received left calibration image")
@@ -139,13 +138,12 @@ while True:
     #print("Output image sent")
     IMAGE_HUB.send_reply(b'OK')
     '''
-    imagelist[0] = PICAM.read()[1]
+    imagelist[0] = PICAM.read()
     imagelist[1] = IMAGE_HUB.recv_image()[1]
     imagelist[1][
             translation_dist[1] : rows_r+translation_dist[1],
             translation_dist[0] : cols_r+translation_dist[0]
             ] = imagelist[0]
-    print("stuur")
     SENDER.send_image(RB_IP_MAIN, imagelist[1])
     IMAGE_HUB.send_reply(b'OK')
 
