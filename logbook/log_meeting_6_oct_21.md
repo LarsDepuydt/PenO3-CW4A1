@@ -18,7 +18,7 @@
 Person | Hour 1 | Hour 2 | Hour 3 | Hour 4 | After hours (specify time)
 ------ | ------ | ------ | ------ | ------ | -------------
 **Jasper Laitem** | task1 | = | task2 | task3
-**Jonas Buts**    |    |     |      |
+**Jonas Buts**    |  Research blending  | =    |  improve code speed    | =
 **Lars Depuydt**  |    |     |      |
 **Robin Anné**    | Pi to pi transformation matrix communication | Pi to pi image shooting, transfer and stitching | = | = | = & clean-up (20m)
 **Ruben Janssen** |  improve programs and find errors  |  run tests on efficiency |  run tests on efficiency  |  help with general program

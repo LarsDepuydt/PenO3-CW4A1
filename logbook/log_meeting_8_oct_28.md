@@ -18,7 +18,7 @@
 Person | Hour 1 | Hour 2 | Hour 3 | Hour 4 | After hours (specify time)
 ------ | ------ | ------ | ------ | ------ | -------------
 **Jasper Laitem** | task1 | = | task2 | task3
-**Jonas Buts**    |    |     |      |
+**Jonas Buts**    |  Writing intermediate report  |   =  |  =    | =
 **Lars Depuydt**  |    |     |      |
 **Robin Anné**    | Measuring, gathering data of overlap necessary for image stitching algorithm | = | Troubleshooting 'Backend Error' | = 
 **Ruben Janssen** | Writing intermediate report  | = | = | = 

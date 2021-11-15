@@ -22,5 +22,19 @@ def undistort(img_path, balance=1.0, dim2=None, dim3=None):
     undistorted_img = cv2.remap(img, map1, map2, interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
     cv2.imwrite("right.jpg", undistorted_img)
 
+def crop_r(img_path):
+    img = cv2.imread(img_path)
+    h1, w1 = img.shape[:2]
+    y = 0
+    x = 0
+    a = 70
+    b = 75
+    c = 25
+    d = 5
+    img = img[y + a : y + h1 - b, x + c: x + w1 - d]
+    return img
+
 if __name__ == '__main__':
-    undistort( "sterio_vision/images/right/right3.png")
+    undistort( "sterio_vision/images/right/right1.png")
+    cv2.imwrite("crop_img_r.jpg",crop_r("right.jpg"))
+    cv2.imwrite("crop_img_l.jpg",crop_r("left.jpg"))
