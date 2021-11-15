@@ -6,8 +6,8 @@ t_start = time.perf_counter()
 print(time.process_time())
 
 # variables
-PATH1 = "../../cylindrical_projection/cylindrical_projection_images/left_cyl.jpg"
-PATH2 = "../../cylindrical_projection/cylindrical_projection_images/right_cyl.jpg"
+PATH1 = "../../cylindrical_projection/left.jpg"
+PATH2 = "../../cylindrical_projection/right.jpg"
 PATH_RESULT = "stitchted_normal.jpg"
 MATRIX_DATA = "matrix_data.txt"
 

@@ -9,6 +9,7 @@ import os
 # CONSTANTS
 # =============================
 
+CAMERAMODE = 1 # 1: imutilsVideostream, 2: cv2.VideoCapture
 CALIBRATION_RESOLUTION = (480, 368)
 STREAM_RESOLUTION =      (480, 360)
 RB_IP_MAIN =    'tcp://169.254.222.67:5555'
@@ -31,9 +32,14 @@ imagelist = [None, None, None]
 # =============================
 
 #os.system(INIT_HELPER_CMD)       # init helper pi
+if CAMERAMODE == 1:
+    PICAM = VideoStream(usePiCamera=True, resolution=CALIBRATION_RESOLUTION).start()
+elif CAMERAMODE ==2:
+    PICAM = cv2.VideoCapture(0)
+    PICAM.set(cv2.CAP_PROP_FRAME_WIDTH, CALIBRATION_RESOLUTION[0])
+    PICAM.set(cv2.CAP_PROP_FRAME_HEIGHT, CALIBRATION_RESOLUTION[1])
 IMAGE_HUB = imagezmq.ImageHub()
-PICAM = VideoStream(usePiCamera=True, resolution=CALIBRATION_RESOLUTION).start()
-sleep(4.0)  # allow camera sensor to warm up and wait to make sure helper is running
+sleep(3.0)  # allow camera sensor to warm up and wait to make sure helper is running
 SENDER = imagezmq.ImageSender(connect_to=RB_IP_HELPER)
 
 # SEND READY MESSAGE
@@ -46,7 +52,6 @@ image_right = PICAM.read()
 image_left = IMAGE_HUB.recv_image()[1]
 IMAGE_HUB.send_reply(b'OK')
 print("Received left calibration image")
-print(image_left)
 cv2.imwrite("./calibration_image_left.jpg", image_left)
 cv2.imwrite("./calibration_image_right.jpg", image_right)
 
@@ -86,7 +91,10 @@ def trans_matrix_gen(imgleft, imgright, keypoints, min_mat, mat_data):
     np.savetxt(mat_data, M)
     return M
 
-M = trans_matrix_gen(image_left, image_right, KEYPOINTS_COUNT, MIN_MATCH_COUNT, MATRIX_DATA)
+#M = trans_matrix_gen(image_left, image_right, KEYPOINTS_COUNT, MIN_MATCH_COUNT, MATRIX_DATA)
+import TransformationMatricesForTesting as TMfT
+M = TMfT.giveMildM()
+
 SENDER.send_image(RB_IP_MAIN, M)
 print("Transformation matrix sent & received")
 
@@ -125,7 +133,8 @@ while True:
             ] = imagelist[0]
     
     imagelist[2] = output_img
-    #cv2.imwrite("./output.jpg", imagelist[2])
+    
+    cv2.imwrite("./output.jpg", imagelist[2])
     #print("Sending output_image to PC ...")
     SENDER.send_image(RB_IP_MAIN, imagelist[2])
     #print("Output image sent")
@@ -137,7 +146,6 @@ while True:
             translation_dist[1] : rows_r+translation_dist[1],
             translation_dist[0] : cols_r+translation_dist[0]
             ] = imagelist[0]
-    print("stuur")
     SENDER.send_image(RB_IP_MAIN, imagelist[1])
     IMAGE_HUB.send_reply(b'OK')
 
