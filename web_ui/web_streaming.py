@@ -6,14 +6,14 @@ import flask, cv2, time, imagezmq
 MODE = 3
 
 if MODE == 1:
-    camera = cv2.VideoCapture(0)    # laptop webcam
+    #camera = cv2.VideoCapture(0)    # laptop webcam
+    pass
 elif MODE == 2: 
     import imutils
     vs = imutils.VideoStream(usePiCamera=True).start() # pi camera
     time.sleep(2.0)
 elif MODE == 3:
     IMAGE_HUB = imagezmq.ImageHub()
-
 
 app = flask.Flask(__name__)
 
