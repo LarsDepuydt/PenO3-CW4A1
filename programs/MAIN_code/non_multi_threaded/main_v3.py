@@ -52,7 +52,6 @@ image_right = PICAM.read()
 image_left = IMAGE_HUB.recv_image()[1]
 IMAGE_HUB.send_reply(b'OK')
 print("Received left calibration image")
-print(image_left)
 cv2.imwrite("./calibration_image_left.jpg", image_left)
 cv2.imwrite("./calibration_image_right.jpg", image_right)
 
@@ -92,7 +91,10 @@ def trans_matrix_gen(imgleft, imgright, keypoints, min_mat, mat_data):
     np.savetxt(mat_data, M)
     return M
 
-M = trans_matrix_gen(image_left, image_right, KEYPOINTS_COUNT, MIN_MATCH_COUNT, MATRIX_DATA)
+#M = trans_matrix_gen(image_left, image_right, KEYPOINTS_COUNT, MIN_MATCH_COUNT, MATRIX_DATA)
+import TransformationMatricesForTesting as TMfT
+M = TMfT.giveMildM()
+
 SENDER.send_image(RB_IP_MAIN, M)
 print("Transformation matrix sent & received")
 
