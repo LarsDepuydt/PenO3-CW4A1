@@ -6,8 +6,8 @@ import glob
 
 # values
 CHECKERBOARD = (9, 6)
-INPUT_IMAGE = "camera_images/calibration_image_right.jpg"
-OUTPUT_IMAGE = "undistorded_images/right_und.jpg"
+INPUT_IMAGE = "calibration_images_far/cfoto0.jpg"
+OUTPUT_IMAGE = "undistorded_images//cfoto0_und.jpg"
 
 # stop the iteration when specified
 # accuracy, epsilon, is reached or
@@ -33,7 +33,7 @@ prev_img_shape = None
 # in a given directory. Since no path is
 # specified, it will take current directory
 # jpg files alone
-images = glob.glob('calibration_images_close/*.jpg')
+images = glob.glob('calibration_images_far/*.jpg')
 print(images)
 
 for filename in images:
