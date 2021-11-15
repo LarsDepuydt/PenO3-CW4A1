@@ -80,7 +80,7 @@ h, w = image.shape[:2]
 ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(
     threedpoints, twodpoints, grayColor.shape[::-1], None, None)
 
-img = cv2.imread('foto0.jpg')
+img = cv2.imread('foto11_cyl.jpg')
 h,  w = img.shape[:2]
 newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w,h), 1, (w,h))
 
