@@ -24,7 +24,7 @@ Person | Hour 1 | Hour 2 | Hour 3 | Hour 4 | After hours (specify time)
 **Lars Depuydt**  |    |     |      |
 **Robin Anné**    |    |     |      |
 **Ruben Janssen** |  finding optimization for code  |  =   |   =   |=
-**Wout Bergmans** |    |     |      |
+**Wout Bergmans** | Solid Edge Case design | = | Rethinking case due to possible issues | =
 
 #
 #### Gelezen en goedgekeurd
