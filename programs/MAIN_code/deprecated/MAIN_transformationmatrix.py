@@ -5,8 +5,8 @@ t_start = time.perf_counter()
 
 # VARIABLES
 
-PATH1 = "../../cylindrical_projection/left.jpg"
-PATH2 = "../../cylindrical_projection/right.jpg"
+PATH1 = "/home/pi/Desktop/PenO3-CW4A1/programs/cylindrical_projection/cylindrical_projection_images/left0_cyl.png"
+PATH2 = "/home/pi/Desktop/PenO3-CW4A1/programs/cylindrical_projection/cylindrical_projection_images/right0_cyl.png"
 
 AANTAL_KEYPOINTS = 2000 # set number of keypoints
 MIN_MATCH_COUNT = 9   # Set minimum match condition
@@ -16,6 +16,9 @@ MATRIX_DATA = "matrix_data.txt"
 # Load images
 img1 = cv2.imread(PATH1)
 img2 = cv2.imread(PATH2)
+
+cv2.imshow("k", img1)
+cv2.waitKey(0)
 
 # Create our ORB detector and detect keypoints and descriptors
 orb = cv2.ORB_create(nfeatures=AANTAL_KEYPOINTS)
