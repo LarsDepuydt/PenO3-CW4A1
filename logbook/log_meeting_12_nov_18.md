@@ -1,5 +1,5 @@
-# Log Team Meeting 11
-15 November 2021
+# Log Team Meeting 12
+18 November 2021
 **_This file is unfinished._**
 ## Decisions
 * item1
@@ -23,8 +23,8 @@ Person | Hour 1 | Hour 2 | Hour 3 | Hour 4 | After hours (specify time)
 **Jonas Buts**    |    |     |      |
 **Lars Depuydt**  |    |     |      |
 **Robin Anné**    |    |     |      |
-**Ruben Janssen** |  finding optimization for code  |  =   |   =   |=
-**Wout Bergmans** | Solid Edge Case design | = | Rethinking case due to possible issues | =
+**Ruben Janssen** |  looking for better algorithms  |  =   |   =   |=
+**Wout Bergmans** |    |     |      |
 
 #
 #### Gelezen en goedgekeurd
