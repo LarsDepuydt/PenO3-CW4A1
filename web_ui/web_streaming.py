@@ -83,11 +83,11 @@ def gen_frames_imagehub_log_fps():
         t_old = t_after_yield
 
         if len(webserver_fps) == 10:
-            print("Webapp    fps 10avg  : ", sum(webserver_fps)/10)
+            print("Webapp    fps 10avg  : ", sum(web_app_fps)/10)
             print("Imagehub  fps 10avg  : ", sum(image_hub_fps)/10)
-            print("Webserver fps 1sample: ", webserver_fps[-1])
+            print("Webserver fps 1sample: ", web_app_fps[-1])
             print("Webserver fps 1sample: ", image_hub_fps[-1])
-            webserver_fps, image_hub_fps = [], []
+            web_app_fps, image_hub_fps = [], []
 
 @app.route('/')
 def index():

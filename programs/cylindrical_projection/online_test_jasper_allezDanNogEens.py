@@ -23,7 +23,7 @@ def undistort(img_path, balance=1.0, dim2=None, dim3=None):
     hight, width = undistorted_img.shape[:2]
     print(hight, width)
     print(undistorted_img)
-    cv2.imwrite("left.jpg", undistorted_img[70:405, 20:640])
+    cv2.imwrite("left.jpg", undistorted_img)
 
 
 if __name__ == '__main__':
