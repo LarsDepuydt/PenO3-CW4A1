@@ -20,7 +20,10 @@ def undistort(img_path, balance=1.0, dim2=None, dim3=None):
     new_K = cv2.fisheye.estimateNewCameraMatrixForUndistortRectify(scaled_K, D, dim2, np.eye(3), balance=balance)
     map1, map2 = cv2.fisheye.initUndistortRectifyMap(scaled_K, D, np.eye(3), new_K, dim3, cv2.CV_16SC2)
     undistorted_img = cv2.remap(img, map1, map2, interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
-    cv2.imwrite("right.jpg", undistorted_img)
+    hight, width = undistorted_img.shape[:2]
+    print(hight, width)
+    print(undistorted_img)
+    cv2.imwrite("right.jpg", undistorted_img[70:405, 25:635])
 
 if __name__ == '__main__':
     undistort( "sterio_vision/images/right/right3.png")

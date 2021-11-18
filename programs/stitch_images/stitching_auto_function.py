@@ -30,11 +30,16 @@ cv.waitKey(0)
 """
 
 
-stitcher = cv2.createStitcher(False)
-one = cv2.imread("../testing_images_pi/image_for_testing_1.jpg")
-two = cv2.imread("../testing_images_pi/image_for_testing_2.jpg")
+stitcher = cv2.Stitcher.create()
+one = cv2.imread("../MAIN_code/non_multi_threaded/calibration_image_left.jpg")
+two = cv2.imread("../MAIN_code/non_multi_threaded/calibration_image_right.jpg")
+cv2.imshow("1", one)
+cv2.waitKey(0)
+cv2.imshow("2", two)
+cv2.waitKey(0)
 result = stitcher.stitch((one,two))
 
+print(result)
 cv2.imwrite('auto_function_result.jpg', result[1])
 cv2.imshow("test", result[1])
 cv2.waitKey(0)
