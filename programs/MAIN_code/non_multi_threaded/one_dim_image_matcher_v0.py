@@ -14,7 +14,7 @@ imgR = cv2.imread("C:/Users/robin/Desktop/right0_cyl.png", cv2.IMREAD_UNCHANGED)
 #cv2.imshow('right', imgR)
 #cv2.waitKey(0)
 '''
-Masking code source:
+Transparency masking code source:
 https://stackoverflow.com/questions/45810417/opencv-python-how-to-use-mask-parameter-in-orb-feature-detector
 '''
 t = np.zeros((640, 480), dtype=np.uint8)
@@ -81,10 +81,8 @@ print(avg_x_disp, avg_y_disp)
 avg_x_disp = int(avg_x_disp)
 avg_y_disp = int(avg_y_disp)
 
-imgOut = np.zeros((480+avg_y_disp,2*640-avg_x_disp, 4), np.uint8)
-print(len(imgOut), len(imgOut[0]))
-print(2*640-avg_x_disp)
-print(avg_y_disp)
+#imgOut = np.zeros((480+avg_y_disp,2*640-avg_x_disp, 4), np.uint8)
+#print(len(imgOut), len(imgOut[0]))
 
 for pi, pixel in enumerate(np.flip(imgL[240])):
     if pixel[3] != 0:
@@ -95,18 +93,53 @@ for pi, pixel in enumerate(imgR[240]):
         xRn = pi
         break
 print("HOHO", xLn, xRn)
-d = xLn + xRn
 
-mask_L = np.array([1 for x in range(0, )])
+print(avg_x_disp)
+BLEND_WIDTH = avg_x_disp - xLn - xRn
+height, width = imgL.shape[:2]
+imgL_cropped_width = width - 2*xLn
+imgR_cropped_width = width - 2*xRn
 
+total_width = imgL_cropped_width + imgR_cropped_width - BLEND_WIDTH
+imgL_cropped_noblend_width = imgL_cropped_width - BLEND_WIDTH
+imgR_cropped_noblend_width = imgR_cropped_width - BLEND_WIDTH
+pre_imgR_width = imgL_cropped_noblend_width
+post_imgL_width = imgR_cropped_noblend_width
 
+print(BLEND_WIDTH)
 
-cv2.imshow("lef", imgL)
-cv2.imshow("right", imgR)
+# small linear masks
+maskL = np.repeat(np.tile(np.linspace(1, 0, BLEND_WIDTH), (height, 1))[:, :, np.newaxis], 4, axis=2)
+maskR = np.repeat(np.tile(np.linspace(0, 1, BLEND_WIDTH), (height, 1))[:, :, np.newaxis], 4, axis=2)
+
+# full show mask
+mask_imgL_cropped_noblend = np.repeat(np.tile(np.full(imgL_cropped_noblend_width, 1.), (height, 1))[:, :, np.newaxis], 4, axis=2)
+mask_imgR_cropped_noblend = np.repeat(np.tile(np.full(imgR_cropped_noblend_width, 1.), (height, 1))[:, :, np.newaxis], 4, axis=2)
+mask_post_imgL = np.repeat(np.tile(np.full((post_imgL_width), 0.), (height, 1))[:, :, np.newaxis], 4, axis=2)
+mask_pre_imgR = np.repeat(np.tile(np.full((pre_imgR_width), 0.), (height, 1))[:, :, np.newaxis], 4, axis=2)
+
+# rest aanvullen
+#mask_andere1 = np.repeat(np.tile(np.full(totalWidth - img1.shape[1], 0.), (img2.shape[0], 1))[:, :, np.newaxis], 4, axis=2)
+#mask_andere2 = np.repeat(np.tile(np.full(totalWidth - img1.shape[1] - (width - 2*WEG - BLEND_WIDTH), 0.), (img2.shape[0], 1))[:, :, np.newaxis], 4, axis=2)
+
+mask_realL = np.concatenate((mask_imgL_cropped_noblend, maskL, mask_post_imgL), axis=1)
+mask_realR = np.concatenate((mask_pre_imgR, maskR, mask_imgR_cropped_noblend), axis=1)
+
+TL= np.float32([[1, 0, -xLn], [0, 1, 0]])
+TR = np.float32([[1, 0, (width - 2*xLn -xRn - BLEND_WIDTH)], [0, 1, 0]])
+
+imgL_translation = cv2.warpAffine(imgL, TL, (total_width, height))
+imgR_translation = cv2.warpAffine(imgR, TR, (total_width, height))
+
+# Generate output by linear blending
+finalL = np.uint8(imgL_translation * mask_realL)
+finalR = np.uint8(imgR_translation * mask_realR)
+
+final = np.uint8(imgL_translation * mask_realL + imgR_translation * mask_realR)
+cv2.imshow('output', final)
 cv2.waitKey(0)
-cv2.imwrite("./imleft.png", imgL)
-cv2.imwrite("./imright.png", imgR)
 
+'''
 imgOut[0:480, 0:640] = imgL
 imgOut[
     avg_y_disp:480+avg_y_disp,
@@ -117,7 +150,7 @@ cv2.imshow('output', imgOut)
 cv2.waitKey(0)
 cv2.imwrite('./outputimg.png', imgOut)
 
-
+'''
 # Convert keypoints to an argument for findHomography
 src_pts = np.float32([keyptsL[m.queryIdx].pt for m in good_matches]).reshape(-1, 1, 2)
 dst_pts = np.float32([keyptsR[m.trainIdx].pt for m in good_matches]).reshape(-1, 1, 2)
