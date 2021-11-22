@@ -126,6 +126,7 @@ def get_translation_parameters(imgL, imgR, log=False):
     keypoint_mask_width = int(w * KEYPOINT_MASK_X_BOUND)
     no_keypoint_mask_width = w - keypoint_mask_width
 
+    print(imgL)
     mask_cond_L = imgL[:,:,3] == 255 # create mask for non-transparant pixels
     mask_L = np.array(np.where(mask_cond_L, 255, 0), dtype=np.uint8) # must use uint8 for ORB to work
     mask_L[:,:no_keypoint_mask_width] = 0 # create mask for pixels outside are of interest next to image border
@@ -289,13 +290,15 @@ else:
     MAPL1, MAPL2 = get_cyl_wrap_assets_no_crop(KL)
     MAPR1, MAPR2 = get_cyl_wrap_assets_no_crop(KR)
 
-x_t, y_t = get_translation_parameters(imgL, imgR, log=False)
 
 imgL = warp_image(imgL, MAPL1, MAPL2)
 imgR = warp_image(imgR, MAPR1, MAPR2)
 
+x_t, y_t = get_translation_parameters(imgL, imgR, log=True)
+
+
 if PRECROP_ENABLED:
-    TL, TR, combined_width, mask_realL, mask_realR = get_x_combine_assets_transparent_borders_precrop(x_t, log=False)
+    TL, TR, combined_width, mask_realL, mask_realR = get_x_combine_assets_transparent_borders_precrop(x_t, log=True)
 else:
     TL, TR, combined_width, mask_realL, mask_realR = get_x_combine_assets_transparent_borders_no_precrop(x_t, log=False)
 
