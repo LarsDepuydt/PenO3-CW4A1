@@ -24,7 +24,7 @@ Person | Hour 1 | Hour 2 | Hour 3 | Hour 4 | After hours (specify time)
 **Lars Depuydt**  |    |     |      |
 **Robin Anné**    |    |     |      |
 **Ruben Janssen** |  Oefenzitting analyse |  =   |   making camera and pi parts in solid edge   |=
-**Wout Bergmans** |    |     |      |
+**Wout Bergmans** | Analyse | = | Research camera settings via opencv/imutils | =
 
 #
 #### Gelezen en goedgekeurd
