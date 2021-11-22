@@ -7,10 +7,17 @@ import numpy as np
 CAMERA_MATRIX = [[320.68838395,   0, 315.79552501],
  [0, 314.07165737, 251.72067641],
  [ 0, 0, 1]]
+<<<<<<< HEAD
 #INPUT_IMAGE = "./camera_images/calibration_image_left.jpg"
 INPUT_IMAGE = "sterio_vision/images/left/left0.png"
 #OUTPUT_IMAGE = "./cylindrical_projection_images/left_cyl.jpg"
 OUTPUT_IMAGE = "./cylindrical_projection_images/left0_cyl.png"
+=======
+FOCAL_LENGTH = 500
+
+INPUT_IMAGE = "sterio_vision/images/right/right0.png"
+OUTPUT_IMAGE = "./cylindrical_projection_images/right0_cyl.jpg"
+>>>>>>> 7aedac775066555b2e0ca454d2fb7208e6347b93
 
 
 def cylindricalWarp(img, K):
@@ -40,7 +47,7 @@ def cylindricalWarp(img, K):
 if __name__ == '__main__':
     img = cv2.imread(INPUT_IMAGE)
     h, w = img.shape[:2]
-    K = np.array(CAMERA_MATRIX)  # mock intrinsics
+    K = np.array([[FOCAL_LENGTH, 0, w/2], [0, FOCAL_LENGTH, h/2], [0, 0, 1]])  # mock intrinsics
     # [fx s x0; 0 fy y0; 0 0 1]
     img_cyl = cylindricalWarp(img, K)
     cv2.imwrite(OUTPUT_IMAGE, img_cyl)
