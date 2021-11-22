@@ -20,9 +20,9 @@ PC_IP = 'tcp://169.254.236.78:5555'
 
 INIT_HELPER_CMD = "sh ssh_conn_and_execute_cmd.sh 'cd Desktop/PenO3-CW4A1/programs/MAIN_code/non_multi_threaded;python3 ./helper_v3.py'"
 
-CILINDER_FACTOR = 0
-TRANSLATIEAFSTAND = 0
-ZWARTAFSTAND = 0
+CILINDER_FACTOR = 320
+TRANSLATIEAFSTAND = 417
+ZWARTAFSTAND = 70
 total_image = None
 imagelist = [None, None, None]
 
@@ -97,7 +97,7 @@ while True:
 
     imagelist[1] = IMAGE_HUB.recv_image()[1]
 
-    imagelist[2] = np.concatenate((imagelist[:, 0:TRANSLATIEAFSTAND], img2[:, ZWARTAFSTAND:]), axis=1)
+    imagelist[2] = np.concatenate((imagelist[1][:, 0:TRANSLATIEAFSTAND], imagelist[0][:, ZWARTAFSTAND:]), axis=1)
 
     SENDER.send_image(RB_IP_MAIN, imagelist[2])
     IMAGE_HUB.send_reply(b'OK')

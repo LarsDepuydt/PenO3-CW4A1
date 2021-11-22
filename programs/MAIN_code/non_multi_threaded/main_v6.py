@@ -8,7 +8,7 @@ from time import sleep
 # CONSTANTS
 # ==============================
 
-CAMERAMODE = 2 # 1 = imutils.VideoStream, 2 = cv2.VideoCapture
+CAMERAMODE = 1 # 1 = imutils.VideoStream, 2 = cv2.VideoCapture
 CALIBRATION_RESOLUTION = WIDTH, HEIGHT = (640, 480)
 STREAM_RESOLUTION      = (640, 480)
 RB_IP_MAIN =    'tcp://169.254.222.67:5555'
@@ -27,10 +27,10 @@ MIN_MATCH_COUNT = 5  # set minimum number of better_matches
 KEYPOINT_MASK_X_BOUND = 0.4 # only search for keypoints in this fraction of pixel towards the bound
 
 # focal length = 3.15mm volgens waveshare.com/imx219-d160.htm
-FOCAL_LEN_L_X = 315
-FOCAL_LEN_L_Y = 315
-FOCAL_LEN_R_X = 315
-FOCAL_LEN_R_Y = 315
+FOCAL_LEN_L_X = 310
+FOCAL_LEN_L_Y = 310
+FOCAL_LEN_R_X = 310
+FOCAL_LEN_R_Y = 310
 s = 0 # skew parameter
 
 KL = np.array([[FOCAL_LEN_L_X, s, WIDTH/2], [0, FOCAL_LEN_L_Y, HEIGHT/2], [0, 0, 1]], dtype=np.uint16)  # mock intrinsics
@@ -59,8 +59,9 @@ SENDER = imagezmq.ImageSender(connect_to=RB_IP_HELPER)
 SENDER.send_image(RB_IP_MAIN, np.array(["ready"]))
 print("Ready message was received by helper")
 
-imgR = PICAM.read()
-imgL = IMAGE_HUB.recv_image[1]
+imgR = cv2.cvtColor(PICAM.read(), cv2.COLOR_BGR2BGRA)
+imgL = IMAGE_HUB.recv_image()[1]
+IMAGE_HUB.send_reply(b'OK')
 
 #imgL = cv2.cvtColor(cv2.imread("./programs/cylindrical_projection/sterio_vision/images/left/left0.png"), cv2.COLOR_BGR2BGRA)
 #imgR = cv2.cvtColor(cv2.imread("./programs/cylindrical_projection/sterio_vision/images/right/right0.png"), cv2.COLOR_BGR2BGRA)
@@ -271,11 +272,11 @@ def combine():
 xR_L, xR_R, MAPR1, MAPR2 = get_cyl_wrap_assets_crop(KR)
 xL_L, xL_R, MAPL1, MAPL2 = get_cyl_wrap_assets_crop(KL)
 
-SENDER.send_image(np.array([MAPL1, MAPL2]))
+SENDER.send_image(RB_IP_MAIN, np.array([MAPL1, MAPL2]))
 print('Sent MAPL1 and MAPL2')
 
 x_t, y_t = get_translation_parameters(imgL, imgR, log=False)
-
+#x_t = 100
 imgL = warp_image(imgL, MAPL1, MAPL2)
 imgR = warp_image(imgR, MAPR1, MAPR2)
 
@@ -284,11 +285,12 @@ TL, TR, combined_width, mask_realL, mask_realR = get_x_combine_assets_transparen
 cv2.imwrite("output.png", combine())
 
 
+SENDER = imagezmq.ImageSender(connect_to=PC_IP)
 while True:
-    imgL = cv2.remap(PICAM.read(), MAPL1, MAPL2, cv2.INTER_AREA, borderMode=cv2.BORDER_TRANSPARENT)
-    imgR = IMAGE_HUB.recvimage[1]
-    SENDER.sendimage(np.uint8(cv2.warpAffine(imgL, TL, (combined_width, HEIGHT)) * mask_realL + cv2.warpAffine(imgR, TR, (combined_width, HEIGHT)) * mask_realR))
-    IMAGE_HUB.sendreply(b'OK')
+    imgR = cv2.remap(cv2.cvtColor(PICAM.read(), cv2.COLOR_BGR2BGRA), MAPL1, MAPL2, cv2.INTER_AREA, borderMode=cv2.BORDER_TRANSPARENT)
+    imgL = IMAGE_HUB.recv_image()[1]
+    SENDER.send_image(RB_IP_MAIN, np.uint8(cv2.warpAffine(imgL, TL, (combined_width, HEIGHT)) * mask_realL + cv2.warpAffine(imgR, TR, (combined_width, HEIGHT)) * mask_realR))
+    IMAGE_HUB.send_reply(b'OK')
 
     
 '''

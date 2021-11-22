@@ -6,7 +6,7 @@ import flask
 # REFERENCE: https://www.pyimagesearch.com/2019/09/02/opencv-stream-video-to-web-browser-html-page/
 # REFERENCE: https://towardsdatascience.com/video-streaming-in-web-browsers-with-opencv-flask-93a38846fe00
 
-MODE = 3
+MODE = 4
 # 1:  cv2.VideoCapture
 # 2: imutils.VideoStream(usePiCamera=True)
 # 3: imagezmq.ImageHub
@@ -20,7 +20,7 @@ elif MODE == 2:
     vs = imutils.VideoStream(usePiCamera=True).start() # pi camera
     time.sleep(2.0)
 elif MODE == 3 or MODE == 4:
-    # DO NOT OPEN IMAGEHUB BEFORE app.run'ning flask!
+    # DO NOT OPEN IMAGEHUB BEFORE app.run'ning flask!  
     pass
 
 app = flask.Flask(__name__)
@@ -82,12 +82,12 @@ def gen_frames_imagehub_log_fps():
         img_hub_fps.append(1/(t_after_image - t_old))
         t_old = t_after_yield
 
-        if len(webserver_fps) == 10:
+        if len(web_app_fps) == 10:
             print("Webapp    fps 10avg  : ", sum(web_app_fps)/10)
-            print("Imagehub  fps 10avg  : ", sum(image_hub_fps)/10)
-            print("Webserver fps 1sample: ", web_app_fps[-1])
-            print("Webserver fps 1sample: ", image_hub_fps[-1])
-            web_app_fps, image_hub_fps = [], []
+            print("Webapp fps 1sample: ", web_app_fps[-1])
+            print("Imagehub  fps 10avg  : ", sum(img_hub_fps)/10)
+            print("Imagehub fps 1sample: ", img_hub_fps[-1])
+            web_app_fps, img_hub_fps = [], []
 
 @app.route('/')
 def index():
