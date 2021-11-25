@@ -27,10 +27,10 @@ MIN_MATCH_COUNT = 5  # set minimum number of better_matches
 KEYPOINT_MASK_X_BOUND = 0.4 # only search for keypoints in this fraction of pixel towards the bound
 
 # focal length = 3.15mm volgens waveshare.com/imx219-d160.htm
-FOCAL_LEN_L_X = 315
-FOCAL_LEN_L_Y = 315
-FOCAL_LEN_R_X = 315
-FOCAL_LEN_R_Y = 315
+FOCAL_LEN_L_X = 320
+FOCAL_LEN_L_Y = 320
+FOCAL_LEN_R_X = 320
+FOCAL_LEN_R_Y = 320
 s = 0 # skew parameter
 
 KL = np.array([[FOCAL_LEN_L_X, s, WIDTH/2], [0, FOCAL_LEN_L_Y, HEIGHT/2], [0, 0, 1]], dtype=np.uint16)  # mock intrinsics
@@ -126,7 +126,6 @@ def get_translation_parameters(imgL, imgR, log=False):
     keypoint_mask_width = int(w * KEYPOINT_MASK_X_BOUND)
     no_keypoint_mask_width = w - keypoint_mask_width
 
-    print(imgL)
     mask_cond_L = imgL[:,:,3] == 255 # create mask for non-transparant pixels
     mask_L = np.array(np.where(mask_cond_L, 255, 0), dtype=np.uint8) # must use uint8 for ORB to work
     mask_L[:,:no_keypoint_mask_width] = 0 # create mask for pixels outside are of interest next to image border
@@ -298,7 +297,7 @@ x_t, y_t = get_translation_parameters(imgL, imgR, log=True)
 
 
 if PRECROP_ENABLED:
-    TL, TR, combined_width, mask_realL, mask_realR = get_x_combine_assets_transparent_borders_precrop(x_t, log=True)
+    TL, TR, combined_width, mask_realL, mask_realR = get_x_combine_assets_transparent_borders_precrop(x_t, log=False)
 else:
     TL, TR, combined_width, mask_realL, mask_realR = get_x_combine_assets_transparent_borders_no_precrop(x_t, log=False)
 
