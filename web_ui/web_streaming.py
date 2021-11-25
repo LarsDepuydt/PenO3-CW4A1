@@ -14,10 +14,8 @@ import os
 PROG_DIR =  str(str(os.path.dirname(os.path.realpath(__file__)))[:-6] + "programs/MAIN_code/non_multi_threaded").replace("\\", "/")
 INIT_MAIN_CMD = PROG_DIR + "/ssh_conn_and_execute_cmd_win.bat"
 MAIN_CMD_FILE = PROG_DIR + "/main_init.txt"
-print(INIT_MAIN_CMD)
-print(MAIN_CMD_FILE)
 import subprocess
-subprocess.run([PROG_DIR + INIT_MAIN_CMD, "169.254.222.67", MAIN_CMD_FILE])
+subprocess.run([INIT_MAIN_CMD, "169.254.222.67", MAIN_CMD_FILE])
 # 1:  cv2.VideoCapture
 # 2: imutils.VideoStream(usePiCamera=True)
 # 3: imagezmq.ImageHub
