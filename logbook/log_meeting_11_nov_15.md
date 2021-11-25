@@ -22,7 +22,7 @@ Person | Hour 1 | Hour 2 | Hour 3 | Hour 4 | After hours (specify time)
 **Jasper Laitem** | task1 | = | task2 | task3
 **Jonas Buts**    |    |     |      |
 **Lars Depuydt**  |    |     |      |
-**Robin Anné**    |    |     |      |
+**Robin Anné**    | Troubleshoot and fix Flask - ImageZMQ conflict | = | = and test and fix pi image stitching with cylindrically projected images | =
 **Ruben Janssen** |  finding optimization for code  |  =   |   =   |=
 **Wout Bergmans** | Solid Edge Case design | = | Rethinking case due to possible issues | =
 
