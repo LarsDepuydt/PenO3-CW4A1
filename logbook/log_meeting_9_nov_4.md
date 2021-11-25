@@ -22,7 +22,7 @@ Person | Hour 1 | Hour 2 | Hour 3 | Hour 4 | After hours (specify time)
 **Jasper Laitem** | task1 | = | task2 | task3
 **Jonas Buts**    |    |     |      |
 **Lars Depuydt**  |    |     |      |
-**Robin Anné**    |    |     |      |
+**Robin Anné**    | Write working image-stitching loops on pi using perspective transfrom | = | = | =
 **Ruben Janssen** | Searching optimization for image stitching| = | = | =
 **Wout Bergmans** | Threading reworking | = | = | =
 
