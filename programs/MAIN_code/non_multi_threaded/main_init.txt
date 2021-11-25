@@ -1,0 +1,6 @@
+echo "On the main pi, initting main"
+sleep 5
+echo "On the main pi, initted main"
+cd Desktop
+ls
+sleep 5

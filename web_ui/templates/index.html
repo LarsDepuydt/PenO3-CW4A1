@@ -15,7 +15,7 @@
 	<link rel="icon" type="image/png" href="" sizes="16x16">
 	<link rel="stylesheet" href="{{ url_for('static',filename='styles/main.css') }}" type="text/css">
 	
-	<title>Raspberry Pi Panorama Camera</title>
+	<title>Don'tRobinator</title>
 </head>
 <body>
 	<header>
@@ -38,13 +38,19 @@
 		<div>
 			<img id="camera_feed" src="{{ url_for('video_feed') }}" alt="">
 			<div id="camera_controls">
-				Controls
+				<form method="post" action"/">
+					<input type="submit" name="button" value="start">
+					<input type="submit" name="button" value="stop">
+					<input type="submit" name="button" value="calibrate">
+					<input type="submit" name="button" value="loadpreset">
+				</form>
 			</div>
+
 		</div>
 	</section>
 
 	<footer>
-		
+	
 	</footer>
 </body>
 </html>
