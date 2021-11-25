@@ -22,7 +22,7 @@ Person | Hour 1 | Hour 2 | Hour 3 | Hour 4 | After hours (specify time)
 **Jasper Laitem** | task1 | = | task2 | task3
 **Jonas Buts**    |    |     |      |
 **Lars Depuydt**  |    |     |      |
-**Robin Anné**    | bug fix pi image stitching with cylindrical projections with webui | = | = | write algorithm for image-stitching projected images in x-dimensions | = including linear alpha blending between images, and precropping the cylindrical projection matrix B
+**Robin Anné**    | bug fix pi image stitching with cylindrical projections with webui | = | = | write algorithm for image-stitching projected images in x-dimensions | = including linear alpha blending between images, and precropping the cylindrical projection matrix B (3h)
 **Ruben Janssen** | looking for better algorithms  |  =   |   =   |=
 **Wout Bergmans** | Solid edge casing | = | = | Mathematical problems cylindrical projection
 
