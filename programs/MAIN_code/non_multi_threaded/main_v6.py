@@ -18,8 +18,9 @@ RB_IP_HELPER =  'tcp://169.254.165.116:5555'
 PC_IP = 'tcp://169.254.236.78:5555'
 PREVIOUS_CALIBRATION_DATA_PATH = "calibration_data.txt"
 
-INIT_HELPER_CMD = "sh ssHEIGHTconn_and_execute_cmd.sh 'cd Desktop/PenO3-CW4A1/programs/MAIN_code/non_multi_threaded;python3 ./helper_v3.py'"
-#os.system(INIT_HELPER_CMD)       # init helper pi
+INIT_HELPER_CMD = "sh sshconn_and_execute_cmd.sh 'cd Desktop/PenO3-CW4A1/programs/MAIN_code/non_multi_threaded;python3 ./helper_v3.py'"
+from os import system
+system(INIT_HELPER_CMD)       # init helper pi
 
 KEYPOINT_COUNT = 2000  # set number of keypoints
 MAX_MATCH_Y_DISP = 20 # maximum vertical displacement of valid match in pixels
