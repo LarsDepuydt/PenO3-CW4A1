@@ -22,8 +22,8 @@ Person | Hour 1 | Hour 2 | Hour 3 | Hour 4 | After hours (specify time)
 **Jasper Laitem** | task1 | = | task2 | task3
 **Jonas Buts**    |    |     |      |
 **Lars Depuydt**  |    |     |      |
-**Robin Anné**    |    |     |      |
-**Ruben Janssen** |  Oefenzitting  |  Oefenzitting   |  Verslag  | =
+**Robin Anné**    | / | / | Pi loop optimization | Adding FPS counter to webapp
+**Ruben Janssen** | Oefenzitting  |  Oefenzitting   |  Verslag  | =
 **Wout Bergmans** | Oefenzitting | = | Revision Paper | =
 
 #

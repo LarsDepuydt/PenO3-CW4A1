@@ -28,22 +28,17 @@ def warpImages(img1, img2, H):
 
     translation_dist = [-x_min, -y_min]
 
-    H_translation = np.array([[1, 0, translation_dist[0]], [0, 1, translation_dist[1]], [0, 0, 1]])
-    print("1")
-    print(time.process_time())
+    H_translation = np.array([[1, 0, translation_dist[0]], [0, 1, 0], [0, 0, 1]])
     #output_img = cv2.warpPerspective(img2, H_translation.dot(I), (x_max - x_min, y_max - y_min))
-    print("2")
-    print(time.process_time())
-    xplus = 800
-    yplus = 800
-    output_img = [x + [[0, 0, 0]*xplus] for x in img2]
-    while i < yplus:
-        output_img.append([[0, 0, 0] for x in range(rows1 + xplus)])
-        i += 1
-    cv2.imshow('h', output_img)
-    cv2.waitKey(0)
+    xplus = np.array([np.array([np.array([0, 0, 0]) for x in range(1, 700)]) for y in range(1, rows1+1)])
+    print(type(xplus) ,type(xplus[0]))
+    print(type(img1[0][0][0]), type(img2[0][0][0]))
+    output_img = np.concatenate((img2, xplus), axis=1)
     output_img[translation_dist[1]:rows1 + translation_dist[1], translation_dist[0]:cols1 + translation_dist[0]] = img1
     print(time.process_time())
+    cv2.imwrite('bla.png', output_img)
+    cv2.imshow('h', output_img)
+    cv2.waitKey(0)
     return output_img
 
 

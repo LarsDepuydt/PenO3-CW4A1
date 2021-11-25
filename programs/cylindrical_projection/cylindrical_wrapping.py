@@ -7,10 +7,17 @@ import numpy as np
 CAMERA_MATRIX = [[320.68838395,   0, 315.79552501],
  [0, 314.07165737, 251.72067641],
  [ 0, 0, 1]]
+<<<<<<< HEAD
+#INPUT_IMAGE = "./camera_images/calibration_image_left.jpg"
+INPUT_IMAGE = "sterio_vision/images/left/left0.png"
+#OUTPUT_IMAGE = "./cylindrical_projection_images/left_cyl.jpg"
+OUTPUT_IMAGE = "./cylindrical_projection_images/left0_cyl.png"
+=======
 FOCAL_LENGTH = 500
 
 INPUT_IMAGE = "sterio_vision/images/right/right0.png"
 OUTPUT_IMAGE = "./cylindrical_projection_images/right0_cyl.jpg"
+>>>>>>> 7aedac775066555b2e0ca454d2fb7208e6347b93
 
 
 def cylindricalWarp(img, K):
