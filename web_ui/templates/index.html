@@ -14,14 +14,16 @@
 	<link rel="icon" type="image/png" href="" sizes="32x32">
 	<link rel="icon" type="image/png" href="" sizes="16x16">
 	<link rel="stylesheet" href="{{ url_for('static',filename='styles/main.css') }}" type="text/css">
-	
-	<title>Don'tRobinator</title>
+	<title>DontRobtinator</title>
+	<!-- <script src="../static/jquery-3.5.1.js"></script> -->
+	<!-- minified jquery, use for distribution  -->
+	<script src="../static/jquery-3.5.1.min.js"></script>
 </head>
 <body>
 	<header>
 		<div id="headercontainer">
 			<div id="branding">
-                Raspberry Pi Panorama Camera
+                DontGetRobbedinator
 			</div>
 			<nav id="navigation">
 				<input id="toggle" type="checkbox"/>
@@ -36,21 +38,104 @@
 
 	<section id="main_container">
 		<div>
-			<img id="camera_feed" src="{{ url_for('video_feed') }}" alt="">
-			<div id="camera_controls">
+			<div id="topcontrols">
 				<form method="post" action"/">
-					<input type="submit" name="button" value="start">
-					<input type="submit" name="button" value="stop">
-					<input type="submit" name="button" value="calibrate">
-					<input type="submit" name="button" value="loadpreset">
+					<label>RESTART<input type="submit" name="button" value="restart"></label>
+					<label>CALIBRATE<input type="submit" name="button" value="calibrate"></label>
+					<label>LOAD PRESET<input type="submit" name="button" value="loadpreset"></label>
 				</form>
+			</div>
+			<img id="camera_feed" src="{{ url_for('video_feed') }}" alt="Video stream inactive. Press <start> to start video stream.">
+			<div id="bottomcontrols">
+				<form method="post" action"/" id="formFullView"><label class="square"><img src="{{url_for('static',filename='images/expand-solid.svg') }}" alt=""><input type="submit" name="button" value="fullview"></label></form>
+				<form method="post" action"/" id="fromCroppedView"><label class="square"><img src="{{url_for('static',filename='./images/compress-solid.svg') }}" alt=""><input type="submit" name="button" value="croppedview"></label></form>
+				<form method="post" action"/" id="formZoomIn"><label class="square"><img src="{{url_for('static',filename='images/plus-solid.svg') }}" alt=""><input type="submit" name="button" value="zoomin"></label></form>
+				<form method="post" action"/" id="formZoomOut"><label class="square"><img src="{{url_for('static',filename='images/minus-solid.svg') }}" alt=""><input type="submit" name="button" value="zoomout"></label></form>
+				<div id="arrowcontrols">
+					<div>
+						<form method="post" action"/" id="formPanUp"><label class="square"><img src="{{url_for('static',filename='images/angle-up-solid.svg') }}" alt=""><input type="submit" name="button" value="panup"></label></form>
+					</div>
+					<div>
+						<form method="post" action"/" id="formPanLeft"><label class="square"><img src="{{url_for('static',filename='images/angle-left-solid.svg') }}" alt=""><input type="submit" name="button" value="panleft"></label></form>
+						<form method="post" action"/" id="formPanDown"><label class="square"><img src="{{url_for('static',filename='images/angle-down-solid.svg') }}" alt=""><input type="submit" name="button" value="pandown"></label></form>
+						<form method="post" action"/" id="formPanRight"><label class="square"><img src="{{url_for('static',filename='images/angle-right-solid.svg') }}" alt=""><input type="submit" name="button" value="panright"></label></form>
+					</div>
+				</div>			
 			</div>
 
 		</div>
 	</section>
 
-	<footer>
-	
-	</footer>
+	<!-- <script src="https://code.jquery.com/jquery-3.5.1.js"
+        integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+        crossorigin="anonymous"></script> -->
+	<script type="text/javascript">
+		function submitfun(e, val) {
+			console.log("Submitting: ", val)
+			e.preventDefault();
+			$.ajax({
+				type:'POST',
+				url:'/',
+				data:{button:val},
+				// success:function()
+				// {
+				// 	//alert('saved');
+				// }
+			})
+		}
+		function submitfun2(e, val) {}
+		document.getElementById("camera_feed").addEventListener('wheel', (e) => {
+			if (e.deltaY > 0) {
+				submitfun(e, "zoomout")
+			}
+			else if (e.deltaY < 0) {
+				submitfun(e, "zoomin")
+			}
+		})
+		document.onkeydown = checkKey;
+		function checkKey(e) {
+			e = e || window.event;
+			if (e.keyCode == '38') {
+				console.log("UP")
+				submitfun(e, "panup")
+			}
+			else if (e.keyCode == '40') {
+				console.log("DOWN")
+				submitfun(e, "pandown")
+			}
+			else if (e.keyCode == '37') {
+				console.log("LEFT")
+				submitfun(e, "panleft")
+			}
+			else if (e.keyCode == '39') {
+				console.log("RIGHT")
+				submitfun(e, "panright")
+			}
+		}
+		$(document).on('submit','#formFullView',function(e){
+			submitfun(e, "fullview")
+		});
+		$(document).on('submit','#fromCroppedView',function(e){
+			submitfun(e, "fillview")
+		});
+		$(document).on('submit','#formZoomIn',function(e){
+			submitfun(e, "zoomin")
+		});
+		$(document).on('submit','#formZoomOut',function(e){
+			submitfun(e, "zoomout")
+		});
+		$(document).on('submit','#formPanUp',function(e){
+			submitfun(e, "panup")
+		});
+		$(document).on('submit','#formPanLeft',function(e){
+			submitfun(e, "panleft")
+		});
+		$(document).on('submit','#formPanDown',function(e){
+			submitfun(e, "pandown")
+		});
+		$(document).on('submit','#formPanRight',function(e){
+			submitfun(e, "panright")
+		});
+	</script>
 </body>
 </html>
