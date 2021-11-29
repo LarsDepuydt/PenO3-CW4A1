@@ -1,20 +1,20 @@
-# Log Team Meeting 11
-15 November 2021
+# Log Team Meeting 13
+22 November 2021
 **_This file is unfinished._**
 ## Decisions
 * item1
 
 ## Finished Tasks
-* item1
-* item2
+* /
 
 ## Future Tasks
-* item1
-* item2
+* 3D-printing case
+* Controlling all programs from the pc
   
 ## Running Tasks (general)
-* item1
-* item2
+* Designing case
+* Optimizing stitching program
+* Writing brochure
 
 ## Running Tasks (individual)
 Person | Hour 1 | Hour 2 | Hour 3 | Hour 4 | After hours (specify time)
@@ -22,9 +22,9 @@ Person | Hour 1 | Hour 2 | Hour 3 | Hour 4 | After hours (specify time)
 **Jasper Laitem** | task1 | = | task2 | task3
 **Jonas Buts**    |    |     |      |
 **Lars Depuydt**  |    |     |      |
-**Robin Anné**    | Troubleshoot and fix Flask - ImageZMQ conflict | = | = and test and fix pi image stitching with cylindrically projected images | =
-**Ruben Janssen** |  finding optimization for code  |  =   |   =   |=
-**Wout Bergmans** | Solid Edge Case design | = | Rethinking case due to possible issues | =
+**Robin Anné**    | Test and debug stitching with keypointbased x-dimension translation and linear alpha blending | = | = | = 
+**Ruben Janssen** |  Oefenzitting analyse |  =   |   making camera and pi parts in solid edge   |=
+**Wout Bergmans** | Analyse | = | Research camera settings via opencv/imutils | =
 
 #
 #### Gelezen en goedgekeurd
