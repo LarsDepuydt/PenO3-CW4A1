@@ -14,14 +14,16 @@
 	<link rel="icon" type="image/png" href="" sizes="32x32">
 	<link rel="icon" type="image/png" href="" sizes="16x16">
 	<link rel="stylesheet" href="{{ url_for('static',filename='styles/main.css') }}" type="text/css">
-	
-	<title>Don'tRobinator</title>
+	<title>DontRobbedinator</title>
+	<!-- <script src="../static/jquery-3.5.1.js"></script> -->
+	<!-- minified jquery, use for distribution  -->
+	<script src="../static/jquery-3.5.1.min.js"></script>
 </head>
 <body>
 	<header>
 		<div id="headercontainer">
 			<div id="branding">
-                Raspberry Pi Panorama Camera
+                DontGetRobbedinator
 			</div>
 			<nav id="navigation">
 				<input id="toggle" type="checkbox"/>
@@ -36,21 +38,37 @@
 
 	<section id="main_container">
 		<div>
-			<img id="camera_feed" src="{{ url_for('video_feed') }}" alt="">
-			<div id="camera_controls">
+			<div id="topcontrols">
 				<form method="post" action"/">
-					<input type="submit" name="button" value="start">
-					<input type="submit" name="button" value="stop">
-					<input type="submit" name="button" value="calibrate">
-					<input type="submit" name="button" value="loadpreset">
+					<!-- <label>RESTART<input type="submit" name="button" value="restart"></label>
+					<label>CALIBRATE<input type="submit" name="button" value="calibrate"></label>
+					<label>LOAD PRESET<input type="submit" name="button" value="loadpreset"></label> -->
+					<label><img src="{{url_for('static',filename='images/power-off-solid.svg') }}" alt=""><input type="submit" name="button" value="restart"></label>
+					<label><img src="{{url_for('static',filename='images/balance-scale-left-solid.svg') }}" alt=""><input type="submit" name="button" value="calibrate"></label>
+					<label><img src="{{url_for('static',filename='images/list-solid.svg') }}" alt=""><input type="submit" name="button" value="loadpreset"></label>
 				</form>
+			</div>
+			<img id="camera_feed" src="{{ url_for('video_feed') }}" alt="Video stream inactive. Press <start> to start video stream.">
+			<div id="bottomcontrols">
+				<form method="post" action"/" id="formFullView"><label class="square"><img src="{{url_for('static',filename='images/expand-solid.svg') }}" alt=""><input type="submit" name="button" value="fullview"></label></form>
+				<form method="post" action"/" id="fromCroppedView"><label class="square"><img src="{{url_for('static',filename='./images/compress-solid.svg') }}" alt=""><input type="submit" name="button" value="croppedview"></label></form>
+				<form method="post" action"/" id="formZoomIn"><label class="square"><img src="{{url_for('static',filename='images/search-plus-solid.svg') }}" alt=""><input type="submit" name="button" value="zoomin"></label></form>
+				<form method="post" action"/" id="formZoomOut"><label class="square"><img src="{{url_for('static',filename='images/search-minus-solid.svg') }}" alt=""><input type="submit" name="button" value="zoomout"></label></form>
+				<div id="arrowcontrols">
+					<div>
+						<form method="post" action"/" id="formPanUp"><label class="square"><img src="{{url_for('static',filename='images/angle-up-solid.svg') }}" alt=""><input type="submit" name="button" value="panup"></label></form>
+					</div>
+					<div>
+						<form method="post" action"/" id="formPanLeft"><label class="square"><img src="{{url_for('static',filename='images/angle-left-solid.svg') }}" alt=""><input type="submit" name="button" value="panleft"></label></form>
+						<form method="post" action"/" id="formPanDown"><label class="square"><img src="{{url_for('static',filename='images/angle-down-solid.svg') }}" alt=""><input type="submit" name="button" value="pandown"></label></form>
+						<form method="post" action"/" id="formPanRight"><label class="square"><img src="{{url_for('static',filename='images/angle-right-solid.svg') }}" alt=""><input type="submit" name="button" value="panright"></label></form>
+					</div>
+				</div>			
 			</div>
 
 		</div>
 	</section>
-
-	<footer>
+	<script src="../static/scripts/main.js"></script>
 	
-	</footer>
 </body>
 </html>

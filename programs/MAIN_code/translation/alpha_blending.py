@@ -42,18 +42,14 @@ mask_pre_post = np.repeat(np.tile(np.full((before_after_width), 0.), (height, 1)
 mask_real1 = np.concatenate((mask3, mask1, mask_pre_post), axis=1)
 mask_real2 = np.concatenate((mask_pre_post, mask2, mask3), axis=1)
 
+print(mask1)
+
 
 T1 = np.float32([[1, 0, -WEG], [0, 1, 0]])
 T2 = np.float32([[1, 0, (width - 3*WEG - OVERLAP)], [0, 1, 0]])
 
 img1_translation = cv2.warpAffine(img1, T1, (total_width, height))
 img2_translation = cv2.warpAffine(img2, T2, (total_width, height))
-
-# Generate output by linear blending
-final1 = np.uint8(img1_translation * mask_real1)
-final2 = np.uint8(img2_translation * mask_real2)
-
-final = np.uint8(img1_translation * mask_real1 + img2_translation * mask_real2)
 
 # Outputs
 #cv2.imshow('mask_real1', mask_real1)
@@ -62,4 +58,4 @@ final = np.uint8(img1_translation * mask_real1 + img2_translation * mask_real2)
 #cv2.imshow('img1_translation', img1_translation)
 #cv2.imshow('final1', final1)
 #cv2.imshow('final2', final2)
-cv2.imwrite('final.png', final)
+#cv2.imwrite('final.png', final)
