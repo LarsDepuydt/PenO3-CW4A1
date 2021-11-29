@@ -14,7 +14,6 @@ while True:
     t = time.perf_counter()
     f.append(1/(t-t_old))
     t_old = t
-    print(f)
-print(f)
+    #print(f)
 
 
