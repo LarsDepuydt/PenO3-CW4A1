@@ -38,7 +38,7 @@ SENDER = imagezmq.ImageSender(connect_to=RB_IP_MAIN)
 IMAGE_HUB.recv_image()[1]
 IMAGE_HUB.send_reply(b'OK')
     
-imgL = cv2.cvtColor(PICAM.read(), cv2.COLOR_BGR2RGBA)
+imgL = cv2.cvtColor(PICAM.read(), cv2.COLOR_BGR2BGRA                 ,¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj)
 
 SENDER.send_image(RB_IP_HELPER, imgL)
 print('Sent image to main')
