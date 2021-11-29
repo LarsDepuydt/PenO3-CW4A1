@@ -11,7 +11,7 @@ import numpy as np
 zoom = 0
 origin = [0, 0]
 h, w = 0, 0
-SOURCE = 1
+SOURCE = 3
 # 1: cv2.VideoCapture, 2: imutils.VideoStream, 3: imagezmq.imagehub
 LOG_FPS = False
 INIT_PIs = False
@@ -78,7 +78,6 @@ def gen_frames_cv2_videoCapture_log_fps():
 def gen_frames_cv2_videocapture():
     global HEIGHT, WIDTH, h, w
     HEIGHT, WIDTH = camera.read()[1].shape[:2]
-    print("Beginning of gen_frames")
     while True:
         succes, frame = camera.read()
         # test zoom
@@ -91,9 +90,12 @@ def gen_frames_cv2_videocapture():
             yield(b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
 def gen_frames_imagehub():
+    global HEIGHT, WIDTH, h, w
     IMAGE_HUB = imagezmq.ImageHub()#open_port='tcp://:5555')
+    HEIGHT, WIDTH = IMAGE_HUB.recv_image()[1].shape[:2]
+    IMAGE_HUB.send_reply(b'OK')
     while True:
-        frame = IMAGE_HUB.recv_image()[1]
+        frame = IMAGE_HUB.recv_image()[1][origin[1]:origin[1] + h, origin[0]:origin[0] + w]
         IMAGE_HUB.send_reply(b'OK')
         yield(b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + cv2.imencode('.jpg', frame)[1].tobytes() + b'\r\n')
 
