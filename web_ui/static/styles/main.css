@@ -139,9 +139,13 @@ form label.square {
 	padding: 2px;
 	width: 36px;
 	height: 36px;
-	text-align: center;
+	text-align: center
 }
-
+form label.square img {
+	width: 20px;
+	height: 20px;
+	vertical-align: middle;
+}
 #arrowcontrols {
 	float: right;
 }
@@ -154,13 +158,15 @@ form label.square {
 	display: inline-block;
 }
 
-form label:hover {
+form label:hover,
+form label.activatedThroughJS {
 	cursor: pointer;
 	transition: all ease-in-out 150ms;
 	background-color: var(--2);
 	color: #FFF;
 }
-form label:hover img {
+form label:hover img,
+form label.activatedThroughJS img {
 	filter: invert(100%);
 }
 form  label > input {

@@ -75,7 +75,7 @@ print('Received MAPL1 and MAPL2')
 
 
 class Remapping(threading.Thread):
-    def __init(self, REMAPPED):
+    def __init__(self, REMAPPED):
         super().__init__()
         self.REMAPPED = REMAPPED
 
