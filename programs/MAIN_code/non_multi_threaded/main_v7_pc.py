@@ -39,6 +39,9 @@ KL = np.array([[FOCAL_LEN_L_X, s, WIDTH/2], [0, FOCAL_LEN_L_Y, HEIGHT/2], [0, 0,
 KR = np.array([[FOCAL_LEN_R_X, s, WIDTH/2], [0, FOCAL_LEN_R_Y, HEIGHT/2], [0, 0, 1]], dtype=np.uint16)  # mock intrinsics
 # [fx s x0; 0 fy y0; 0 0 1]
 
+"""
+PRECROP_ENABLED = True
+
 if CAMERAMODE == 1:
     PICAM = VideoStream(usePiCamera=True, resolution=CALIBRATION_RESOLUTION).start()
 elif CAMERAMODE ==2:
@@ -51,6 +54,7 @@ sleep(2)  # allow camera sensor to warm up and wait to make sure helper is runni
 SENDER = imagezmq.ImageSender(connect_to=RB_IP_HELPER)
 
 
+
 # ==============================
 # INITIALISATION
 # ==============================
@@ -61,10 +65,10 @@ print("Ready message was received by helper")
 imgR = cv2.cvtColor(PICAM.read(), cv2.COLOR_BGR2BGRA)
 imgL = IMAGE_HUB.recv_image()[1]
 IMAGE_HUB.send_reply(b'OK')
+"""
 
-
-#imgL = cv2.cvtColor(cv2.imread("./programs/cylindrical_projection/sterio_vision/images/left/left1.png"), cv2.COLOR_BGR2BGRA)
-#imgR = cv2.cvtColor(cv2.imread("./programs/cylindrical_projection/sterio_vision/images/right/right1.png"), cv2.COLOR_BGR2BGRA)
+imgL = cv2.cvtColor(cv2.imread("./programs/cylindrical_projection/sterio_vision/images/left/left1.png"), cv2.COLOR_BGR2BGRA)
+imgR = cv2.cvtColor(cv2.imread("./programs/cylindrical_projection/sterio_vision/images/right/right1.png"), cv2.COLOR_BGR2BGRA)
 
 def get_cyl_wrap_assets_crop(K):
     """
@@ -201,8 +205,8 @@ def combine():
 xL_L, xL_R, MAPL1, MAPL2 = get_cyl_wrap_assets_crop(KL)
 xR_L, xR_R, MAPR1, MAPR2 = get_cyl_wrap_assets_crop(KR)
 
-SENDER.send_image(RB_IP_MAIN, np.array([MAPL1, MAPL2]))
-print('Sent MAPL1 and MAPL2')
+#SENDER.send_image(RB_IP_MAIN, np.array([MAPL1, MAPL2]))
+#print('Sent MAPL1 and MAPL2')
 
 #x_t, y_t = get_translation_parameters(imgL, imgR, log=False)
 x_t = 100
@@ -220,12 +224,12 @@ TL, TR, combined_width, mask_realL, mask_realR = get_x_combine_assets_transparen
 cv2.imwrite("output.png", combine())
 
 
-SENDER = imagezmq.ImageSender(connect_to=PC_IP)
-while True:
-    imgR = cv2.remap(cv2.cvtColor(PICAM.read(), cv2.COLOR_BGR2BGRA), MAPL1, MAPL2, cv2.INTER_AREA, borderMode=cv2.BORDER_TRANSPARENT)
-    imgL = IMAGE_HUB.recv_image()[1]
-    SENDER.send_image(RB_IP_MAIN, np.uint8(cv2.warpAffine(imgL, TL, (combined_width, HEIGHT)) * mask_realL + cv2.warpAffine(imgR, TR, (combined_width, HEIGHT)) * mask_realR))
-    IMAGE_HUB.send_reply(b'OK')
+#SENDER = imagezmq.ImageSender(connect_to=PC_IP)
+#while True:
+#    imgR = cv2.remap(cv2.cvtColor(PICAM.read(), cv2.COLOR_BGR2BGRA), MAPL1, MAPL2, cv2.INTER_AREA, borderMode=cv2.BORDER_TRANSPARENT)
+#    imgL = IMAGE_HUB.recv_image()[1]
+#    SENDER.send_image(RB_IP_MAIN, np.uint8(cv2.warpAffine(imgL, TL, (combined_width, HEIGHT)) * mask_realL + cv2.warpAffine(imgR, TR, (combined_width, HEIGHT)) * mask_realR))
+#    IMAGE_HUB.send_reply(b'OK')
 
 '''
 TO DO:
