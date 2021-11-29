@@ -8,6 +8,8 @@ import numpy as np
 # REFERENCE: https://www.pyimagesearch.com/2019/09/02/opencv-stream-video-to-web-browser-html-page/
 # REFERENCE: https://towardsdatascience.com/video-streaming-in-web-browsers-with-opencv-flask-93a38846fe00
 
+FIRST = True
+print("here")
 zoom = 0
 origin = [0, 0]
 h, w = 0, 0
@@ -35,7 +37,9 @@ def initialize():
         vs = imutils.VideoStream(usePiCamera=True).start() # pi camera
         time.sleep(2.0)
     elif SOURCE == 3:
-        # DO NOT OPEN IMAGEHUB BEFORE app.run'ning flask!  
+        # DO NOT OPEN IMAGEHUB BEFORE app.run'ning flask!
+        # global IMAGE_HUB
+        # IMAGE_HUB = imagezmq.ImageHub()#open_port='tcp://:5555')
         pass
     else:
         assert False
@@ -90,12 +94,18 @@ def gen_frames_cv2_videocapture():
             yield(b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
 def gen_frames_imagehub():
-    global HEIGHT, WIDTH, h, w
-    IMAGE_HUB = imagezmq.ImageHub()#open_port='tcp://:5555')
-    HEIGHT, WIDTH = IMAGE_HUB.recv_image()[1].shape[:2]
-    IMAGE_HUB.send_reply(b'OK')
+    global HEIGHT, WIDTH, h, w, FIRST
+    print(FIRST)
+    if FIRST:
+        print("HEERERERHEHER")
+        IMAGE_HUB = imagezmq.ImageHub()
+        HEIGHT, WIDTH = IMAGE_HUB.recv_image()[1].shape[:2]
+        IMAGE_HUB.send_reply(b'OK')
+        FIRST = False
+    print(FIRST)
     while True:
         frame = IMAGE_HUB.recv_image()[1][origin[1]:origin[1] + h, origin[0]:origin[0] + w]
+        print(frame)
         IMAGE_HUB.send_reply(b'OK')
         yield(b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + cv2.imencode('.jpg', frame)[1].tobytes() + b'\r\n')
 
@@ -128,7 +138,8 @@ def gen_frames_imagehub_log_fps():
 @app.route('/', methods=['POST', 'GET'])
 def index():
     error = None
-    global zoom, h, w, origin
+    global zoom, h, w, origin, FIRST
+    print(FIRST)
     if request.method == 'POST':
         if request.form['button'] == 'restart':
             print("RESTART button clicked")
@@ -194,6 +205,7 @@ def index():
     else:
         print("NON-POST REQUEST")
         pass
+    print("Okay okay", FIRST)
     return flask.render_template('index.html')
 
 
@@ -216,5 +228,7 @@ elif SOURCE == 3:
         def video_feed():
             return flask.Response(gen_frames_imagehub(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
+
 if __name__ == "__main__":
     app.run(debug=True)
+    
