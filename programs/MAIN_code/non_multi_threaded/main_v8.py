@@ -8,18 +8,19 @@ from time import sleep
 # CONSTANTS
 # ==============================
 
-CAMERAMODE = 2 # 1 = imutils.VideoStream, 2 = cv2.VideoCapture
+CAMERAMODE = 1 # 1 = imutils.VideoStream, 2 = cv2.VideoCapture
 CALIBRATION_RESOLUTION = WIDTH, HEIGHT = (640, 480)
-STREAM_RESOLUTION      = (640, 480)
+STREAM_RESOLUTION      = (256, 144)
 RB_IP_MAIN =    'tcp://169.254.222.67:5555'
 RB_IP_HELPER =  'tcp://169.254.165.116:5555'
 #PC_IP =         'tcp://192.168.137.1:5555'
-#PC_IP = 'tcp://169.254.62.171:5555'
-PC_IP = 'tcp://169.254.236.78:5555'
+PC_IP = 'tcp://169.254.62.171:5555'
+#PC_IP = 'tcp://169.254.236.78:5555'
 PREVIOUS_CALIBRATION_DATA_PATH = "calibration_data.txt"
 
-INIT_HELPER_CMD = "sh ssHEIGHTconn_and_execute_cmd.sh 'cd Desktop/PenO3-CW4A1/programs/MAIN_code/non_multi_threaded;python3 ./helper_v3.py'"
-#os.system(INIT_HELPER_CMD)       # init helper pi
+INIT_HELPER_CMD = "sh sshconn_and_execute_cmd.sh 'cd Desktop/PenO3-CW4A1/programs/MAIN_code/non_multi_threaded;python3 ./helper_v3.py'"
+from os import system
+#system(INIT_HELPER_CMD)       # init helper pi
 
 KEYPOINT_COUNT = 2000  # set number of keypoints
 MAX_MATCH_Y_DISP = 20 # maximum vertical displacement of valid match in pixels
@@ -27,10 +28,10 @@ MIN_MATCH_COUNT = 5  # set minimum number of better_matches
 KEYPOINT_MASK_X_BOUND = 0.4 # only search for keypoints in this fraction of pixel towards the bound
 
 # focal length = 3.15mm volgens waveshare.com/imx219-d160.htm
-FOCAL_LEN_L_X = 360
-FOCAL_LEN_L_Y = 360
-FOCAL_LEN_R_X = 360
-FOCAL_LEN_R_Y = 360
+FOCAL_LEN_L_X = 450
+FOCAL_LEN_L_Y = 450
+FOCAL_LEN_R_X = 450
+FOCAL_LEN_R_Y = 450
 s = 0 # skew parameter
 
 KL = np.array([[FOCAL_LEN_L_X, s, WIDTH/2], [0, FOCAL_LEN_L_Y, HEIGHT/2], [0, 0, 1]], dtype=np.uint16)  # mock intrinsics
@@ -47,38 +48,24 @@ elif CAMERAMODE ==2:
     PICAM.set(cv2.CAP_PROP_FRAME_HEIGHT, CALIBRATION_RESOLUTION[1])
 IMAGE_HUB = imagezmq.ImageHub()
 
-sleep(0)  # allow camera sensor to warm up and wait to make sure helper is running
+sleep(2)  # allow camera sensor to warm up and wait to make sure helper is running
 SENDER = imagezmq.ImageSender(connect_to=RB_IP_HELPER)
+
+
 
 # ==============================
 # INITIALISATION
 # ==============================
 
-imgL = cv2.cvtColor(cv2.imread("../../cylindrical_projection/sterio_vision/images/left/left3.png"), cv2.COLOR_BGR2BGRA)
-imgR = cv2.cvtColor(cv2.imread("../../cylindrical_projection/sterio_vision/images/right/right3.png"), cv2.COLOR_BGR2BGRA)
+SENDER.send_image(RB_IP_MAIN, np.array(["ready"]))
+print("Ready message was received by helper")
 
-def get_cyl_wrap_assets_no_crop(K):
-    """
-    This function returns the cylindrical warp for a given image and intrinsics matrix K
-    SOURCE: ???????
-    """
-    # pixel coordinates
-    y_i, x_i = np.indices((HEIGHT, WIDTH))
-    X = np.stack([x_i, y_i, np.ones_like(x_i)], axis=-1).reshape(HEIGHT * WIDTH, 3)  # to homog
-    Kinv = np.linalg.inv(K)
-    X = Kinv.dot(X.T).T  # normalized coords
-    # calculate cylindrical coords (sin\theta, h, cos\theta)
-    A = np.stack([np.sin(X[:, 0]), X[:, 1], np.cos(X[:, 0])], axis=-1).reshape(WIDTH * HEIGHT, 3)
-    #boven onder: A = np.stack([X[:, 0], np.sin(X[:, 1]), np.cos(X[:, 1])], axis=-1).reshape(WIDTH * HEIGHT, 3)
-    B = K.dot(A.T).T  # project back to image-pixels plane
-    # back from homog coords
-    B = B[:, :-1] / B[:, [-1]]
-    # make sure warp coords only within image bounds
-    B[(B[:, 0] < 0) | (B[:, 0] >= WIDTH) | (B[:, 1] < 0) | (B[:, 1] >= HEIGHT)] = -1
+imgR = cv2.cvtColor(PICAM.read(), cv2.COLOR_BGR2BGRA)
+imgL = IMAGE_HUB.recv_image()[1]
+IMAGE_HUB.send_reply(b'OK')
 
-    B = B.reshape(HEIGHT, WIDTH, -1)
- 
-    return B[:, :, 0].astype(np.float32), B[:, :, 1].astype(np.float32)
+#imgL = cv2.cvtColor(cv2.imread("./programs/cylindrical_projection/sterio_vision/images/left/left0.png"), cv2.COLOR_BGR2BGRA)
+#imgR = cv2.cvtColor(cv2.imread("./programs/cylindrical_projection/sterio_vision/images/right/right0.png"), cv2.COLOR_BGR2BGRA)
 
 def get_cyl_wrap_assets_crop(K):
     """
@@ -239,28 +226,28 @@ def get_x_combine_assets_transparent_borders_precrop(xt, log=False):
     height, imgR_cropped_width = imgR.shape[:2]
 
     combined_width = imgL_cropped_width + imgR_cropped_width - xt
-    imgL_cropped_no_overlap_width = imgL_cropped_width - x_t
-    imgR_cropped_no_overlap_width = imgR_cropped_width - x_t
+    imgL_cropped_no_overlap_width = imgL_cropped_width - xt
 
-    imgL_cropped_noblend_width = imgL_cropped_width - int(2*xt/3)
-    imgR_cropped_noblend_width = imgR_cropped_width - int(2*xt/3)
+    imgL_cropped_noblend_width = imgL_cropped_width - int(2 * xt / 3)
+    imgR_cropped_noblend_width = imgR_cropped_width - int(2 * xt / 3)
     pre_imgR_width = imgL_cropped_noblend_width
     post_imgL_width = imgR_cropped_noblend_width
     print(imgL_cropped_no_overlap_width, imgL_cropped_noblend_width, imgR_cropped_noblend_width)
     # linear blend masks
-    maskL = np.repeat(np.tile(np.linspace(1, 0, int(xt/3)), (height, 1))[:, :, np.newaxis], 4, axis=2)
-    maskR = np.repeat(np.tile(np.linspace(0, 1, int(xt/3)), (height, 1))[:, :, np.newaxis], 4, axis=2)
+    maskL = np.repeat(np.tile(np.linspace(1, 0, int(xt / 3)), (height, 1))[:, :, np.newaxis], 4, axis=2)
+    maskR = np.repeat(np.tile(np.linspace(0, 1, int(xt / 3)), (height, 1))[:, :, np.newaxis], 4, axis=2)
 
     # constant no blend masks
-    mask_imgL_cropped_noblend = np.repeat(np.tile(np.full(imgL_cropped_noblend_width, 1.), (height, 1))[:, :, np.newaxis], 4, axis=2)
-    mask_imgR_cropped_noblend = np.repeat(np.tile(np.full(imgR_cropped_noblend_width, 1.), (height, 1))[:, :, np.newaxis], 4, axis=2)
+    mask_imgL_cropped_noblend = np.repeat(
+        np.tile(np.full(imgL_cropped_noblend_width, 1.), (height, 1))[:, :, np.newaxis], 4, axis=2)
+    mask_imgR_cropped_noblend = np.repeat(
+        np.tile(np.full(imgR_cropped_noblend_width, 1.), (height, 1))[:, :, np.newaxis], 4, axis=2)
     mask_post_imgL = np.repeat(np.tile(np.full((post_imgL_width), 0.), (height, 1))[:, :, np.newaxis], 4, axis=2)
     mask_pre_imgR = np.repeat(np.tile(np.full((pre_imgR_width), 0.), (height, 1))[:, :, np.newaxis], 4, axis=2)
 
     # full-sized masks
     mask_realL = np.concatenate((mask_imgL_cropped_noblend, maskL, mask_post_imgL), axis=1)
     mask_realR = np.concatenate((mask_pre_imgR, maskR, mask_imgR_cropped_noblend), axis=1)
-    print(imgL_cropped_noblend_width)
     TL= np.float32([[1, 0, 0], [0, 1, 0]])
     TR = np.float32([[1, 0, imgL_cropped_no_overlap_width], [0, 1, 0]])
 
@@ -271,64 +258,44 @@ def get_x_combine_assets_transparent_borders_precrop(xt, log=False):
         print('height', height)
         print('TL', TL)
         print('TR', TR)
-        print('xt', xt)
+        print('xt', x_t)
         cv2.waitKey(0)
 
     return TL, TR, combined_width, mask_realL, mask_realR
 
 def combine():
-    print(imgL.shape)
-    print(imgR.shape)
-    cv2.imshow('imgL', imgL)
-    cv2.imshow('imgR', imgR)
     imgL_translation = cv2.warpAffine(imgL, TL, (combined_width, HEIGHT))
-    cv2.imshow('imgL_translation', imgL_translation)
-    print(imgL_translation.shape)
     imgR_translation = cv2.warpAffine(imgR, TR, (combined_width, HEIGHT))
-    print(imgR_translation.shape)
-    cv2.imshow('imgR_translation', imgR_translation)
-    print(mask_realL.shape)
-    print(mask_realR.shape)
-    cv2.waitKey(0)
     final = np.uint8(imgL_translation * mask_realL + imgR_translation * mask_realR)
-
+    return final
     cv2.namedWindow("output", cv2.WINDOW_KEEPRATIO)
     cv2.imshow('output', final)
     cv2.waitKey(0)
 
-if PRECROP_ENABLED:
-    xL_L, xL_R, MAPL1, MAPL2 = get_cyl_wrap_assets_crop(KL)
-    xR_L, xR_R, MAPR1, MAPR2 = get_cyl_wrap_assets_crop(KR)
-else:
-    MAPL1, MAPL2 = get_cyl_wrap_assets_no_crop(KL)
-    MAPR1, MAPR2 = get_cyl_wrap_assets_no_crop(KR)
 
+xR_L, xR_R, MAPR1, MAPR2 = get_cyl_wrap_assets_crop(KR)
+xL_L, xL_R, MAPL1, MAPL2 = get_cyl_wrap_assets_crop(KL)
 
+SENDER.send_image(RB_IP_MAIN, np.array([MAPL1, MAPL2]))
+print('Sent MAPL1 and MAPL2')
+
+#x_t, y_t = get_translation_parameters(imgL, imgR, log=False)
+x_t = 60
 imgL = warp_image(imgL, MAPL1, MAPL2)
 imgR = warp_image(imgR, MAPR1, MAPR2)
-cv2.imshow("imgL", imgL)
-cv2.imshow("imgR", imgR)
-cv2.waitKey(0)
-x_t, y_t = get_translation_parameters(imgL, imgR, log=False)
-print(x_t)
-if PRECROP_ENABLED:
-    TL, TR, combined_width, mask_realL, mask_realR = get_x_combine_assets_transparent_borders_precrop(x_t, log=False)
-else:
-    TL, TR, combined_width, mask_realL, mask_realR = get_x_combine_assets_transparent_borders_no_precrop(x_t, log=False)
+
+TL, TR, combined_width, mask_realL, mask_realR = get_x_combine_assets_transparent_borders_precrop(x_t, log=False)
+
+cv2.imwrite("output.png", combine())
 
 
-combine()
-
-'''
-loop would look like:
+SENDER = imagezmq.ImageSender(connect_to=PC_IP)
 while True:
-    imgL = cv2.remap(PICAM.read(), MAPL1, MAPL2, cv2.INTER_AREA, borderMode=cv2.BORDER_TRANSPARENT)
-    imgR = IMAGEHUB.recvimage[1]
-    SENDER.sendimage(np.uint8(cv2.warpAffine(imgL, TL, (combined_width, HEIGHT)) * mask_realL + cv2.warpAffine(imgR, TR, (combined_width, HEIGHT)) * mask_realR))
-    IMAGEHUB.sendreply(b'OK')
+    imgR = cv2.remap(cv2.cvtColor(PICAM.read(), cv2.COLOR_BGR2BGRA), MAPL1, MAPL2, cv2.INTER_AREA, borderMode=cv2.BORDER_TRANSPARENT)
+    imgL = IMAGE_HUB.recv_image()[1]
+    SENDER.send_image(RB_IP_MAIN, np.uint8(cv2.warpAffine(imgL, TL, (combined_width, HEIGHT)) * mask_realL + cv2.warpAffine(imgR, TR, (combined_width, HEIGHT)) * mask_realR)[30:210, :])
+    IMAGE_HUB.send_reply(b'OK')
 
-'''
-    
 '''
 TO DO:
 [X] Remove linear-alpha blending artefacts

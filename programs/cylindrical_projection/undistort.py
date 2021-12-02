@@ -6,8 +6,8 @@ import glob
 
 # values
 CHECKERBOARD = (9, 6)
-INPUT_IMAGE = "calibration_images_far/cfoto0.jpg"
-OUTPUT_IMAGE = "undistorded_images//cfoto0_und.jpg"
+INPUT_IMAGE = "/Users/lars/Downloads/PenO3-CW4A1/programs/cylindrical_projection/sterio_vision/images/imageL0.png"
+OUTPUT_IMAGE = "/Users/lars/Downloads/PenO3-CW4A1/programs/cylindrical_projection/undistorded_images/imageL0_und.png"
 
 # stop the iteration when specified
 # accuracy, epsilon, is reached or
@@ -33,7 +33,7 @@ prev_img_shape = None
 # in a given directory. Since no path is
 # specified, it will take current directory
 # jpg files alone
-images = glob.glob('calibration_images_far/*.jpg')
+images = glob.glob('/Users/lars/Downloads/PenO3-CW4A1/programs/cylindrical_projection/calibration_images_close/*.jpg')
 print(images)
 
 for filename in images:

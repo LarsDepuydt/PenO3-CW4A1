@@ -1,4 +1,3 @@
-# Import required modules
 import cv2
 import numpy as np
 import os
@@ -31,7 +30,7 @@ prev_img_shape = None
 # in a given directory. Since no path is
 # specified, it will take current directory
 # jpg files alone
-images = glob.glob('sterio_vision/images/*.png')
+images = glob.glob('/Users/lars/Desktop/PenO3-CW4A1/programs/cylindrical_projection/sterio_vision/images/*.png')
 print(images)
 
 for filename in images:

@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 
 DIM=(640, 480)
-K=np.array([[308.4274361323937, 0.0, 307.74004197343186], [0.0, 307.15971371728705, 251.85734467095995], [0.0, 0.0, 1.0]])
+K=np.array([[320.68838395, 0., 315.79552501], [0., 314.07165737, 251.72067641], [0., 0., 1.]])
 D=np.array([[-0.02268523653207129], [-0.024552020182573187], [-4.141383624332057e-05], [0.011483828520533408]])
 
 def undistort(img_path, balance=1.0, dim2=None, dim3=None):
@@ -23,8 +23,8 @@ def undistort(img_path, balance=1.0, dim2=None, dim3=None):
     hight, width = undistorted_img.shape[:2]
     print(hight, width)
     print(undistorted_img)
-    cv2.imwrite("left.jpg", undistorted_img)
+    cv2.imwrite("/Users/lars/Downloads/PenO3-CW4A1/programs/cylindrical_projection/undistorded_images/right0_und.jpg", undistorted_img)
 
 
 if __name__ == '__main__':
-    undistort( "sterio_vision/images/left/left3.png")
+    undistort( "/Users/lars/Downloads/PenO3-CW4A1/programs/cylindrical_projection/sterio_vision/images/right/right0.png")
