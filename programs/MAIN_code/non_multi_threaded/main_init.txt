@@ -3,5 +3,7 @@ cd Desktop/PenO3-CW4A1
 cd venv/bin
 source activate
 cd ../../programs/MAIN_code/non_multi_threaded
-python3 main_v6.py
-exit 0
+# opens in new window so it doesn't wait for it to finish execution
+nohup python main_v6.py &
+echo SUCCES?
+sleep 20
