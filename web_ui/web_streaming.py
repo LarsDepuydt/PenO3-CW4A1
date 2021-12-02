@@ -11,25 +11,28 @@ import numpy as np
 first = True
 zoom = 0
 origin = [0, 0]
-h, w = 0, 0
+h, w = 480, 640
 SOURCE = 3
 # 1: cv2.VideoCapture, 2: imutils.VideoStream, 3: imagezmq.imagehub
 LOG_FPS = False
-INIT_PIs = False
+INIT_PIs = True
 
 def initialize():
     global camera
-    if INIT_PIs: 
+    if INIT_PIs:
+        print("Initing pis")
         import os
         PROG_DIR =  str(str(os.path.dirname(os.path.realpath(__file__)))[:-6] + "programs/MAIN_code/non_multi_threaded").replace("\\", "/")
-        INIT_MAIN_CMD = PROG_DIR + "/ssh_conn_and_execute_cmd_win.bat"
+        REMOTE_EXEC_SCRIPT_PATH = PROG_DIR + "/ssh_conn_and_execute_cmd_win.bat"
         MAIN_CMD_FILE = PROG_DIR + "/main_init.txt"
+        HELPER_CMD_FILE = PROG_DIR + "/helper_init.txt"
         import subprocess
-        subprocess.run([INIT_MAIN_CMD, "169.254.222.67", MAIN_CMD_FILE])
-
+        subprocess.run([REMOTE_EXEC_SCRIPT_PATH, "169.254.222.67", MAIN_CMD_FILE])
+        subprocess.run([REMOTE_EXEC_SCRIPT_PATH, "169.254.165.116", HELPER_CMD_FILE])
     if SOURCE == 1:
         camera = cv2.VideoCapture(0)    # laptop webcam
         global w, h
+
         h, w = camera.read()[1].shape[:2]
     elif SOURCE == 2: 
         import imutils
@@ -42,6 +45,16 @@ def initialize():
         pass
     else:
         assert False
+
+def terminate():
+    import os
+    PROG_DIR =  str(str(os.path.dirname(os.path.realpath(__file__)))[:-6] + "programs/MAIN_code/non_multi_threaded").replace("\\", "/")
+    REMOTE_EXEC_SCRIPT_PATH = PROG_DIR + "/ssh_conn_and_execute_cmd_win.bat"
+    MAIN_CMD_FILE = PROG_DIR + "/main_terminate.txt"
+    HELPER_CMD_FILE = PROG_DIR + "/helper_terminate.txt"
+    import subprocess
+    subprocess.run([REMOTE_EXEC_SCRIPT_PATH, "169.254.222.67", MAIN_CMD_FILE])
+    subprocess.run([REMOTE_EXEC_SCRIPT_PATH, "169.254.165.116", HELPER_CMD_FILE])
 
 app = flask.Flask(__name__)
 
@@ -102,7 +115,6 @@ def gen_frames_imagehub(first=False):
         IMAGE_HUB.send_reply(b'OK')
     while True:
         frame = IMAGE_HUB.recv_image()[1][origin[1]:origin[1] + h, origin[0]:origin[0] + w]
-        print(frame)
         IMAGE_HUB.send_reply(b'OK')
         yield(b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + cv2.imencode('.jpg', frame)[1].tobytes() + b'\r\n')
 
@@ -143,6 +155,7 @@ def index():
             # call terminate function
             first = True
             print('first', first)
+            terminate()
             initialize()
         elif request.form['button'] == 'calibrate':
             print("CALIBRATION button clicked")
