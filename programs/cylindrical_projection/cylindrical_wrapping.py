@@ -9,8 +9,8 @@ CAMERA_MATRIX = [[320.68838395,   0, 315.79552501],
  [ 0, 0, 1]]
 FOCAL_LENGTH = 320
 
-INPUT_IMAGE = "/Users/lars/Downloads/PenO3-CW4A1/programs/cylindrical_projection/right3_cyl_x.png"
-OUTPUT_IMAGE = "/Users/lars/Downloads/PenO3-CW4A1/programs/cylindrical_projection/right3_cyl_xy.png"
+INPUT_IMAGE = "/Users/lars/Downloads/PenO3-CW4A1/programs/cylindrical_projection/undistorded_images/right0_und.jpg"
+OUTPUT_IMAGE = "/Users/lars/Downloads/PenO3-CW4A1/programs/cylindrical_projection/right0_und_cyl_x.png"
 
 
 def cylindricalWarp(img, K):
@@ -24,9 +24,9 @@ def cylindricalWarp(img, K):
     # calculate cylindrical coords (sin\theta, h, cos\theta)
 
     # x-as
-    #A = np.stack([np.sin(X[:, 0]), X[:, 1], np.cos(X[:, 0])], axis=-1).reshape(w_ * h_, 3)
+    A = np.stack([np.sin(X[:, 0]), X[:, 1], np.cos(X[:, 0])], axis=-1).reshape(w_ * h_, 3)
     # y-as
-    A = np.stack([X[:, 0], np.sin(X[:, 1]), np.cos(X[:, 1])], axis=-1).reshape(w_ * h_, 3)
+    #A = np.stack([X[:, 0], np.sin(X[:, 1]), np.cos(X[:, 1])], axis=-1).reshape(w_ * h_, 3)
 
     B = K.dot(A.T).T  # project back to image-pixels plane
     # back from homog coords
