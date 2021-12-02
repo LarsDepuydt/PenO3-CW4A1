@@ -3,6 +3,7 @@ import cv2
 import imagezmq
 from imutils.video import VideoStream
 from time import sleep
+from math import floor, ceil
 
 # ==============================
 # CONSTANTS
@@ -20,6 +21,8 @@ PREVIOUS_CALIBRATION_DATA_PATH = "calibration_data.txt"
 
 INIT_HELPER_CMD = "sh ssHEIGHTconn_and_execute_cmd.sh 'cd Desktop/PenO3-CW4A1/programs/MAIN_code/non_multi_threaded;python3 ./helper_v3.py'"
 #os.system(INIT_HELPER_CMD)       # init helper pi
+
+BLURR_WIDTH = 3/4
 
 KEYPOINT_COUNT = 2000  # set number of keypoints
 MAX_MATCH_Y_DISP = 20 # maximum vertical displacement of valid match in pixels
@@ -244,13 +247,13 @@ def get_x_combine_assets_transparent_borders_precrop(xt, log=False):
     combined_width = imgL_cropped_width + imgR_cropped_width - xt
     imgL_cropped_no_overlap_width = imgL_cropped_width - xt
 
-    imgL_cropped_noblend_width = imgL_cropped_width - int(2 * xt / 3)
-    imgR_cropped_noblend_width = imgR_cropped_width - int(2 * xt / 3)
+    imgL_cropped_noblend_width = imgL_cropped_width - ceil((1 + BLURR_WIDTH)/2 * xt)
+    imgR_cropped_noblend_width = imgR_cropped_width - ceil((1 + BLURR_WIDTH)/2 * xt)
     pre_imgR_width = imgL_cropped_noblend_width
     post_imgL_width = imgR_cropped_noblend_width
     # linear blend masks
-    maskL = np.repeat(np.tile(np.linspace(1, 0, int(xt / 3)), (height, 1))[:, :, np.newaxis], 4, axis=2)
-    maskR = np.repeat(np.tile(np.linspace(0, 1, int(xt / 3)), (height, 1))[:, :, np.newaxis], 4, axis=2)
+    maskL = np.repeat(np.tile(np.linspace(1, 0, ceil(xt * BLURR_WIDTH)), (height, 1))[:, :, np.newaxis], 4, axis=2)
+    maskR = np.repeat(np.tile(np.linspace(0, 1, ceil(xt * BLURR_WIDTH)), (height, 1))[:, :, np.newaxis], 4, axis=2)
 
     # constant no blend masks
     mask_imgL_cropped_noblend = np.repeat(
