@@ -14,8 +14,8 @@ STREAM_RESOLUTION      = (256, 144)
 RB_IP_MAIN =    'tcp://169.254.222.67:5555'
 RB_IP_HELPER =  'tcp://169.254.165.116:5555'
 #PC_IP =         'tcp://192.168.137.1:5555'
-PC_IP = 'tcp://169.254.62.171:5555'
-#PC_IP = 'tcp://169.254.236.78:5555'
+#PC_IP = 'tcp://169.254.62.171:5555'
+PC_IP = 'tcp://169.254.236.78:5555'
 PREVIOUS_CALIBRATION_DATA_PATH = "calibration_data.txt"
 
 INIT_HELPER_CMD = "sh sshconn_and_execute_cmd.sh 'cd Desktop/PenO3-CW4A1/programs/MAIN_code/non_multi_threaded;python3 ./helper_v3.py'"
@@ -293,7 +293,7 @@ SENDER = imagezmq.ImageSender(connect_to=PC_IP)
 while True:
     imgR = cv2.remap(cv2.cvtColor(PICAM.read(), cv2.COLOR_BGR2BGRA), MAPL1, MAPL2, cv2.INTER_AREA, borderMode=cv2.BORDER_TRANSPARENT)
     imgL = IMAGE_HUB.recv_image()[1]
-    SENDER.send_image(RB_IP_MAIN, np.uint8(cv2.warpAffine(imgL, TL, (combined_width, HEIGHT)) * mask_realL + cv2.warpAffine(imgR, TR, (combined_width, HEIGHT)) * mask_realR)[30:210, :])
+    SENDER.send_image(RB_IP_MAIN, np.uint8(cv2.warpAffine(imgL, TL, (combined_width, HEIGHT)) * mask_realL + cv2.warpAffine(imgR, TR, (combined_width, HEIGHT)) * mask_realR))
     IMAGE_HUB.send_reply(b'OK')
 
 '''
