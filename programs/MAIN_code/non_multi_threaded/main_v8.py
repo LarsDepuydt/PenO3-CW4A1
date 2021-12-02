@@ -3,6 +3,7 @@ import cv2
 import imagezmq
 from imutils.video import VideoStream
 from time import sleep
+from math import floor, ceil
 
 # ==============================
 # CONSTANTS
@@ -10,17 +11,19 @@ from time import sleep
 
 CAMERAMODE = 1 # 1 = imutils.VideoStream, 2 = cv2.VideoCapture
 CALIBRATION_RESOLUTION = WIDTH, HEIGHT = (640, 480)
-STREAM_RESOLUTION      = (256, 144)
+STREAM_RESOLUTION      = (640, 480)
 RB_IP_MAIN =    'tcp://169.254.222.67:5555'
 RB_IP_HELPER =  'tcp://169.254.165.116:5555'
 #PC_IP =         'tcp://192.168.137.1:5555'
-PC_IP = 'tcp://169.254.62.171:5555'
-#PC_IP = 'tcp://169.254.236.78:5555'
+#PC_IP = 'tcp://169.254.62.171:5555'
+PC_IP = 'tcp://169.254.236.78:5555'
 PREVIOUS_CALIBRATION_DATA_PATH = "calibration_data.txt"
 
 INIT_HELPER_CMD = "sh sshconn_and_execute_cmd.sh 'cd Desktop/PenO3-CW4A1/programs/MAIN_code/non_multi_threaded;python3 ./helper_v3.py'"
 from os import system
 #system(INIT_HELPER_CMD)       # init helper pi
+
+BLURR_WIDTH = 1/3
 
 KEYPOINT_COUNT = 2000  # set number of keypoints
 MAX_MATCH_Y_DISP = 20 # maximum vertical displacement of valid match in pixels
@@ -228,14 +231,14 @@ def get_x_combine_assets_transparent_borders_precrop(xt, log=False):
     combined_width = imgL_cropped_width + imgR_cropped_width - xt
     imgL_cropped_no_overlap_width = imgL_cropped_width - xt
 
-    imgL_cropped_noblend_width = imgL_cropped_width - int(2 * xt / 3)
-    imgR_cropped_noblend_width = imgR_cropped_width - int(2 * xt / 3)
+    imgL_cropped_noblend_width = imgL_cropped_width - ceil((1 + BLURR_WIDTH)/2 * xt)
+    imgR_cropped_noblend_width = imgR_cropped_width - ceil((1 + BLURR_WIDTH)/2 * xt)
     pre_imgR_width = imgL_cropped_noblend_width
     post_imgL_width = imgR_cropped_noblend_width
     print(imgL_cropped_no_overlap_width, imgL_cropped_noblend_width, imgR_cropped_noblend_width)
     # linear blend masks
-    maskL = np.repeat(np.tile(np.linspace(1, 0, int(xt / 3)), (height, 1))[:, :, np.newaxis], 4, axis=2)
-    maskR = np.repeat(np.tile(np.linspace(0, 1, int(xt / 3)), (height, 1))[:, :, np.newaxis], 4, axis=2)
+    maskL = np.repeat(np.tile(np.linspace(1, 0, ceil(xt * BLURR_WIDTH)), (height, 1))[:, :, np.newaxis], 4, axis=2)
+    maskR = np.repeat(np.tile(np.linspace(0, 1, ceil(xt * BLURR_WIDTH)), (height, 1))[:, :, np.newaxis], 4, axis=2)
 
     # constant no blend masks
     mask_imgL_cropped_noblend = np.repeat(
@@ -248,6 +251,7 @@ def get_x_combine_assets_transparent_borders_precrop(xt, log=False):
     # full-sized masks
     mask_realL = np.concatenate((mask_imgL_cropped_noblend, maskL, mask_post_imgL), axis=1)
     mask_realR = np.concatenate((mask_pre_imgR, maskR, mask_imgR_cropped_noblend), axis=1)
+
     TL= np.float32([[1, 0, 0], [0, 1, 0]])
     TR = np.float32([[1, 0, imgL_cropped_no_overlap_width], [0, 1, 0]])
 
@@ -293,7 +297,7 @@ SENDER = imagezmq.ImageSender(connect_to=PC_IP)
 while True:
     imgR = cv2.remap(cv2.cvtColor(PICAM.read(), cv2.COLOR_BGR2BGRA), MAPL1, MAPL2, cv2.INTER_AREA, borderMode=cv2.BORDER_TRANSPARENT)
     imgL = IMAGE_HUB.recv_image()[1]
-    SENDER.send_image(RB_IP_MAIN, np.uint8(cv2.warpAffine(imgL, TL, (combined_width, HEIGHT)) * mask_realL + cv2.warpAffine(imgR, TR, (combined_width, HEIGHT)) * mask_realR)[30:210, :])
+    SENDER.send_image(RB_IP_MAIN, np.uint8(cv2.warpAffine(imgL, TL, (combined_width, HEIGHT)) * mask_realL + cv2.warpAffine(imgR, TR, (combined_width, HEIGHT)) * mask_realR))
     IMAGE_HUB.send_reply(b'OK')
 
 '''
