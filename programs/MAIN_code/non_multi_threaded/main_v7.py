@@ -3,6 +3,7 @@ import cv2
 import imagezmq
 from imutils.video import VideoStream
 from time import sleep
+import copy
 
 # ==============================
 # CONSTANTS
@@ -35,11 +36,8 @@ FOCAL_LEN_R_Y = 310
 s = 0 # skew parameter
 
 KL = np.array([[FOCAL_LEN_L_X, s, WIDTH/2], [0, FOCAL_LEN_L_Y, HEIGHT/2], [0, 0, 1]], dtype=np.uint16)  # mock intrinsics
-KR = np.array([[FOCAL_LEN_R_X, 0, WIDTH/2], [0, FOCAL_LEN_R_Y, HEIGHT/2], [0, 0, 1]], dtype=np.uint16)  # mock intrinsics
+KR = np.array([[FOCAL_LEN_R_X, s, WIDTH/2], [0, FOCAL_LEN_R_Y, HEIGHT/2], [0, 0, 1]], dtype=np.uint16)  # mock intrinsics
 # [fx s x0; 0 fy y0; 0 0 1]
-
-"""
-PRECROP_ENABLED = True
 
 if CAMERAMODE == 1:
     PICAM = VideoStream(usePiCamera=True, resolution=CALIBRATION_RESOLUTION).start()
@@ -53,7 +51,6 @@ sleep(2)  # allow camera sensor to warm up and wait to make sure helper is runni
 SENDER = imagezmq.ImageSender(connect_to=RB_IP_HELPER)
 
 
-
 # ==============================
 # INITIALISATION
 # ==============================
@@ -64,10 +61,10 @@ print("Ready message was received by helper")
 imgR = cv2.cvtColor(PICAM.read(), cv2.COLOR_BGR2BGRA)
 imgL = IMAGE_HUB.recv_image()[1]
 IMAGE_HUB.send_reply(b'OK')
-"""
 
-imgL = cv2.cvtColor(cv2.imread("./programs/cylindrical_projection/sterio_vision/images/left/left0.png"), cv2.COLOR_BGR2BGRA)
-imgR = cv2.cvtColor(cv2.imread("./programs/cylindrical_projection/sterio_vision/images/right/right0.png"), cv2.COLOR_BGR2BGRA)
+
+#imgL = cv2.cvtColor(cv2.imread("./programs/cylindrical_projection/sterio_vision/images/left/left1.png"), cv2.COLOR_BGR2BGRA)
+#imgR = cv2.cvtColor(cv2.imread("./programs/cylindrical_projection/sterio_vision/images/right/right1.png"), cv2.COLOR_BGR2BGRA)
 
 def get_cyl_wrap_assets_crop(K):
     """
@@ -106,121 +103,7 @@ def get_cyl_wrap_assets_crop(K):
 def warp_image(img, map1, map2):
     return cv2.remap(img, map1, map2, cv2.INTER_AREA, borderMode=cv2.BORDER_TRANSPARENT)
 
-def get_translation_parameters(imgL, imgR, log=False):
-    '''
-    Transparency masking code source:
-    https://stackoverflow.com/questions/45810417/opencv-python-how-to-use-mask-parameter-in-orb-feature-detector
-    '''
-    h, w = imgL.shape[:2]
-    keypoint_mask_width = int(w * KEYPOINT_MASK_X_BOUND)
-    no_keypoint_mask_width = w - keypoint_mask_width
-
-    mask_cond_L = imgL[:,:,3] == 255 # create mask for non-transparant pixels
-    mask_L = np.array(np.where(mask_cond_L, 255, 0), dtype=np.uint8) # must use uint8 for ORB to work
-    mask_L[:,:no_keypoint_mask_width] = 0 # create mask for pixels outside are of interest next to image border
-
-    mask_cond_R = imgR[:,:,3] == 255
-    mask_R = np.array(np.where(mask_cond_R, 255, 0), dtype=np.uint8)
-    mask_R[:, keypoint_mask_width:] = 0
-
-    orb = cv2.ORB_create(nfeatures=KEYPOINT_COUNT)
-    keyptsL, descriptorsL = orb.detectAndCompute(imgL, mask=mask_L)
-    keyptsR, descriptorsR = orb.detectAndCompute(imgR, mask=mask_R)
-
-    bf = cv2.BFMatcher_create(cv2.NORM_HAMMING)
-    matches = bf.knnMatch(descriptorsL, descriptorsR, k=2)
-
-    # Finding the best matches
-    good_matches = []
-    for m, n in matches:
-        if m.distance < 0.6 * n.distance:
-            good_matches.append(m)
-
-    #Filter out matches with too much vertical displacement
-    better_matches, filtered_because_of_vert_disp = [], 0
-    for m in good_matches:
-        if abs(keyptsL[m.queryIdx].pt[1] - keyptsR[m.trainIdx].pt[1]) <= MAX_MATCH_Y_DISP:
-            better_matches.append(m)
-        else:
-            filtered_because_of_vert_disp += 1
-
-    print("keypoints: ", len(keyptsL), "| matches: ", len(matches), "| good matches:", len(good_matches), "| better matches:", len(better_matches))
-    assert len(better_matches) >= MIN_MATCH_COUNT
-
-    x_t, avg_y_disp = 0, 0
-    for m in better_matches:
-        xL, yL= keyptsL[m.queryIdx].pt
-        xR, yR= keyptsR[m.trainIdx].pt
-        x_t += abs(w-xL + xR)
-        avg_y_disp += abs(yR-yL)
-    x_t = int(x_t / len(better_matches))
-    avg_y_disp = int(avg_y_disp / len(better_matches))
-
-    if log:
-        cv2.imshow('left mask', mask_L)
-        cv2.imshow('right mask', mask_R)
-        cv2.imshow('left img keypts', cv2.drawKeypoints(imgL, keyptsL, None, color=(255,0,0)))
-        cv2.imshow('right img keypts', cv2.drawKeypoints(imgR, keyptsR, None, color=(255,0,0)))
-        cv2.imshow("Good matches", cv2.drawMatches(imgL, keyptsL, imgR, keyptsR, good_matches, None, matchColor=(0,255,0)))
-        cv2.imshow("Better Matches", cv2.drawMatches(imgL, keyptsL, imgR, keyptsR, better_matches, None, matchColor=(255, 0, 255)))
-        cv2.waitKey(0)
-    
-    return x_t, avg_y_disp
-
-def get_x_combine_assets_transparent_borders_no_precrop(x_t, log=False):
-    '''
-    SOURCE FOR IMAGE BLENDING CODE: ??????
-    '''
-    for pi, pixel in enumerate(np.flip(imgL[240])):
-        if pixel[3] != 0:
-            xLn = pi # distance overlap point to black border
-            break
-    for pi, pixel in enumerate(imgR[240]):
-        if pixel[3] != 0:
-            xRn = pi
-            break
-
-    xt = x_t - xLn - xRn
-    height, width = imgL.shape[:2]
-    imgL_cropped_width = width - 2*xLn
-    imgR_cropped_width = width - 2*xRn
-
-    combined_width = imgL_cropped_width + imgR_cropped_width - xt
-    imgL_cropped_noblend_width = imgL_cropped_width - xt
-    imgR_cropped_noblend_width = imgR_cropped_width - xt
-    pre_imgR_width = imgL_cropped_noblend_width
-    post_imgL_width = imgR_cropped_noblend_width
-
-    print(xt)
-
-    # small linear masks
-    maskL = np.repeat(np.tile(np.linspace(1, 0, xt), (height, 1))[:, :, np.newaxis], 4, axis=2)
-    maskR = np.repeat(np.tile(np.linspace(0, 1, xt), (height, 1))[:, :, np.newaxis], 4, axis=2)
-
-    # full show mask
-    mask_imgL_cropped_noblend = np.repeat(np.tile(np.full(imgL_cropped_noblend_width, 1.), (height, 1))[:, :, np.newaxis], 4, axis=2)
-    mask_imgR_cropped_noblend = np.repeat(np.tile(np.full(imgR_cropped_noblend_width, 1.), (height, 1))[:, :, np.newaxis], 4, axis=2)
-    mask_post_imgL = np.repeat(np.tile(np.full((post_imgL_width), 0.), (height, 1))[:, :, np.newaxis], 4, axis=2)
-    mask_pre_imgR = np.repeat(np.tile(np.full((pre_imgR_width), 0.), (height, 1))[:, :, np.newaxis], 4, axis=2)
-
-    mask_realL = np.concatenate((mask_imgL_cropped_noblend, maskL, mask_post_imgL), axis=1)
-    mask_realR = np.concatenate((mask_pre_imgR, maskR, mask_imgR_cropped_noblend), axis=1)
-
-    TL= np.float32([[1, 0, -xLn], [0, 1, 0]])
-    TR = np.float32([[1, 0, (width - 2*xLn -xRn - xt)], [0, 1, 0]])
-
-    if log:
-        cv2.imshow('mask_realL', mask_realL)
-        cv2.imshow('mask_realR', mask_realR)
-        print('combined width:', combined_width)
-        print('height', height)
-        print('TL', TL)
-        print('TR', TR)
-        cv2.waitKey(0)
-
-    return TL, TR, combined_width, mask_realL, mask_realR
-
-def get_x_combine_assets_transparent_borders_precrop(xt, log=False):
+def get_x_combine_assets_transparent_borders_precrop(xt, imgL, imgR, log=False):
     '''
     SOURCE FOR IMAGE BLENDING CODE: ??????
     '''
@@ -230,29 +113,68 @@ def get_x_combine_assets_transparent_borders_precrop(xt, log=False):
     combined_width = imgL_cropped_width + imgR_cropped_width - xt
     imgL_cropped_noblend_width = imgL_cropped_width - xt
     imgR_cropped_noblend_width = imgR_cropped_width - xt
-    pre_imgR_width = imgL_cropped_noblend_width
     post_imgL_width = imgR_cropped_noblend_width
+    pre_imgR_width = imgL_cropped_noblend_width
+
+    ##########################################################################################
 
     # linear blend masks
     maskL = np.repeat(np.tile(np.linspace(1, 0, xt), (height, 1))[:, :, np.newaxis], 4, axis=2)
     maskR = np.repeat(np.tile(np.linspace(0, 1, xt), (height, 1))[:, :, np.newaxis], 4, axis=2)
 
-    # constant no blend masks
-    mask_imgL_cropped_noblend = np.repeat(np.tile(np.full(imgL_cropped_noblend_width, 1.), (height, 1))[:, :, np.newaxis], 4, axis=2)
-    mask_imgR_cropped_noblend = np.repeat(np.tile(np.full(imgR_cropped_noblend_width, 1.), (height, 1))[:, :, np.newaxis], 4, axis=2)
-    mask_post_imgL = np.repeat(np.tile(np.full((post_imgL_width), 0.), (height, 1))[:, :, np.newaxis], 4, axis=2)
-    mask_pre_imgR = np.repeat(np.tile(np.full((pre_imgR_width), 0.), (height, 1))[:, :, np.newaxis], 4, axis=2)
+    # mask of image
+    imgL_mask = copy.deepcopy(imgL)
+    imgR_mask = copy.deepcopy(imgR)
+    imgL_mask[np.where((imgL_mask>[0,0,0,0]).all(axis=2))] = [255,255,255,1]
+    imgR_mask[np.where((imgR_mask>[0,0,0,0]).all(axis=2))] = [255,255,255,1]
 
-    # full-sized masks
-    mask_realL = np.concatenate((mask_imgL_cropped_noblend, maskL, mask_post_imgL), axis=1)
-    mask_realR = np.concatenate((mask_pre_imgR, maskR, mask_imgR_cropped_noblend), axis=1)
+    #full white
+    full_whiteL = np.repeat(np.tile(np.full((imgL_cropped_noblend_width), 1.), (height, 1))[:, :, np.newaxis], 4, axis=2)
+    full_whiteR = np.repeat(np.tile(np.full((imgR_cropped_noblend_width), 1.), (height, 1))[:, :, np.newaxis], 4, axis=2)
+
+    # linespace with white
+    mask_realL = np.concatenate((maskR, full_whiteR), axis=1)
+    mask_realR = np.concatenate((full_whiteL, maskL), axis=1)
+    
+    mask_realL_rounded = np.uint8(imgL_mask * mask_realL)
+    mask_realR_rounded = np.uint8(imgR_mask * mask_realR)
+    
+
+    # white before mask
+    mask_realL_rounded_white = np.uint8(np.concatenate((full_whiteL, mask_realL_rounded, ), axis=1))
+    mask_realR_rounded_white = np.uint8(np.concatenate((mask_realR_rounded, full_whiteR), axis=1))
+
+
+    # make orinigal img mask longer
+    mask_postL = np.repeat(np.tile(np.full((post_imgL_width), 0.), (height, 1))[:, :, np.newaxis], 4, axis=2)
+    mask_preR = np.repeat(np.tile(np.full((pre_imgR_width), 0.), (height, 1))[:, :, np.newaxis], 4, axis=2)
+
+    imgL_full = np.uint8(np.concatenate((imgL_mask, mask_postL), axis=1))
+    imgR_full = np.uint8(np.concatenate((mask_preR, imgR_mask), axis=1))
+
+    # left image mask
+    output_maskL = np.uint8(imgL_full * mask_realL_rounded_white)
+    output_maskL[np.where((output_maskL==[0,0,0,0]).all(axis=2))] = [255,255,255,1]
+
+    vector1 = np.repeat(255, output_maskL.size)
+    output_maskL = output_maskL / vector1.reshape(output_maskL.shape)
+
+
+    # right image mask
+    output_maskR = np.uint8(imgR_full * mask_realR_rounded_white)
+    output_maskR[np.where((output_maskR==[0,0,0,0]).all(axis=2))] = [255,255,255,1]
+
+    vector2 = np.repeat(255, output_maskR.size)
+    output_maskR = output_maskR / vector2.reshape(output_maskR.shape)
+    
+    ##########################################################################################
 
     TL= np.float32([[1, 0, 0], [0, 1, 0]])
     TR = np.float32([[1, 0, imgL_cropped_noblend_width], [0, 1, 0]])
 
     if log:
-        cv2.imshow('mask_realL', mask_realL)
-        cv2.imshow('mask_realR', mask_realR)
+        cv2.imshow('output_maskL', output_maskL)
+        cv2.imshow('output_maskR', output_maskR)
         print('combined width:', combined_width)
         print('height', height)
         print('TL', TL)
@@ -260,43 +182,50 @@ def get_x_combine_assets_transparent_borders_precrop(xt, log=False):
         print('xt', x_t)
         cv2.waitKey(0)
 
-    return TL, TR, combined_width, mask_realL, mask_realR
+    return TL, TR, combined_width, output_maskL, output_maskR
 
 def combine():
     imgL_translation = cv2.warpAffine(imgL, TL, (combined_width, HEIGHT))
     imgR_translation = cv2.warpAffine(imgR, TR, (combined_width, HEIGHT))
     final = np.uint8(imgL_translation * mask_realL + imgR_translation * mask_realR)
     
-    cv2.namedWindow("output", cv2.WINDOW_KEEPRATIO)
+    #cv2.namedWindow("output", cv2.WINDOW_KEEPRATIO)
     cv2.imshow('output', final)
+    return final
     cv2.imshow('imgL_translation', imgL_translation)
     cv2.imshow('imgR_translation', imgR_translation)
+    cv2.imshow('imgR', imgR)
     cv2.waitKey(0)
-    return final
+    
 
-
-xR_L, xR_R, MAPR1, MAPR2 = get_cyl_wrap_assets_crop(KR)
 xL_L, xL_R, MAPL1, MAPL2 = get_cyl_wrap_assets_crop(KL)
+xR_L, xR_R, MAPR1, MAPR2 = get_cyl_wrap_assets_crop(KR)
 
-#SENDER.send_image(RB_IP_MAIN, np.array([MAPL1, MAPL2]))
-#print('Sent MAPL1 and MAPL2')
+SENDER.send_image(RB_IP_MAIN, np.array([MAPL1, MAPL2]))
+print('Sent MAPL1 and MAPL2')
 
 #x_t, y_t = get_translation_parameters(imgL, imgR, log=False)
 x_t = 100
-imgL = warp_image(imgL, MAPL1, MAPL2)
+'''
+####################################################################################
+dit faalt als het 2x wordt uitgevoerd !!!!!!!!!!!!!!!! (soms)
+####################################################################################
+'''
 imgR = warp_image(imgR, MAPR1, MAPR2)
+imgL = warp_image(imgL, MAPL1, MAPL2)
 
-TL, TR, combined_width, mask_realL, mask_realR = get_x_combine_assets_transparent_borders_precrop(x_t, log=True)
+
+TL, TR, combined_width, mask_realL, mask_realR = get_x_combine_assets_transparent_borders_precrop(x_t, imgL, imgR, log=False)
 
 cv2.imwrite("output.png", combine())
 
 
-#SENDER = imagezmq.ImageSender(connect_to=PC_IP)
-#while True:
-#    imgR = cv2.remap(cv2.cvtColor(PICAM.read(), cv2.COLOR_BGR2BGRA), MAPL1, MAPL2, cv2.INTER_AREA, borderMode=cv2.BORDER_TRANSPARENT)
-#    imgL = IMAGE_HUB.recv_image()[1]
-#    SENDER.send_image(RB_IP_MAIN, np.uint8(cv2.warpAffine(imgL, TL, (combined_width, HEIGHT)) * mask_realL + cv2.warpAffine(imgR, TR, (combined_width, HEIGHT)) * mask_realR))
-#    IMAGE_HUB.send_reply(b'OK')
+SENDER = imagezmq.ImageSender(connect_to=PC_IP)
+while True:
+    imgR = cv2.remap(cv2.cvtColor(PICAM.read(), cv2.COLOR_BGR2BGRA), MAPL1, MAPL2, cv2.INTER_AREA, borderMode=cv2.BORDER_TRANSPARENT)
+    imgL = IMAGE_HUB.recv_image()[1]
+    SENDER.send_image(RB_IP_MAIN, np.uint8(cv2.warpAffine(imgL, TL, (combined_width, HEIGHT)) * mask_realL + cv2.warpAffine(imgR, TR, (combined_width, HEIGHT)) * mask_realR))
+    IMAGE_HUB.send_reply(b'OK')
 
 '''
 TO DO:

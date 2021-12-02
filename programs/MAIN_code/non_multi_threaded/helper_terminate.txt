@@ -1,0 +1,6 @@
+echo "IN HELPER PI: terminating helper"
+ps -ef | grep python
+pkill -f helper_v6.py
+ps -ef | grep python
+sudo pkill python
+sleep 10

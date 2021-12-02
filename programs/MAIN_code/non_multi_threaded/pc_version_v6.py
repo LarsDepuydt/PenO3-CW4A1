@@ -60,7 +60,7 @@ imgR = cv2.cvtColor(cv2.imread("./programs/cylindrical_projection/sterio_vision/
 def get_cyl_wrap_assets_no_crop(K):
     """
     This function returns the cylindrical warp for a given image and intrinsics matrix K
-    SOURCE: ???????
+    REFERENCE: https://gist.github.com/royshil/0b21e8e7c6c1f46a16db66c384742b2b
     """
     # pixel coordinates
     y_i, x_i = np.indices((HEIGHT, WIDTH))
@@ -83,7 +83,7 @@ def get_cyl_wrap_assets_no_crop(K):
 def get_cyl_wrap_assets_crop(K):
     """
     This function returns the cylindrical warp for a given image and intrinsics matrix K
-    SOURCE: ???????
+    SOURCE: https://gist.github.com/royshil/0b21e8e7c6c1f46a16db66c384742b2b
     """
     # pixel coordinates
     y_i, x_i = np.indices((HEIGHT, WIDTH))

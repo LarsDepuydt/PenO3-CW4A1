@@ -35,11 +35,16 @@ mask_real1 = np.concatenate((mask3, mask1, mask_pre_post), axis=1)
 mask_real2 = np.concatenate((mask_pre_post, mask2, mask3), axis=1)
 
 
+
+
+
 T1 = np.float32([[1, 0, - WEG + 10], [0, 1, 0]])
 T2 = np.float32([[1, 0, (width - 3*WEG - OVERLAP)], [0, 1, 0]])
 
 img1_translation = cv2.warpAffine(img1, T1, (total_width, height))
 img2_translation = cv2.warpAffine(img2, T2, (total_width, height))
+
+
 
 # mask images
 img1_translation_mask = cv2.warpAffine(img1_mask, T1, (total_width, height))
@@ -48,13 +53,17 @@ img2_translation_mask = cv2.warpAffine(img2_mask, T2, (total_width, height))
 img1_translation_mask[np.where((img1_translation_mask>[0,0,0]).all(axis=2))] = [255,255,255]
 img2_translation_mask[np.where((img2_translation_mask>[0,0,0]).all(axis=2))] = [255,255,255]
 
+
+
 # change image size
 img1_translation_mask_small = cv2.warpAffine(img1_mask, T1, (small_image_width, height))
 img2_translation_mask_small = cv2.warpAffine(img2_mask, T1, (small_image_width, height))
 
-# image in black and white
 img1_translation_mask_small[np.where((img1_translation_mask_small>[0,0,0]).all(axis=2))] = [255,255,255]
 img2_translation_mask_small[np.where((img2_translation_mask_small>[0,0,0]).all(axis=2))] = [255,255,255]
+
+
+
 
 #full white
 full_white = np.repeat(np.tile(np.full((small_image_width - OVERLAP), 1.), (height, 1))[:, :, np.newaxis], 3, axis=2)
@@ -69,8 +78,6 @@ mask_real2_rounded = np.uint8(img2_translation_mask_small * mask_real2_white)
 mask_real1_rounded_white = np.uint8(np.concatenate((full_white, mask_real1_rounded, ), axis=1))
 mask_real2_rounded_white = np.uint8(np.concatenate((mask_real2_rounded, full_white), axis=1))
 
-#mask_real1_rounded_white[np.where((mask_real1_rounded_white==[0,0,0]).all(axis=2))] = [255,255,255]
-#mask_real2_rounded_white[np.where((mask_real2_rounded_white==[0,0,0]).all(axis=2))] = [255,255,255]
 mask_real1_rounded_white[np.where((mask_real1_rounded_white==[1,1,1]).all(axis=2))] = [255,255,255]
 mask_real2_rounded_white[np.where((mask_real2_rounded_white==[1,1,1]).all(axis=2))] = [255,255,255]
 
