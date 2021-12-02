@@ -157,6 +157,9 @@ def index():
             print('first', first)
             terminate()
             initialize()
+        elif request.form['button'] == 'terminate':
+            print("TERMINATE button clicked")
+            terminate()
         elif request.form['button'] == 'calibrate':
             print("CALIBRATION button clicked")
         elif request.form['button'] == 'loadpreset':

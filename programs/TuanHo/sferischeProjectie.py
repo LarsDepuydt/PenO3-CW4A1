@@ -41,7 +41,7 @@ def sferischeWarp(img):
     # pixel coordinates
     y_i, x_i = np.indices((h_, w_))
     X = np.stack([x_i, y_i], axis=-1).reshape(h_ * w_, 2)
-
+    
     return_img = map(sferical_projection, X)
     print(list(return_img))
 
