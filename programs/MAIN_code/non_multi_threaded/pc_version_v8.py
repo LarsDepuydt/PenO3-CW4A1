@@ -64,7 +64,10 @@ def get_cyl_wrap_assets_no_crop(K):
     """
     # pixel coordinates
     y_i, x_i = np.indices((HEIGHT, WIDTH))
-    X = np.stack([x_i, y_i, np.ones_like(x_i)], axis=-1).reshape(HEIGHT * WIDTH, 3)  # to homog
+    X = np.stack([x_i, y_i, np.ones_like(x_i)], axis=-1)
+    print(X.shape)
+    X.reshape(HEIGHT * WIDTH, 3)  # to homog
+    print(X.shape)
     Kinv = np.linalg.inv(K)
     X = Kinv.dot(X.T).T  # normalized coords
     # calculate cylindrical coords (sin\theta, h, cos\theta)
@@ -239,28 +242,27 @@ def get_x_combine_assets_transparent_borders_precrop(xt, log=False):
     height, imgR_cropped_width = imgR.shape[:2]
 
     combined_width = imgL_cropped_width + imgR_cropped_width - xt
-    imgL_cropped_no_overlap_width = imgL_cropped_width - x_t
-    imgR_cropped_no_overlap_width = imgR_cropped_width - x_t
+    imgL_cropped_no_overlap_width = imgL_cropped_width - xt
 
-    imgL_cropped_noblend_width = imgL_cropped_width - int(2*xt/3)
-    imgR_cropped_noblend_width = imgR_cropped_width - int(2*xt/3)
+    imgL_cropped_noblend_width = imgL_cropped_width - int(2 * xt / 3)
+    imgR_cropped_noblend_width = imgR_cropped_width - int(2 * xt / 3)
     pre_imgR_width = imgL_cropped_noblend_width
     post_imgL_width = imgR_cropped_noblend_width
-    print(imgL_cropped_no_overlap_width, imgL_cropped_noblend_width, imgR_cropped_noblend_width)
     # linear blend masks
-    maskL = np.repeat(np.tile(np.linspace(1, 0, int(xt/3)), (height, 1))[:, :, np.newaxis], 4, axis=2)
-    maskR = np.repeat(np.tile(np.linspace(0, 1, int(xt/3)), (height, 1))[:, :, np.newaxis], 4, axis=2)
+    maskL = np.repeat(np.tile(np.linspace(1, 0, int(xt / 3)), (height, 1))[:, :, np.newaxis], 4, axis=2)
+    maskR = np.repeat(np.tile(np.linspace(0, 1, int(xt / 3)), (height, 1))[:, :, np.newaxis], 4, axis=2)
 
     # constant no blend masks
-    mask_imgL_cropped_noblend = np.repeat(np.tile(np.full(imgL_cropped_noblend_width, 1.), (height, 1))[:, :, np.newaxis], 4, axis=2)
-    mask_imgR_cropped_noblend = np.repeat(np.tile(np.full(imgR_cropped_noblend_width, 1.), (height, 1))[:, :, np.newaxis], 4, axis=2)
+    mask_imgL_cropped_noblend = np.repeat(
+        np.tile(np.full(imgL_cropped_noblend_width, 1.), (height, 1))[:, :, np.newaxis], 4, axis=2)
+    mask_imgR_cropped_noblend = np.repeat(
+        np.tile(np.full(imgR_cropped_noblend_width, 1.), (height, 1))[:, :, np.newaxis], 4, axis=2)
     mask_post_imgL = np.repeat(np.tile(np.full((post_imgL_width), 0.), (height, 1))[:, :, np.newaxis], 4, axis=2)
     mask_pre_imgR = np.repeat(np.tile(np.full((pre_imgR_width), 0.), (height, 1))[:, :, np.newaxis], 4, axis=2)
 
     # full-sized masks
     mask_realL = np.concatenate((mask_imgL_cropped_noblend, maskL, mask_post_imgL), axis=1)
     mask_realR = np.concatenate((mask_pre_imgR, maskR, mask_imgR_cropped_noblend), axis=1)
-    print(imgL_cropped_noblend_width)
     TL= np.float32([[1, 0, 0], [0, 1, 0]])
     TR = np.float32([[1, 0, imgL_cropped_no_overlap_width], [0, 1, 0]])
 
@@ -277,18 +279,12 @@ def get_x_combine_assets_transparent_borders_precrop(xt, log=False):
     return TL, TR, combined_width, mask_realL, mask_realR
 
 def combine():
-    print(imgL.shape)
-    print(imgR.shape)
     cv2.imshow('imgL', imgL)
     cv2.imshow('imgR', imgR)
     imgL_translation = cv2.warpAffine(imgL, TL, (combined_width, HEIGHT))
     cv2.imshow('imgL_translation', imgL_translation)
-    print(imgL_translation.shape)
     imgR_translation = cv2.warpAffine(imgR, TR, (combined_width, HEIGHT))
-    print(imgR_translation.shape)
     cv2.imshow('imgR_translation', imgR_translation)
-    print(mask_realL.shape)
-    print(mask_realR.shape)
     cv2.waitKey(0)
     final = np.uint8(imgL_translation * mask_realL + imgR_translation * mask_realR)
 
