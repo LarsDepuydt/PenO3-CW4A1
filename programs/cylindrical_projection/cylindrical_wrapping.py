@@ -7,17 +7,10 @@ import numpy as np
 CAMERA_MATRIX = [[320.68838395,   0, 315.79552501],
  [0, 314.07165737, 251.72067641],
  [ 0, 0, 1]]
-<<<<<<< HEAD
-#INPUT_IMAGE = "./camera_images/calibration_image_left.jpg"
-INPUT_IMAGE = "sterio_vision/images/left/left0.png"
-#OUTPUT_IMAGE = "./cylindrical_projection_images/left_cyl.jpg"
-OUTPUT_IMAGE = "./cylindrical_projection_images/left0_cyl.png"
-=======
-FOCAL_LENGTH = 500
+FOCAL_LENGTH = 320
 
-INPUT_IMAGE = "sterio_vision/images/right/right0.png"
-OUTPUT_IMAGE = "./cylindrical_projection_images/right0_cyl.jpg"
->>>>>>> 7aedac775066555b2e0ca454d2fb7208e6347b93
+INPUT_IMAGE = "/Users/lars/Downloads/PenO3-CW4A1/programs/cylindrical_projection/right3_cyl_x.png"
+OUTPUT_IMAGE = "/Users/lars/Downloads/PenO3-CW4A1/programs/cylindrical_projection/right3_cyl_xy.png"
 
 
 def cylindricalWarp(img, K):
@@ -29,8 +22,12 @@ def cylindricalWarp(img, K):
     Kinv = np.linalg.inv(K)
     X = Kinv.dot(X.T).T  # normalized coords
     # calculate cylindrical coords (sin\theta, h, cos\theta)
-    A = np.stack([np.sin(X[:, 0]), X[:, 1], np.cos(X[:, 0])], axis=-1).reshape(w_ * h_, 3)
-    #boven onder: A = np.stack([X[:, 0], np.sin(X[:, 1]), np.cos(X[:, 1])], axis=-1).reshape(w_ * h_, 3)
+
+    # x-as
+    #A = np.stack([np.sin(X[:, 0]), X[:, 1], np.cos(X[:, 0])], axis=-1).reshape(w_ * h_, 3)
+    # y-as
+    A = np.stack([X[:, 0], np.sin(X[:, 1]), np.cos(X[:, 1])], axis=-1).reshape(w_ * h_, 3)
+
     B = K.dot(A.T).T  # project back to image-pixels plane
     # back from homog coords
     B = B[:, :-1] / B[:, [-1]]
