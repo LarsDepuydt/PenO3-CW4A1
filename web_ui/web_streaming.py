@@ -8,8 +8,7 @@ import numpy as np
 # REFERENCE: https://www.pyimagesearch.com/2019/09/02/opencv-stream-video-to-web-browser-html-page/
 # REFERENCE: https://towardsdatascience.com/video-streaming-in-web-browsers-with-opencv-flask-93a38846fe00
 
-FIRST = True
-print("here")
+first = True
 zoom = 0
 origin = [0, 0]
 h, w = 0, 0
@@ -93,16 +92,14 @@ def gen_frames_cv2_videocapture():
             frame = buffer.tobytes()
             yield(b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
-def gen_frames_imagehub():
-    global HEIGHT, WIDTH, h, w, FIRST
-    print(FIRST)
-    if FIRST:
-        print("HEERERERHEHER")
+def gen_frames_imagehub(first=False):
+    global HEIGHT, WIDTH, h, w
+    print(first)
+    if first:
+        print("Starting IMAGEHUB")
         IMAGE_HUB = imagezmq.ImageHub()
         HEIGHT, WIDTH = IMAGE_HUB.recv_image()[1].shape[:2]
         IMAGE_HUB.send_reply(b'OK')
-        FIRST = False
-    print(FIRST)
     while True:
         frame = IMAGE_HUB.recv_image()[1][origin[1]:origin[1] + h, origin[0]:origin[0] + w]
         print(frame)
@@ -138,12 +135,14 @@ def gen_frames_imagehub_log_fps():
 @app.route('/', methods=['POST', 'GET'])
 def index():
     error = None
-    global zoom, h, w, origin, FIRST
-    print(FIRST)
+    global zoom, h, w, origin, first
+    print(first)
     if request.method == 'POST':
         if request.form['button'] == 'restart':
             print("RESTART button clicked")
             # call terminate function
+            first = True
+            print('first', first)
             initialize()
         elif request.form['button'] == 'calibrate':
             print("CALIBRATION button clicked")
@@ -205,7 +204,7 @@ def index():
     else:
         print("NON-POST REQUEST")
         pass
-    print("Okay okay", FIRST)
+    print("Okay okay", first)
     return flask.render_template('index.html')
 
 
@@ -226,7 +225,9 @@ elif SOURCE == 3:
     else:
         @app.route('/video_feed')
         def video_feed():
-            return flask.Response(gen_frames_imagehub(), mimetype='multipart/x-mixed-replace; boundary=frame')
+            return flask.Response(gen_frames_imagehub(first), mimetype='multipart/x-mixed-replace; boundary=frame')
+        first = False
+
 
 
 if __name__ == "__main__":
