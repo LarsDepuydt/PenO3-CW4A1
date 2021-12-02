@@ -20,7 +20,7 @@ PREVIOUS_CALIBRATION_DATA_PATH = "calibration_data.txt"
 
 INIT_HELPER_CMD = "sh sshconn_and_execute_cmd.sh 'cd Desktop/PenO3-CW4A1/programs/MAIN_code/non_multi_threaded;python3 ./helper_v3.py'"
 from os import system
-system(INIT_HELPER_CMD)       # init helper pi
+#system(INIT_HELPER_CMD)       # init helper pi
 
 KEYPOINT_COUNT = 2000  # set number of keypoints
 MAX_MATCH_Y_DISP = 20 # maximum vertical displacement of valid match in pixels
@@ -28,10 +28,10 @@ MIN_MATCH_COUNT = 5  # set minimum number of better_matches
 KEYPOINT_MASK_X_BOUND = 0.4 # only search for keypoints in this fraction of pixel towards the bound
 
 # focal length = 3.15mm volgens waveshare.com/imx219-d160.htm
-FOCAL_LEN_L_X = 310
-FOCAL_LEN_L_Y = 310
-FOCAL_LEN_R_X = 310
-FOCAL_LEN_R_Y = 310
+FOCAL_LEN_L_X = 450
+FOCAL_LEN_L_Y = 450
+FOCAL_LEN_R_X = 450
+FOCAL_LEN_R_Y = 450
 s = 0 # skew parameter
 
 KL = np.array([[FOCAL_LEN_L_X, s, WIDTH/2], [0, FOCAL_LEN_L_Y, HEIGHT/2], [0, 0, 1]], dtype=np.uint16)  # mock intrinsics
@@ -248,8 +248,7 @@ def get_x_combine_assets_transparent_borders_precrop(xt, log=False):
     # full-sized masks
     mask_realL = np.concatenate((mask_imgL_cropped_noblend, maskL, mask_post_imgL), axis=1)
     mask_realR = np.concatenate((mask_pre_imgR, maskR, mask_imgR_cropped_noblend), axis=1)
-    print(imgL_cropped_noblend_width)
-    TL = np.float32([[1, 0, 0], [0, 1, 0]])
+    TL= np.float32([[1, 0, 0], [0, 1, 0]])
     TR = np.float32([[1, 0, imgL_cropped_no_overlap_width], [0, 1, 0]])
 
     if log:
