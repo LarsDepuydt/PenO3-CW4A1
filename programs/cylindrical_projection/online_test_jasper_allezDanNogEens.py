@@ -23,8 +23,8 @@ def undistort(img_path, balance=1.0, dim2=None, dim3=None):
     hight, width = undistorted_img.shape[:2]
     print(hight, width)
     print(undistorted_img)
-    cv2.imwrite("left.jpg", undistorted_img)
+    cv2.imwrite("/Users/lars/Downloads/PenO3-CW4A1/programs/cylindrical_projection/undistorded_images/right0_und.jpg", undistorted_img)
 
 
 if __name__ == '__main__':
-    undistort( "sterio_vision/images/left/left3.png")
+    undistort( "/Users/lars/Downloads/PenO3-CW4A1/programs/cylindrical_projection/sterio_vision/images/right/right0.png")
