@@ -1,6 +1,3 @@
 echo "IN MAIN PI: terminating main"
-ps -ef | grep python
-pkill -f main_v6.py
-ps -ef | grep python
+# pkill -f main_v6.py
 sudo pkill python
-sleep 10

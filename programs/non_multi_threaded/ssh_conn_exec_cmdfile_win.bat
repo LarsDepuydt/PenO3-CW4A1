@@ -1,4 +1,4 @@
-echo Connecting to pi from win
+echo Trying to connect to Pi via SSH(Putty)
 
 echo ip adress: %1
 echo command file: %2

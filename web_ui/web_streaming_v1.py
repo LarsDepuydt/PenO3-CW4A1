@@ -16,7 +16,6 @@ SOURCE = 3
 # 1: cv2.VideoCapture, 2: imutils.VideoStream, 3: imagezmq.imagehub
 LOG_FPS = False
 INIT_PIs = True
-DEBUG = True
 
 def initialize():
     global camera
@@ -40,7 +39,8 @@ def initialize():
         time.sleep(2.0)
     elif SOURCE == 3:
         # DO NOT OPEN IMAGEHUB BEFORE app.run'ning flask!
-        pass
+        global IMAGE_HUB
+        IMAGE_HUB = imagezmq.ImageHub()#open_port='tcp://:5555')
     else:
         assert False
 
@@ -105,12 +105,9 @@ def gen_frames_cv2_videocapture():
 
 def gen_frames_imagehub(first=False):
     global HEIGHT, WIDTH, h, w
-    print(first)
     if first:
-        print("Starting IMAGEHUB")
-        IMAGE_HUB = imagezmq.ImageHub()
         HEIGHT, WIDTH = IMAGE_HUB.recv_image()[1].shape[:2]
-        IMAGE_HUB.send_reply(b'OK')
+        print("In FIRST IN GEN_FRAMES")
     while True:
         frame = IMAGE_HUB.recv_image()[1][origin[1]:origin[1] + h, origin[0]:origin[0] + w]
         IMAGE_HUB.send_reply(b'OK')
@@ -123,10 +120,6 @@ def gen_frames_imagehub_log_fps():
         frame = IMAGE_HUB.recv_image()[1]
         IMAGE_HUB.send_reply(b'OK')
         t_after_image = time.perf_counter()
-        '''
-            ret, buffer = cv2.imencode('.jpg', frame)
-            frame = buffer.tobytes()
-            yield(b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')'''
         yield(b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + cv2.imencode('.jpg', frame)[1].tobytes() + b'\r\n')
         
         t_after_yield = time.perf_counter()
@@ -145,7 +138,7 @@ def gen_frames_imagehub_log_fps():
 @app.route('/', methods=['POST', 'GET'])
 def index():
     global zoom, h, w, origin, first
-    print("start of index() - first=", first)
+    print("beginning index() - first=", first)
     if request.method == 'POST':
         if request.form['button'] == 'terminate':
             print("TERMINATE button clicked")
@@ -153,11 +146,10 @@ def index():
             terminate()
         elif request.form['button'] == 'restart':
             print("RESTART button clicked")
-            # call terminate function
             first = True
             print('restarting - first=', first)
             terminate()
-            initialize()   
+            initialize()
         elif request.form['button'] == 'calibrate':
             print("CALIBRATION button clicked")
         elif request.form['button'] == 'loadpreset':
@@ -218,7 +210,7 @@ def index():
     else:
         print("NON-POST REQUEST")
         pass
-    print("End of index() - first=", first)
+    print("RETURNING render_template(index.html), first=", first)
     return flask.render_template('index.html')
 
 
@@ -242,6 +234,8 @@ elif SOURCE == 3:
             return flask.Response(gen_frames_imagehub(first), mimetype='multipart/x-mixed-replace; boundary=frame')
         first = False
 
+
+
 if __name__ == "__main__":
-    app.run(DEBUG)
+    app.run(debug=True)
     
