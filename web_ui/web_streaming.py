@@ -8,26 +8,28 @@ import numpy as np
 # REFERENCE: https://www.pyimagesearch.com/2019/09/02/opencv-stream-video-to-web-browser-html-page/
 # REFERENCE: https://towardsdatascience.com/video-streaming-in-web-browsers-with-opencv-flask-93a38846fe00
 
-FIRST = True
-print("here")
+first = True
 zoom = 0
 origin = [0, 0]
-h, w = 0, 0
+h, w = 480, 640
 SOURCE = 3
 # 1: cv2.VideoCapture, 2: imutils.VideoStream, 3: imagezmq.imagehub
 LOG_FPS = False
-INIT_PIs = False
+INIT_PIs = True
+DEBUG = True
 
 def initialize():
     global camera
-    if INIT_PIs: 
-        import os
-        PROG_DIR =  str(str(os.path.dirname(os.path.realpath(__file__)))[:-6] + "programs/MAIN_code/non_multi_threaded").replace("\\", "/")
-        INIT_MAIN_CMD = PROG_DIR + "/ssh_conn_and_execute_cmd_win.bat"
+    if INIT_PIs:
+        print("Initing pis")
+        from os import path
+        from subprocess import run
+        PROG_DIR =  str(str(path.dirname(path.realpath(__file__)))[:-6] + "programs/non_multi_threaded").replace("\\", "/")
+        REMOTE_EXEC_SCRIPT_PATH = PROG_DIR + "/ssh_conn_exec_cmdfile_win.bat"
         MAIN_CMD_FILE = PROG_DIR + "/main_init.txt"
-        import subprocess
-        subprocess.run([INIT_MAIN_CMD, "169.254.222.67", MAIN_CMD_FILE])
-
+        HELPER_CMD_FILE = PROG_DIR + "/helper_init.txt"
+        run([REMOTE_EXEC_SCRIPT_PATH, "169.254.222.67", MAIN_CMD_FILE])
+        run([REMOTE_EXEC_SCRIPT_PATH, "169.254.165.116", HELPER_CMD_FILE])
     if SOURCE == 1:
         camera = cv2.VideoCapture(0)    # laptop webcam
         global w, h
@@ -38,11 +40,19 @@ def initialize():
         time.sleep(2.0)
     elif SOURCE == 3:
         # DO NOT OPEN IMAGEHUB BEFORE app.run'ning flask!
-        # global IMAGE_HUB
-        # IMAGE_HUB = imagezmq.ImageHub()#open_port='tcp://:5555')
         pass
     else:
         assert False
+
+def terminate():
+    from os import path
+    from subprocess import run
+    PROG_DIR =  str(str(path.dirname(path.realpath(__file__)))[:-6] + "programs/non_multi_threaded").replace("\\", "/")
+    REMOTE_EXEC_SCRIPT_PATH = PROG_DIR + "/ssh_conn_exec_cmdfile_win.bat"
+    MAIN_CMD_FILE = PROG_DIR + "/main_terminate.txt"
+    HELPER_CMD_FILE = PROG_DIR + "/helper_terminate.txt"
+    run([REMOTE_EXEC_SCRIPT_PATH, "169.254.222.67", MAIN_CMD_FILE])
+    run([REMOTE_EXEC_SCRIPT_PATH, "169.254.165.116", HELPER_CMD_FILE])
 
 app = flask.Flask(__name__)
 
@@ -93,19 +103,16 @@ def gen_frames_cv2_videocapture():
             frame = buffer.tobytes()
             yield(b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
-def gen_frames_imagehub():
-    global HEIGHT, WIDTH, h, w, FIRST
-    print(FIRST)
-    if FIRST:
-        print("HEERERERHEHER")
+def gen_frames_imagehub(first=False):
+    global HEIGHT, WIDTH, h, w
+    print(first)
+    if first:
+        print("Starting IMAGEHUB")
         IMAGE_HUB = imagezmq.ImageHub()
         HEIGHT, WIDTH = IMAGE_HUB.recv_image()[1].shape[:2]
         IMAGE_HUB.send_reply(b'OK')
-        FIRST = False
-    print(FIRST)
     while True:
         frame = IMAGE_HUB.recv_image()[1][origin[1]:origin[1] + h, origin[0]:origin[0] + w]
-        print(frame)
         IMAGE_HUB.send_reply(b'OK')
         yield(b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + cv2.imencode('.jpg', frame)[1].tobytes() + b'\r\n')
 
@@ -137,14 +144,20 @@ def gen_frames_imagehub_log_fps():
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
-    error = None
-    global zoom, h, w, origin, FIRST
-    print(FIRST)
+    global zoom, h, w, origin, first
+    print("start of index() - first=", first)
     if request.method == 'POST':
-        if request.form['button'] == 'restart':
+        if request.form['button'] == 'terminate':
+            print("TERMINATE button clicked")
+            first = True
+            terminate()
+        elif request.form['button'] == 'restart':
             print("RESTART button clicked")
             # call terminate function
-            initialize()
+            first = True
+            print('restarting - first=', first)
+            terminate()
+            initialize()   
         elif request.form['button'] == 'calibrate':
             print("CALIBRATION button clicked")
         elif request.form['button'] == 'loadpreset':
@@ -205,7 +218,7 @@ def index():
     else:
         print("NON-POST REQUEST")
         pass
-    print("Okay okay", FIRST)
+    print("End of index() - first=", first)
     return flask.render_template('index.html')
 
 
@@ -226,9 +239,9 @@ elif SOURCE == 3:
     else:
         @app.route('/video_feed')
         def video_feed():
-            return flask.Response(gen_frames_imagehub(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
+            return flask.Response(gen_frames_imagehub(first), mimetype='multipart/x-mixed-replace; boundary=frame')
+        first = False
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(DEBUG)
     

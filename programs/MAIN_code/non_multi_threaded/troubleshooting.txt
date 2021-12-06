@@ -1,6 +1,0 @@
-If error =~ port already in use:
-    sudo netstat -ltnp
-    check process using :5555
-    kill -9 <pid of process>
-    (done)
-

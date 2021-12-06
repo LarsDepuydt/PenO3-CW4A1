@@ -1,0 +1,10 @@
+OPTION 1
+	- add .cfg file which contains:
+		Int or -1 (if int: index of preset, if -1: calibrate)
+		1: x_t=xxx, y_t=xxx
+		2: ...
+		3: ...
+	- write commands in init-scripts where pc edits this config
+OPTION 2
+	- add argument parser to main.py and helper.py and pass arguments during init
+	
