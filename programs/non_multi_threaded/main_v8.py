@@ -12,8 +12,8 @@ from math import floor, ceil
 CAMERAMODE = 1 # 1 = imutils.VideoStream, 2 = cv2.VideoCapture
 CALIBRATION_RESOLUTION = WIDTH, HEIGHT = (640, 480)
 STREAM_RESOLUTION      = (640, 480)
-RB_IP_MAIN =    'tcp://169.254.222.67:5555'
-RB_IP_HELPER =  'tcp://169.254.165.116:5555'
+RB_IP_MAIN =    'tcp://169.254.165.116:5555'
+RB_IP_HELPER =  'tcp://169.254.222.67:5555'
 #PC_IP =         'tcp://192.168.137.1:5555'
 #PC_IP = 'tcp://169.254.62.171:5555'
 PC_IP = 'tcp://169.254.236.78:5555'
@@ -80,17 +80,20 @@ def get_cyl_wrap_assets_crop(K):
     X = np.stack([x_i, y_i, np.ones_like(x_i)], axis=-1).reshape(HEIGHT * WIDTH, 3)  # to homog
     Kinv = np.linalg.inv(K)
     X = Kinv.dot(X.T).T  # normalized coords
-    # calculate cylindrical coords (sin\theta, h, cos\theta)
-    A = np.stack([np.sin(X[:, 0]), X[:, 1], np.cos(X[:, 0])], axis=-1).reshape(WIDTH * HEIGHT, 3)
-    #boven onder: A = np.stack([X[:, 0], np.sin(X[:, 1]), np.cos(X[:, 1])], axis=-1).reshape(WIDTH * HEIGHT, 3)
-    B = K.dot(A.T).T  # project back to image-pixels plane
-    # back from homog coords
+    theta_s = X[:, 0]
+    phi_s = X[:, 1]
+    A = np.stack([np.cos(phi_s) * np.sin(theta_s), np.sin(phi_s), np.cos(phi_s) * np.cos(theta_s)], axis=-1).reshape(
+        WIDTH * HEIGHT, 3)
+    B = K.dot(A.T).T
+    #ro = 2*np.arctan2(np.sqrt(A[:,0]**2 + A[:,1]**2),A[:,2])
+    #theta = np.arctan2(A[:,1],A[:,0])
+    #B = np.stack([ro*np.cos(theta), ro*np.sin(theta), np.ones_like(A[:,0])], axis=-1).reshape(WIDTH * HEIGHT, 3)
+    #B = K.dot(B.T).T  # project back to image-pixels plane
     B = B[:, :-1] / B[:, [-1]]
     # make sure warp coords only within image bounds
     B[(B[:, 0] < 0) | (B[:, 0] >= WIDTH) | (B[:, 1] < 0) | (B[:, 1] >= HEIGHT)] = -1
-    x_L, x_R = [], []
-
     B = B.reshape(HEIGHT, WIDTH, -1)
+    x_L, x_R = [], []
     for y, r in enumerate(B):
         foundleft = False
         for x, p in enumerate(r):
@@ -102,6 +105,8 @@ def get_cyl_wrap_assets_crop(K):
                 break
     x_L, x_R = min(x_L), max(x_R)
     B = B[:, x_L:x_R]
+    np.savetxt("bspherical0.txt", B[0])
+    np.savetxt("bspherical1.txt", B[1])
     return x_L, x_R, B[:, :, 0].astype(np.float32), B[:, :, 1].astype(np.float32)
 
 def warp_image(img, map1, map2):
@@ -284,7 +289,7 @@ SENDER.send_image(RB_IP_MAIN, np.array([MAPL1, MAPL2]))
 print('Sent MAPL1 and MAPL2')
 
 #x_t, y_t = get_translation_parameters(imgL, imgR, log=False)
-x_t = 60
+x_t = 0
 imgL = warp_image(imgL, MAPL1, MAPL2)
 imgR = warp_image(imgR, MAPR1, MAPR2)
 
