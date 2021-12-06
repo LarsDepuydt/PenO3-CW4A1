@@ -15,5 +15,14 @@ while True:
     f.append(1/(t-t_old))
     t_old = t
     #print(f)
+    
+
+
+
+
+
+
+
+
 
 
