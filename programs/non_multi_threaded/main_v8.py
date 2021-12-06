@@ -93,6 +93,8 @@ def get_cyl_wrap_assets_crop(K):
     # make sure warp coords only within image bounds
     B[(B[:, 0] < 0) | (B[:, 0] >= WIDTH) | (B[:, 1] < 0) | (B[:, 1] >= HEIGHT)] = -1
     B = B.reshape(HEIGHT, WIDTH, -1)
+    np.savetxt("bspherical0.txt", B[0])
+    np.savetxt("bspherical1.txt", B[1])
     x_L, x_R = [], []
     for y, r in enumerate(B):
         foundleft = False
@@ -105,8 +107,7 @@ def get_cyl_wrap_assets_crop(K):
                 break
     x_L, x_R = min(x_L), max(x_R)
     B = B[:, x_L:x_R]
-    np.savetxt("bspherical0.txt", B[0])
-    np.savetxt("bspherical1.txt", B[1])
+
     return x_L, x_R, B[:, :, 0].astype(np.float32), B[:, :, 1].astype(np.float32)
 
 def warp_image(img, map1, map2):
