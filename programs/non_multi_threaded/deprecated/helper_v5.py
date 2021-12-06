@@ -15,7 +15,7 @@ CALIBRATION_RESOLUTION = (480, 368)
 STREAM_RESOLUTION = (480, 360)
 RB_IP_MAIN = 'tcp://169.254.222.67:5555'
 RB_IP_HELPER = 'tcp://169.254.165.116:5555'
-CILINDER_FACTOR = 0
+CILINDER_FACTOR = 320
 
 # =============================
 # INITIALIZATION
@@ -84,6 +84,7 @@ def cylindricalWarp(img, K):
 
 
 while True:
+    print(K)
     SENDER.send_image(RB_IP_HELPER, cylindricalWarp(PICAM.read(), K))
 
     '''
