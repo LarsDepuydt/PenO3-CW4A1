@@ -1,3 +1,3 @@
 echo "On the helper pi, initting helper"
-cd Desktop/PenO3-CW4A1/programs/MAIN_code/non_multi_threaded
+cd Desktop/PenO3-CW4A1/programs/non_multi_threaded
 python3 helper_v6.py
