@@ -11,8 +11,8 @@ from time import sleep
 CAMERAMODE = 1 # 1 = imutils.VideoStream, 2 = cv2.VideoCapture
 CALIBRATION_RESOLUTION = WIDTH, HEIGHT = (640, 480)
 STREAM_RESOLUTION      = (640, 480)
-RB_IP_MAIN =    'tcp://169.254.222.67:5555'
-RB_IP_HELPER =  'tcp://169.254.165.116:5555'
+RB_IP_MAIN =    'tcp://169.254.165.116:5555'
+RB_IP_HELPER =  'tcp://169.254.222.67:5555'
 #PC_IP =         'tcp://192.168.137.1:5555'
 #PC_IP = 'tcp://169.254.62.171:5555'
 PC_IP = 'tcp://169.254.236.78:5555'
