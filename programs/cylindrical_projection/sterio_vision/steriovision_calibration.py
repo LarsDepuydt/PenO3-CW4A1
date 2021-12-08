@@ -25,13 +25,25 @@ objpoints = [] # 3d point in real world space
 imgpointsL = [] # 2d points in image plane.
 imgpointsR = [] # 2d points in image plane.
 
+import os
+CURRENT_DIR = str(os.path.dirname(os.path.realpath(__file__))).replace("\\", "/")
+DIRS = CURRENT_DIR.split("/")
+for i, s in enumerate(DIRS):
+    if s == "PenO3-CW4A1":
+        REPO_ROOT = "/".join(DIRS[:i+1])
+print(REPO_ROOT)
+IMAGE_DIR = REPO_ROOT + "/programs/cylindrical_projection/sterio_vision/images/"
 
-imagesLeft = sorted(glob.glob('images/stereoLeft/*.png'))
-imagesRight = sorted(glob.glob('images/stereoRight/*.png'))
-
+imagesLeft  = sorted(glob.glob(IMAGE_DIR + 'left/*.png'))
+imagesRight = sorted(glob.glob(IMAGE_DIR + 'right/*.png'))
+imagesLeft = [x.replace("\\", "/") for x in imagesLeft]
+imagesRight = [x.replace("\\", "/") for x in imagesRight]
+print(imagesRight)
 for imgLeft, imgRight in zip(imagesLeft, imagesRight):
 
     imgL = cv.imread(imgLeft)
+    cv.imshow("j", imgL)
+    cv.waitKey(0)
     imgR = cv.imread(imgRight)
     grayL = cv.cvtColor(imgL, cv.COLOR_BGR2GRAY)
     grayR = cv.cvtColor(imgR, cv.COLOR_BGR2GRAY)
