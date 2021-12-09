@@ -19,11 +19,7 @@ RB_IP_HELPER =  'tcp://169.254.222.67:5555'
 PC_IP = 'tcp://169.254.236.78:5555'
 PREVIOUS_CALIBRATION_DATA_PATH = "calibration_data.txt"
 
-INIT_HELPER_CMD = "sh sshconn_and_execute_cmd.sh 'cd Desktop/PenO3-CW4A1/programs/MAIN_code/non_multi_threaded;python3 ./helper_v3.py'"
-from os import system
-#system(INIT_HELPER_CMD)       # init helper pi
-
-BLURR_WIDTH = 1/3
+BLURR_WIDTH = 1/10
 
 KEYPOINT_COUNT = 2000  # set number of keypoints
 MAX_MATCH_Y_DISP = 20 # maximum vertical displacement of valid match in pixels
@@ -31,10 +27,10 @@ MIN_MATCH_COUNT = 5  # set minimum number of better_matches
 KEYPOINT_MASK_X_BOUND = 0.4 # only search for keypoints in this fraction of pixel towards the bound
 
 # focal length = 3.15mm volgens waveshare.com/imx219-d160.htm
-FOCAL_LEN_L_X = 450
-FOCAL_LEN_L_Y = 450
-FOCAL_LEN_R_X = 450
-FOCAL_LEN_R_Y = 450
+FOCAL_LEN_L_X = 315
+FOCAL_LEN_L_Y = 315
+FOCAL_LEN_R_X = 315
+FOCAL_LEN_R_Y = 315
 s = 0 # skew parameter
 
 KL = np.array([[FOCAL_LEN_L_X, s, WIDTH/2], [0, FOCAL_LEN_L_Y, HEIGHT/2], [0, 0, 1]], dtype=np.uint16)  # mock intrinsics
@@ -84,11 +80,11 @@ def get_cyl_wrap_assets_crop(K):
     phi_s = X[:, 1]
     A = np.stack([np.cos(phi_s) * np.sin(theta_s), np.sin(phi_s), np.cos(phi_s) * np.cos(theta_s)], axis=-1).reshape(
         WIDTH * HEIGHT, 3)
-    B = K.dot(A.T).T
-    #ro = 2*np.arctan2(np.sqrt(A[:,0]**2 + A[:,1]**2),A[:,2])
-    #theta = np.arctan2(A[:,1],A[:,0])
-    #B = np.stack([ro*np.cos(theta), ro*np.sin(theta), np.ones_like(A[:,0])], axis=-1).reshape(WIDTH * HEIGHT, 3)
-    #B = K.dot(B.T).T  # project back to image-pixels plane
+    #B = K.dot(A.T).T
+    ro = np.arctan2(np.sqrt(A[:,0]**2 + A[:,1]**2),A[:,2])
+    theta = np.arctan2(A[:,1],A[:,0])
+    B = np.stack([ro*np.cos(theta), ro*np.sin(theta), np.ones_like(A[:,0])], axis=-1).reshape(WIDTH * HEIGHT, 3)
+    B = K.dot(B.T).T  # project back to image-pixels plane
     B = B[:, :-1] / B[:, [-1]]
     # make sure warp coords only within image bounds
     B[(B[:, 0] < 0) | (B[:, 0] >= WIDTH) | (B[:, 1] < 0) | (B[:, 1] >= HEIGHT)] = -1
@@ -273,14 +269,14 @@ def get_x_combine_assets_transparent_borders_precrop(xt, log=False):
 
     return TL, TR, combined_width, mask_realL, mask_realR
 
-def combine():
+def combine(log = False):
     imgL_translation = cv2.warpAffine(imgL, TL, (combined_width, HEIGHT))
     imgR_translation = cv2.warpAffine(imgR, TR, (combined_width, HEIGHT))
+    
     final = np.uint8(imgL_translation * mask_realL + imgR_translation * mask_realR)
+    if log:
+        pass
     return final
-    cv2.namedWindow("output", cv2.WINDOW_KEEPRATIO)
-    cv2.imshow('output', final)
-    cv2.waitKey(0)
 
 
 xR_L, xR_R, MAPR1, MAPR2 = get_cyl_wrap_assets_crop(KR)
@@ -290,7 +286,7 @@ SENDER.send_image(RB_IP_MAIN, np.array([MAPL1, MAPL2]))
 print('Sent MAPL1 and MAPL2')
 
 #x_t, y_t = get_translation_parameters(imgL, imgR, log=False)
-x_t = 0
+x_t = 472 nb
 imgL = warp_image(imgL, MAPL1, MAPL2)
 imgR = warp_image(imgR, MAPR1, MAPR2)
 
