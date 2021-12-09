@@ -285,7 +285,7 @@ SENDER.send_image(RB_IP_MAIN, np.array([MAPL1, MAPL2]))
 print('Sent MAPL1 and MAPL2')
 
 #x_t, y_t = get_translation_parameters(imgL, imgR, log=False)
-x_t = 472 nb
+x_t = 472
 imgL = warp_image(imgL, MAPL1, MAPL2)
 imgR = warp_image(imgR, MAPR1, MAPR2)
 
