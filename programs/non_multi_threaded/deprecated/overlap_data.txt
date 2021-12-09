@@ -1,0 +1,27 @@
+ANGLE = 60° (0° overlap)
+Good:
+    1
+    0
+    0
+    0
+    2
+ANGLE = 50° (10° overlap)
+Good:
+    8
+    0
+    2
+    9
+    2
+ANGLE = 40° (20° overlap)
+Good:
+    59
+    51
+    14
+    29
+    72 (malteser)
+
+
+
+
+
+

@@ -16,23 +16,32 @@ SOURCE = 3
 # 1: cv2.VideoCapture, 2: imutils.VideoStream, 3: imagezmq.imagehub
 LOG_FPS = False
 INIT_PIs = True
+DEBUG = True
+HEIGHT, WIDTH = 480, 1000
+
+MAIN_INIT_CMDS = [
+    'echo "On the main pi, initting main"', 
+    'cd Desktop/PenO3-CW4A1',
+    'cd venv/bin',
+    'source activate',
+    'cd ../../programs/non_multi_threaded',
+    'python main_v9.py']
 
 def initialize():
     global camera
     if INIT_PIs:
         print("Initing pis")
-        import os
-        PROG_DIR =  str(str(os.path.dirname(os.path.realpath(__file__)))[:-6] + "programs/MAIN_code/non_multi_threaded").replace("\\", "/")
-        REMOTE_EXEC_SCRIPT_PATH = PROG_DIR + "/ssh_conn_and_execute_cmd_win.bat"
+        from os import path
+        from subprocess import run
+        PROG_DIR =  str(str(path.dirname(path.realpath(__file__)))[:-6] + "programs/non_multi_threaded").replace("\\", "/")
+        REMOTE_EXEC_SCRIPT_PATH = PROG_DIR + "/ssh_conn_exec_cmdfile_win.bat"
         MAIN_CMD_FILE = PROG_DIR + "/main_init.txt"
         HELPER_CMD_FILE = PROG_DIR + "/helper_init.txt"
-        import subprocess
-        subprocess.run([REMOTE_EXEC_SCRIPT_PATH, "169.254.222.67", MAIN_CMD_FILE])
-        subprocess.run([REMOTE_EXEC_SCRIPT_PATH, "169.254.165.116", HELPER_CMD_FILE])
+        run([REMOTE_EXEC_SCRIPT_PATH, "169.254.165.116", MAIN_CMD_FILE])
+        run([REMOTE_EXEC_SCRIPT_PATH, "169.254.222.67", HELPER_CMD_FILE])
     if SOURCE == 1:
         camera = cv2.VideoCapture(0)    # laptop webcam
         global w, h
-
         h, w = camera.read()[1].shape[:2]
     elif SOURCE == 2: 
         import imutils
@@ -40,21 +49,19 @@ def initialize():
         time.sleep(2.0)
     elif SOURCE == 3:
         # DO NOT OPEN IMAGEHUB BEFORE app.run'ning flask!
-        # global IMAGE_HUB
-        # IMAGE_HUB = imagezmq.ImageHub()#open_port='tcp://:5555')
         pass
     else:
         assert False
 
 def terminate():
-    import os
-    PROG_DIR =  str(str(os.path.dirname(os.path.realpath(__file__)))[:-6] + "programs/MAIN_code/non_multi_threaded").replace("\\", "/")
-    REMOTE_EXEC_SCRIPT_PATH = PROG_DIR + "/ssh_conn_and_execute_cmd_win.bat"
+    from os import path
+    from subprocess import run
+    PROG_DIR =  str(str(path.dirname(path.realpath(__file__)))[:-6] + "programs/non_multi_threaded").replace("\\", "/")
+    REMOTE_EXEC_SCRIPT_PATH = PROG_DIR + "/ssh_conn_exec_cmdfile_win.bat"
     MAIN_CMD_FILE = PROG_DIR + "/main_terminate.txt"
     HELPER_CMD_FILE = PROG_DIR + "/helper_terminate.txt"
-    import subprocess
-    subprocess.run([REMOTE_EXEC_SCRIPT_PATH, "169.254.222.67", MAIN_CMD_FILE])
-    subprocess.run([REMOTE_EXEC_SCRIPT_PATH, "169.254.165.116", HELPER_CMD_FILE])
+    run([REMOTE_EXEC_SCRIPT_PATH, "169.254.222.67", MAIN_CMD_FILE])
+    run([REMOTE_EXEC_SCRIPT_PATH, "169.254.165.116", HELPER_CMD_FILE])
 
 app = flask.Flask(__name__)
 
@@ -146,20 +153,20 @@ def gen_frames_imagehub_log_fps():
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
-    error = None
     global zoom, h, w, origin, first
-    print(first)
+    print("start of index() - first=", first)
     if request.method == 'POST':
-        if request.form['button'] == 'restart':
+        if request.form['button'] == 'terminate':
+            print("TERMINATE button clicked")
+            first = True
+            terminate()
+        elif request.form['button'] == 'restart':
             print("RESTART button clicked")
             # call terminate function
             first = True
-            print('first', first)
+            print('restarting - first=', first)
             terminate()
-            initialize()
-        elif request.form['button'] == 'terminate':
-            print("TERMINATE button clicked")
-            terminate()
+            initialize()   
         elif request.form['button'] == 'calibrate':
             print("CALIBRATION button clicked")
         elif request.form['button'] == 'loadpreset':
@@ -220,7 +227,7 @@ def index():
     else:
         print("NON-POST REQUEST")
         pass
-    print("Okay okay", first)
+    print("End of index() - first=", first)
     return flask.render_template('index.html')
 
 
@@ -244,8 +251,7 @@ elif SOURCE == 3:
             return flask.Response(gen_frames_imagehub(first), mimetype='multipart/x-mixed-replace; boundary=frame')
         first = False
 
-
-
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=DEBUG)
+    
     

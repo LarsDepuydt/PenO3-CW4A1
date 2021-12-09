@@ -1,8 +1,0 @@
-echo "On the main pi, initting main"
-cd Desktop/PenO3-CW4A1
-cd venv/bin
-source activate
-cd ../../programs/MAIN_code/non_multi_threaded
-# opens in new window so it doesn't wait for it to finish execution
-python main_v6.py
-echo SUCCES?

@@ -12,6 +12,7 @@ function highlightButton(id) {
 }
 
 function submitfun(e, val) {
+    // REFERENCE: geek website
     console.log("Submitting: ", val)
     e.preventDefault();
     $.ajax({
