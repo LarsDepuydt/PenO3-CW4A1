@@ -79,11 +79,11 @@ def get_cyl_wrap_assets_crop(K):
     phi_s = X[:, 1]
     A = np.stack([np.cos(phi_s) * np.sin(theta_s), np.sin(phi_s), np.cos(phi_s) * np.cos(theta_s)], axis=-1).reshape(
         WIDTH * HEIGHT, 3)
-    B = K.dot(A.T).T
-    # ro = 2*np.arctan2(np.sqrt(A[:,0]**2 + A[:,1]**2),A[:,2])
-    # theta = np.arctan2(A[:,1],A[:,0])
-    # B = np.stack([ro*np.cos(theta), ro*np.sin(theta), np.ones_like(A[:,0])], axis=-1).reshape(WIDTH * HEIGHT, 3)
-    # B = K.dot(B.T).T  # project back to image-pixels plane
+    #B = K.dot(A.T).T
+    ro = np.arctan2(np.sqrt(A[:,0]**2 + A[:,1]**2),A[:,2])
+    theta = np.arctan2(A[:,1],A[:,0])
+    B = np.stack([ro*np.cos(theta), ro*np.sin(theta), np.ones_like(A[:,0])], axis=-1).reshape(WIDTH * HEIGHT, 3)
+    B = K.dot(B.T).T  # project back to image-pixels plane
     B = B[:, :-1] / B[:, [-1]]
     # make sure warp coords only within image bounds
     B[(B[:, 0] < 0) | (B[:, 0] >= WIDTH) | (B[:, 1] < 0) | (B[:, 1] >= HEIGHT)] = -1
@@ -291,7 +291,7 @@ SENDER.send_image(RB_IP_MAIN, np.array([MAPL1, MAPL2]))
 print('Sent MAPL1 and MAPL2')
 
 # x_t, y_t = get_translation_parameters(imgL, imgR, log=False)
-x_t = 0
+x_t = 25
 imgL = warp_image(imgL, MAPL1, MAPL2)
 imgR = warp_image(imgR, MAPR1, MAPR2)
 
