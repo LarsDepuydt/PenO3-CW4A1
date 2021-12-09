@@ -72,8 +72,6 @@ IMAGE_HUB.send_reply(b'OK')
 print('Received MAPL1 and MAPL2')
 
 
-
-
 class Remapping(threading.Thread):
     def __init__(self, REMAPPED):
         super().__init__()

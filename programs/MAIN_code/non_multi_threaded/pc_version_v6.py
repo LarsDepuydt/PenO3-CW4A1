@@ -54,8 +54,8 @@ SENDER = imagezmq.ImageSender(connect_to=RB_IP_HELPER)
 # INITIALISATION
 # ==============================
 
-imgL = cv2.cvtColor(cv2.imread("./programs/cylindrical_projection/sterio_vision/images/left/left0.png"), cv2.COLOR_BGR2BGRA)
-imgR = cv2.cvtColor(cv2.imread("./programs/cylindrical_projection/sterio_vision/images/right/right0.png"), cv2.COLOR_BGR2BGRA)
+imgL = cv2.cvtColor(cv2.imread("../../cylindrical_projection/sterio_vision/images/left/left0.png"), cv2.COLOR_BGR2BGRA)
+imgR = cv2.cvtColor(cv2.imread("../../cylindrical_projection/sterio_vision/images/right/right0.png"), cv2.COLOR_BGR2BGRA)
 
 def get_cyl_wrap_assets_no_crop(K):
     """
