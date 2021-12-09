@@ -38,8 +38,8 @@ K = np.array([
 # HAS TO BE OF TYPE FLOAT!!!!!!!!!
 # [fx s x0; 0 fy y0; 0 0 1]
 
-D=np.array([[-0.02268523653207129], [-0.024552020182573187], [-4.141383624332057e-05], [0.011483828520533408]])
-
+#D=np.array([[-0.02268523653207129], [-0.024552020182573187], [-4.141383624332057e-05], [0.011483828520533408]])
+D = np.array([[-0.25], [-0.025], [0], [0.010]])
 
 def get_cyl_wrap_assets_crop(K):
     """
@@ -152,7 +152,6 @@ def combine(log=False):
         cv2.imshow('imgR', imgR)
         cv2.waitKey(0)
     return final 
-    
 
 imgR = undistort(imgR)
 imgL = undistort(imgL)
