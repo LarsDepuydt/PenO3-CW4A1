@@ -18,10 +18,6 @@ RB_IP_HELPER = 'tcp://169.254.165.116:5555'
 PC_IP = 'tcp://169.254.236.78:5555'
 PREVIOUS_CALIBRATION_DATA_PATH = "calibration_data.txt"
 
-INIT_HELPER_CMD = "sh sshconn_and_execute_cmd.sh 'cd Desktop/PenO3-CW4A1/programs/MAIN_code/non_multi_threaded;python3 ./helper_v3.py'"
-from os import system
-
-system(INIT_HELPER_CMD)  # init helper pi
 
 KEYPOINT_COUNT = 2000  # set number of keypoints
 MAX_MATCH_Y_DISP = 20  # maximum vertical displacement of valid match in pixels
@@ -64,7 +60,7 @@ print("Ready message was received by helper")
 imgR = cv2.cvtColor(PICAM.read(), cv2.COLOR_BGR2BGRA)
 imgL = IMAGE_HUB.recv_image()[1]
 IMAGE_HUB.send_reply(b'OK')
-
+print("Foto_ontvangen")
 
 # imgL = cv2.cvtColor(cv2.imread("./programs/cylindrical_projection/sterio_vision/images/left/left0.png"), cv2.COLOR_BGR2BGRA)
 # imgR = cv2.cvtColor(cv2.imread("./programs/cylindrical_projection/sterio_vision/images/right/right0.png"), cv2.COLOR_BGR2BGRA)
@@ -83,11 +79,11 @@ def get_cyl_wrap_assets_crop(K):
     phi_s = X[:, 1]
     A = np.stack([np.cos(phi_s) * np.sin(theta_s), np.sin(phi_s), np.cos(phi_s) * np.cos(theta_s)], axis=-1).reshape(
         WIDTH * HEIGHT, 3)
-    B = K.dot(A.T).T
-    # ro = 2*np.arctan2(np.sqrt(A[:,0]**2 + A[:,1]**2),A[:,2])
-    # theta = np.arctan2(A[:,1],A[:,0])
-    # B = np.stack([ro*np.cos(theta), ro*np.sin(theta), np.ones_like(A[:,0])], axis=-1).reshape(WIDTH * HEIGHT, 3)
-    # B = K.dot(B.T).T  # project back to image-pixels plane
+    #B = K.dot(A.T).T
+    ro = np.arctan2(np.sqrt(A[:,0]**2 + A[:,1]**2),A[:,2])
+    theta = np.arctan2(A[:,1],A[:,0])
+    B = np.stack([ro*np.cos(theta), ro*np.sin(theta), np.ones_like(A[:,0])], axis=-1).reshape(WIDTH * HEIGHT, 3)
+    B = K.dot(B.T).T  # project back to image-pixels plane
     B = B[:, :-1] / B[:, [-1]]
     # make sure warp coords only within image bounds
     B[(B[:, 0] < 0) | (B[:, 0] >= WIDTH) | (B[:, 1] < 0) | (B[:, 1] >= HEIGHT)] = -1

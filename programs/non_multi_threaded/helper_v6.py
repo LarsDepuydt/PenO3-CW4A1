@@ -47,3 +47,4 @@ print('Received MAPL1 and MAPL2')
 
 while True:
     SENDER.send_image(RB_IP_HELPER, cv2.remap(cv2.cvtColor(PICAM.read(), cv2.COLOR_BGR2BGRA), MAPL1, MAPL2, cv2.INTER_AREA, borderMode=cv2.BORDER_TRANSPARENT))
+
