@@ -3,4 +3,4 @@ cd Desktop/PenO3-CW4A1
 cd venv/bin
 source activate
 cd ../../programs/non_multi_threaded
-python main_v6.py
+python main_v8.py

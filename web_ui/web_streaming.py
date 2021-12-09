@@ -19,6 +19,14 @@ INIT_PIs = True
 DEBUG = True
 HEIGHT, WIDTH = 480, 1000
 
+MAIN_INIT_CMDS = [
+    'echo "On the main pi, initting main"', 
+    'cd Desktop/PenO3-CW4A1',
+    'cd venv/bin',
+    'source activate',
+    'cd ../../programs/non_multi_threaded',
+    'python main_v9.py']
+
 def initialize():
     global camera
     if INIT_PIs:
