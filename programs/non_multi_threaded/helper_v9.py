@@ -48,7 +48,7 @@ SENDER = imagezmq.ImageSender(connect_to=RB_IP_MAIN)
 # ==============================
 
 IMAGE_HUB.send_reply(b'OK') # main continues after this and also takes picture
-imgL = PICAM.read()
+imgL = cv2.cvtColor(PICAM.read(), cv2.COLOR_BGR2BGRA)
 SENDER.send_image("", imgL)
 print("Left calibration image was received by main")
 

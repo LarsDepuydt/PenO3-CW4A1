@@ -23,7 +23,6 @@ PC_IP = argv[5]
 CAMERAMODE = 1 # 1 = imutils.VideoStream, 2 = cv2.VideoCapture
 RB_IP_MAIN =    'tcp://169.254.165.116:5555'
 RB_IP_HELPER =  'tcp://169.254.222.67:5555'
-PREVIOUS_CALIBRATION_DATA_PATH = "calibration_data.txt"
 
 KEYPOINT_COUNT = 2000  # set number of keypoints
 MAX_MATCH_Y_DISP = int() # maximum vertical displacement of valid match in pixels
@@ -44,7 +43,7 @@ elif CAMERAMODE ==2:
     PICAM.set(cv2.CAP_PROP_FRAME_HEIGHT, HEIGHT)
 IMAGE_HUB = imagezmq.ImageHub()
 
-sleep(2)  # allow camera sensor to warm up and wait to make sure helper is running
+sleep(1)  # allow camera sensor to warm up and wait to make sure helper is running
 SENDER = imagezmq.ImageSender(connect_to=RB_IP_HELPER)
 
 # ==============================
@@ -207,7 +206,7 @@ def get_combine_objects(xt, log=False):
 xR_L, xR_R, MAPR1, MAPR2 = get_projection_objects(KR)
 xL_L, xL_R, MAPL1, MAPL2 = get_projection_objects(KL)
 
-SENDER.send_image(RB_IP_MAIN, np.array([MAPL1, MAPL2]))
+SENDER.send_image("", np.array([MAPL1, MAPL2]))
 print('MAPL1 and MAPL2 were received by helper')
 
 imgL = cv2.remap(imgL, MAPL1, MAPL2, cv2.INTER_AREA, borderMode=cv2.BORDER_TRANSPARENT)
@@ -237,6 +236,6 @@ SENDER = imagezmq.ImageSender(connect_to=PC_IP)
 while True:
     imgR = cv2.remap(cv2.cvtColor(PICAM.read(), cv2.COLOR_BGR2BGRA), MAPL1, MAPL2, cv2.INTER_AREA, borderMode=cv2.BORDER_TRANSPARENT)
     imgL = IMAGE_HUB.recv_image()[1]
-    SENDER.send_image(RB_IP_MAIN, np.uint8(cv2.warpAffine(imgL, TL, (combined_width, HEIGHT)) * mask_realL + cv2.warpAffine(imgR, TR, (combined_width, HEIGHT)) * mask_realR))
+    SENDER.send_image("", np.uint8(cv2.warpAffine(imgL, TL, (combined_width, HEIGHT)) * mask_realL + cv2.warpAffine(imgR, TR, (combined_width, HEIGHT)) * mask_realR))
     IMAGE_HUB.send_reply(b'OK')
 
