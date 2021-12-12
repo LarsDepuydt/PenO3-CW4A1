@@ -131,6 +131,12 @@ def gen_frames_imagehub_log_fps():
             print("Imagehub fps 1sample: ", img_hub_fps[-1])
             web_app_fps, img_hub_fps = [], []
 
+def is_port_in_use(port):
+    # REFERENCE: https://codereview.stackexchange.com/questions/116450/find-available-ports-on-localhost
+    import socket
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        return s.connect_ex(('localhost', port)) == 0
+
 # ==============================
 # FLASK
 # ==============================
