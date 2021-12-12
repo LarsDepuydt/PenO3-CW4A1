@@ -87,12 +87,12 @@ def gen_command_files(maincmds, helpercmds, use_keypnt, res, blend_frac, x_t, pc
     
     maincmds[-1] += argstr
     maincmds = [x+'\n' for x in maincmds]
-    with open(CMD_FILE_SAVE_DIR + 'main_init2.txt', mode='w') as f:
+    with open(CMD_FILE_SAVE_DIR + 'main_init.txt', mode='w') as f:
         f.writelines(maincmds)
 
     helpercmds[-1] += argstr
     helpercmds = [x + '\n' for x in helpercmds]
-    with open(CMD_FILE_SAVE_DIR + 'helper_init2.txt', mode='w') as f:
+    with open(CMD_FILE_SAVE_DIR + 'helper_init.txt', mode='w') as f:
         f.writelines(helpercmds)
 
 def gen_frames_imagehub():
