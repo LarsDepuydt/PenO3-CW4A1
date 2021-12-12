@@ -28,7 +28,6 @@ MAIN_INIT_CMDS = [
     'python main_v9.py']
 
 def initialize():
-    global camera
     if INIT_PIs:
         print("Initing pis")
         from os import path
@@ -40,6 +39,7 @@ def initialize():
         run([REMOTE_EXEC_SCRIPT_PATH, "169.254.165.116", MAIN_CMD_FILE])
         run([REMOTE_EXEC_SCRIPT_PATH, "169.254.222.67", HELPER_CMD_FILE])
     if SOURCE == 1:
+        global camera
         camera = cv2.VideoCapture(0)    # laptop webcam
         global w, h
         h, w = camera.read()[1].shape[:2]
@@ -60,8 +60,8 @@ def terminate():
     REMOTE_EXEC_SCRIPT_PATH = PROG_DIR + "/ssh_conn_exec_cmdfile_win.bat"
     MAIN_CMD_FILE = PROG_DIR + "/main_terminate.txt"
     HELPER_CMD_FILE = PROG_DIR + "/helper_terminate.txt"
-    run([REMOTE_EXEC_SCRIPT_PATH, "169.254.222.67", MAIN_CMD_FILE])
-    run([REMOTE_EXEC_SCRIPT_PATH, "169.254.165.116", HELPER_CMD_FILE])
+    run([REMOTE_EXEC_SCRIPT_PATH, "169.254.165.116", MAIN_CMD_FILE])
+    run([REMOTE_EXEC_SCRIPT_PATH, "169.254.222.67", HELPER_CMD_FILE])
 
 app = flask.Flask(__name__)
 
