@@ -9,7 +9,7 @@
 	<link rel="icon" type="image/png" href="" sizes="16x16">
 	<link rel="stylesheet" href="{{ url_for('static',filename='styles/main.css') }}" type="text/css">
 	<title>DontRobbedinator</title>
-	<!-- <script src="../static/jquery-3.5.1.js"></script> -->
+	<!-- <script src="../static/jquery-3.5.1.js"></script> --> 
 	<!-- ^ minified jquery, use for distribution  -->
 	<script src="../static/jquery-3.5.1.min.js"></script>
 </head>
@@ -33,40 +33,57 @@
 	<section id="main_container">
 		<div>
 			<div id="topcontrols">
-				<!-- <label><img src="{{url_for('static',filename='images/list-solid.svg') }}" alt=""><input type="submit" name="button" value="loadpreset"></label> -->
-				<!-- <label><img src="{{url_for('static',filename='images/redo-alt-solid.svg') }}" alt=""><input type="submit" name="button" value="restart"></label> -->
-				<form method="post" action"/" id="formPower"><label id="powerbutton">
-					<img src="{{url_for('static',filename='images/power-off-solid.svg') }}" alt="">
-					<input type="submit" name="button" value="power">
-				</label></form>
-				<form method="post" action"/" id="formCalibrate"><label>
-					<img src="{{url_for('static',filename='images/balance-scale-left-solid.svg') }}" alt="">
-					<input type="submit" name="button" value="calibrate">
-				</label></form>
-				<form method="post" action"/" id="form180"><label>
-					<img src="{{url_for('static',filename='images/180.svg') }}" alt="">
-					<input type="submit" name="button" value="setto180">
-				</label></form>
-				<form method="post" action"/" id="form270"><label>
-					<img src="{{url_for('static',filename='images/270.svg') }}" alt="">
-					<input type="submit" name="button" value="setto270">
-				</label></form>
+				<div id="topleftcontrols">
+					<!-- <label><img src="{{url_for('static',filename='images/list-solid.svg') }}" alt=""><input type="submit" name="button" value="loadpreset"></label> -->
+					<!-- <label><img src="{{url_for('static',filename='images/redo-alt-solid.svg') }}" alt=""><input type="submit" name="button" value="restart"></label> -->
+					<form method="post" action"/" id="formPower"><label id="powerbutton">
+						<img src="{{url_for('static',filename='images/power-off-solid.svg') }}" alt="">
+						<input type="submit" name="button" value="power">
+					</label></form>
+					<form method="post" action"/" id="formCalibrate"><label>
+						<img src="{{url_for('static',filename='images/calibrate.svg') }}" alt="">
+						<input type="submit" name="button" value="calibrate">
+					</label></form>
+					<form method="post" action"/" id="form180"><label>
+						<img src="{{url_for('static',filename='images/180_v2.svg') }}" alt="">
+						<input type="submit" name="button" value="setto180">
+					</label></form>
+					<form method="post" action"/" id="form270"><label>
+						<img src="{{url_for('static',filename='images/270_v2.svg') }}" alt="">
+						<input type="submit" name="button" value="setto270">
+					</label></form>
+				</div>
+				<div id= "toprightcontrols">
+					<div id="blendfraccontrols"></div>
+						<span></span>
+						<form method="post" action"/" id="formLowerBlendFrac"><label>
+							<img src="{{url_for('static',filename='images/angle-down-solid.svg') }}" alt="">
+							<input type="submit" name="button" value="decreaseblendfrac">
+						</label></form>
+						<span>{{blend_frac}}</span>
+						<form method="post" action"/" id="formIncreaseBlendFrac"><label>
+							<img src="{{url_for('static',filename='images/angle-up-solid.svg') }}" alt="">
+							<input type="submit" name="button" value="increaseblendfrac">
+						</label></form>
+				</div>
 			</div>
 			<img id="camera_feed" src="{{ url_for('video_feed') }}" alt="Video stream inactive. Press <power button> twice to restart video stream.">
 			<div id="bottomcontrols">
-				<form method="post" action"/" id="formFullView"><label>
-					<img src="{{url_for('static',filename='images/expand-solid.svg') }}" alt="">
-					<input type="submit" name="button" value="fullview"></label></form>
-				<form method="post" action"/" id="fromCroppedView"><label>
-					<img src="{{url_for('static',filename='./images/compress-solid.svg') }}" alt="">
-					<input type="submit" name="button" value="croppedview"></label></form>
-				<form method="post" action"/" id="formZoomIn"><label>
-					<img src="{{url_for('static',filename='images/search-plus-solid.svg') }}" alt="">
-					<input type="submit" name="button" value="zoomin"></label></form>
-				<form method="post" action"/" id="formZoomOut"><label>
-					<img src="{{url_for('static',filename='images/search-minus-solid.svg') }}" alt="">
-					<input type="submit" name="button" value="zoomout"></label></form>
-				<div id="arrowcontrols">
+				<div id="bottomleftcontrols">
+					<form method="post" action"/" id="formFullView"><label>
+						<img src="{{url_for('static',filename='images/expand-solid.svg') }}" alt="">
+						<input type="submit" name="button" value="fullview"></label></form>
+					<form method="post" action"/" id="fromCroppedView"><label>
+						<img src="{{url_for('static',filename='./images/compress-solid.svg') }}" alt="">
+						<input type="submit" name="button" value="croppedview"></label></form>
+					<form method="post" action"/" id="formZoomIn"><label>
+						<img src="{{url_for('static',filename='images/search-plus-solid.svg') }}" alt="">
+						<input type="submit" name="button" value="zoomin"></label></form>
+					<form method="post" action"/" id="formZoomOut"><label>
+						<img src="{{url_for('static',filename='images/search-minus-solid.svg') }}" alt="">
+						<input type="submit" name="button" value="zoomout"></label></form>
+				</div>
+				<div id="bottomrightcontrols">
 					<div>
 						<form method="post" action"/" id="formPanUp"><label>
 							<img src="{{url_for('static',filename='images/angle-up-solid.svg') }}" alt="">

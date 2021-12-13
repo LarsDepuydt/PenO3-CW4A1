@@ -15,6 +15,11 @@ RESOLUTION = WIDTH, HEIGHT = [int(x) for x in argv[2].split(",")]
 BLEND_FRAC = float(argv[3])
 X_t = int(argv[4])
 PC_IP = argv[5]
+print(USE_KEYPOINT_TRANSLATE)
+print(RESOLUTION)
+print(BLEND_FRAC)
+print(X_t)
+print(PC_IP)
 
 # ==============================
 # CONSTANTS

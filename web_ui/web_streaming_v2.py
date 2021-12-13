@@ -11,10 +11,32 @@ from flask import request
 # CONSTANTS
 # ==============================
 
+'''
+TEST this to enable camera by default:
+/boot/config.txt: 
+start_x=1             # essential
+gpu_mem=128           # at least, or maybe more if you wish
+disable_camera_led=1  # optional, if you don't want the led to glow
+'''
+
+'''
+TEST this to set static eth0 ip on pi's
+/etc/network/interfaces:
+https://elinux.org/RPi_Setting_up_a_static_IP_in_Debian
+auto lo
+iface lo inet loopback
+iface eth0 inet static
+address        192.168.1.200
+netmask        255.255.255.0
+gateway        192.168.1.1
+'''
+
 RUNNING = False
 LOG_FPS = False
 DEBUG = True
 
+image_hub = False
+running = False
 resolution = [640, 480]
 blend_frac = 0.5
 x_t = 0
@@ -31,7 +53,7 @@ MAIN_INIT_CMDS = [
     'python3 main_v9.py']
 
 HELPER_INIT_CMDS = [
-    'echo "On the main pi, initting main"', 
+    'echo "On the helper pi, initting helper"', 
     'cd Desktop/PenO3-CW4A1/venv/bin',
     'source activate',
     'cd ../../programs/non_multi_threaded',
@@ -96,9 +118,10 @@ def gen_command_files(maincmds, helpercmds, use_keypnt, res, blend_frac, x_t, pc
         f.writelines(helpercmds)
 
 def gen_frames_imagehub():
-    global zoom, h, w, frame_width, frame_height, origin
-    print("Starting imageHub")
-    image_hub = imagezmq.ImageHub()
+    global zoom, h, w, frame_width, frame_height, origin, image_hub
+    if not(image_hub):
+        print("Starting imageHub")
+        image_hub = imagezmq.ImageHub()
     frame_height, frame_width = image_hub.recv_image()[1].shape()[:2]
     image_hub.send_reply(b'OK')
     while True:
@@ -146,7 +169,7 @@ app = flask.Flask(__name__)
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
-    global zoom, h, w, frame_width, frame_height, origin
+    global zoom, h, w, frame_width, frame_height, origin, blend_frac
     if request.method == 'POST':
         if request.form['button'] == 'power_on':
             print("POWER button clicked: powering on")
@@ -160,10 +183,26 @@ def index():
             initialize()
         elif request.form['button'] == 'setto180':
             print("SETTO180 button clicked")
+            x_t = 400
             gen_command_files(MAIN_INIT_CMDS, HELPER_INIT_CMDS, False, resolution, blend_frac, x_t, PC_IP)
+            initialize()
         elif request.form['button'] == 'setto270':
             print("SETTO270 button clicked")
+            x_t = 52
             gen_command_files(MAIN_INIT_CMDS, HELPER_INIT_CMDS, False, resolution, blend_frac, x_t, PC_IP)
+            initialize()
+        elif request.form['button'] == 'decreaseblendfrac':
+            print("Decreasing blend frac...")
+            if blend_frac > 0.1:
+                blend_frac = round(blend_frac-0.1, 1)
+            if blend_frac <= 0.1:
+                blend_frac = 0
+        elif request.form['button'] == 'increaseblendfrac':
+            print("Increasing blend frac...")
+            if blend_frac < 0.9:
+                blend_frac = round(blend_frac+0.1, 1)
+            if blend_frac >= 0.9:
+                blend_frac = 1
         elif request.form['button'] == 'fullview':
             zoom = 0
             w = frame_width
@@ -220,7 +259,7 @@ def index():
     else:
         print("NON-POST REQUEST")
         pass
-    return flask.render_template('index.html')
+    return flask.render_template('index.html', blend_frac=blend_frac)
 
 if LOG_FPS:
     @app.route('/video_feed')
@@ -233,4 +272,3 @@ else:
 
 if __name__ == "__main__":
     app.run(debug=DEBUG)
-    

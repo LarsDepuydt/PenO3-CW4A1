@@ -1,5 +1,5 @@
-echo "On the main pi, initting main"
+echo "On the helper pi, initting helper"
 cd Desktop/PenO3-CW4A1/venv/bin
 source activate
 cd ../../programs/non_multi_threaded
-python3 helper_v6.py "True" "640,480" "0.5" "0" "192.168.1.133"
+python3 helper_v6.py "False" "640,480" "0.5" "400" "169.254.236.78"

@@ -105,17 +105,17 @@ MAIN
 #camera_feed {
 	display: block;
 	margin: 0 auto;
-	width: 90%;
+	width: 100%;
 }
 #topcontrols {
 	display: block;
-	width: 90%;
-	margin: 0 auto 12px auto;
+	width: 100%;
+	margin-bottom: 12px;
 }
 #bottomcontrols {
 	display: block;
-	width: 90%;
-	margin: 12px auto 0 auto;
+	width: 100%;
+	margin-top: 12px;
 }
 
 form label {
@@ -147,15 +147,15 @@ form label img {
 	height: 20px;
 	vertical-align: middle;
 }
-#arrowcontrols {
+#bottomrightcontrols {
 	float: right;
 }
-#arrowcontrols div:first-child  {
+#bottomrightcontrols div:first-child  {
 	display: flex;
 	justify-content: center;
 	margin-bottom: 4px;
 }
-#arrowcontrols form {
+#bottomrightcontrols form {
 	display: inline-block;
 }
 
