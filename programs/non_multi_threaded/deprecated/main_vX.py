@@ -60,7 +60,7 @@ print("Ready message was received by helper")
 imgR = cv2.cvtColor(PICAM.read(), cv2.COLOR_BGR2BGRA)
 imgL = IMAGE_HUB.recv_image()[1]
 IMAGE_HUB.send_reply(b'OK')
-
+print("Foto_ontvangen")
 
 # imgL = cv2.cvtColor(cv2.imread("./programs/cylindrical_projection/sterio_vision/images/left/left0.png"), cv2.COLOR_BGR2BGRA)
 # imgR = cv2.cvtColor(cv2.imread("./programs/cylindrical_projection/sterio_vision/images/right/right0.png"), cv2.COLOR_BGR2BGRA)
