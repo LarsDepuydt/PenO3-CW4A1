@@ -37,12 +37,12 @@ DEBUG = True
 
 image_hub = False
 running = False
-resolution = [640, 480]
+resolution = [320, 240]
 blend_frac = 0.5
 x_t = 0
 calibrate = False
 
-frame_width, frame_height = 1000, 480 # placeholder for frame_width and frame_height
+frame_width, frame_height = 1000, 240 # placeholder for frame_width and frame_height
 w, h = frame_width, frame_height # shown frame width (for zooming)
 zoom = 0
 origin = [0, 0]
@@ -57,7 +57,7 @@ HELPER_INIT_CMDS = [
     'cd Desktop/PenO3-CW4A1/venv/bin',
     'source activate',
     'cd ../../programs/non_multi_threaded',
-    'python3 helper_v6.py']
+    'python3 helper_v9.py']
 
 def get_pc_ip():
     # REFERENCE: https://stackoverflow.com/a/59004409
@@ -115,6 +115,7 @@ def gen_command_files(maincmds, helpercmds, use_keypnt, res, blend_frac, x_t, pc
 
     helpercmds[-1] += argstr
     helpercmds = [x + '\n' for x in helpercmds]
+    helpercmds.append("sleep 10")
     with open(CMD_FILE_SAVE_DIR + 'helper_init.txt', mode='w') as f:
         f.writelines(helpercmds)
 
@@ -123,7 +124,7 @@ def gen_frames_imagehub():
     if not(image_hub):
         print("Starting imageHub")
         image_hub = imagezmq.ImageHub()
-    frame_height, frame_width = image_hub.recv_image()[1].shape()[:2]
+    frame_height, frame_width = image_hub.recv_image()[1].shape[:2]
     image_hub.send_reply(b'OK')
     while True:
         frame = image_hub.recv_image()[1][origin[1]:origin[1] + h, origin[0]:origin[0] + w]
@@ -180,16 +181,19 @@ def index():
             terminate()
         elif request.form['button'] == 'calibrate':
             print("CALIBRATION button clicked")
-            gen_command_files(MAIN_INIT_CMDS, HELPER_INIT_CMDS, 1, resolution, blend_frac, x_t, PC_IP)
+            blend_frac = 0.2
+            gen_command_files(MAIN_INIT_CMDS, HELPER_INIT_CMDS, 1, resolution, blend_frac, 0, PC_IP)
             initialize()
         elif request.form['button'] == 'setto180':
             print("SETTO180 button clicked")
-            x_t = 400
+            x_t = 540
+            blend_frac = 0.1
             gen_command_files(MAIN_INIT_CMDS, HELPER_INIT_CMDS, 0, resolution, blend_frac, x_t, PC_IP)
             initialize()
         elif request.form['button'] == 'setto270':
             print("SETTO270 button clicked")
-            x_t = 52
+            x_t = 64
+            blend_frac = 0.5
             gen_command_files(MAIN_INIT_CMDS, HELPER_INIT_CMDS, 0, resolution, blend_frac, x_t, PC_IP)
             initialize()
         elif request.form['button'] == 'decreaseblendfrac':

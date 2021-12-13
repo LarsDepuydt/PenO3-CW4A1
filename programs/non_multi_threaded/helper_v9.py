@@ -5,6 +5,7 @@ import imagezmq
 from imutils.video import VideoStream
 from time import sleep
 
+
 # ==============================
 # ARGUMENT PARSER
 # ==============================
@@ -12,6 +13,7 @@ from time import sleep
 # args = "True" "width,height" "blend_frac" "x_t" "pc_ip"
 # USE_KEYPOINT_TRANSLATE = bool(argv[1])
 RESOLUTION = WIDTH, HEIGHT = [int(x) for x in argv[2].split(",")]
+print(RESOLUTION)
 # BLEND_FRAC = float(argv[3])
 # X_t = int(argv[4])
 # PC_IP = "tcp://" + argv[5] + ":5555"
