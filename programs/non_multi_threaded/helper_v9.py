@@ -5,7 +5,6 @@ import imagezmq
 from imutils.video import VideoStream
 from time import sleep
 
-from programs.non_multi_threaded.main_v9 import RESOLUTION
 
 # ==============================
 # ARGUMENT PARSER
