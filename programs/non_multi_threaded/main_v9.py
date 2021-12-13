@@ -14,7 +14,7 @@ USE_KEYPOINT_TRANSLATE = bool(int(argv[1]))
 RESOLUTION = WIDTH, HEIGHT = [int(x) for x in argv[2].split(",")]
 BLEND_FRAC = float(argv[3])
 X_t = int(argv[4])
-PC_IP = argv[5] + ":5555"
+PC_IP = "tcp://" + argv[5] + ":5555"
 print(USE_KEYPOINT_TRANSLATE)
 print(RESOLUTION)
 print(BLEND_FRAC)
