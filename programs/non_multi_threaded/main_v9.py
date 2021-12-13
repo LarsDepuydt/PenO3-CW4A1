@@ -10,7 +10,7 @@ from math import floor, ceil
 # ARGUMENT PARSER
 # ==============================
 # args = "True" "width,height" "blend_frac" "x_t" "pc_ip"
-USE_KEYPOINT_TRANSLATE = bool(argv[1])
+USE_KEYPOINT_TRANSLATE = bool(int(argv[1]))
 RESOLUTION = WIDTH, HEIGHT = [int(x) for x in argv[2].split(",")]
 BLEND_FRAC = float(argv[3])
 X_t = int(argv[4])

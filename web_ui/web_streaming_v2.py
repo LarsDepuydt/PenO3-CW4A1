@@ -180,17 +180,17 @@ def index():
             terminate()
         elif request.form['button'] == 'calibrate':
             print("CALIBRATION button clicked")
-            gen_command_files(MAIN_INIT_CMDS, HELPER_INIT_CMDS, True, resolution, blend_frac, x_t, PC_IP)
+            gen_command_files(MAIN_INIT_CMDS, HELPER_INIT_CMDS, 1, resolution, blend_frac, x_t, PC_IP)
             initialize()
         elif request.form['button'] == 'setto180':
             print("SETTO180 button clicked")
             x_t = 400
-            gen_command_files(MAIN_INIT_CMDS, HELPER_INIT_CMDS, False, resolution, blend_frac, x_t, PC_IP)
+            gen_command_files(MAIN_INIT_CMDS, HELPER_INIT_CMDS, 0, resolution, blend_frac, x_t, PC_IP)
             initialize()
         elif request.form['button'] == 'setto270':
             print("SETTO270 button clicked")
             x_t = 52
-            gen_command_files(MAIN_INIT_CMDS, HELPER_INIT_CMDS, False, resolution, blend_frac, x_t, PC_IP)
+            gen_command_files(MAIN_INIT_CMDS, HELPER_INIT_CMDS, 0, resolution, blend_frac, x_t, PC_IP)
             initialize()
         elif request.form['button'] == 'decreaseblendfrac':
             print("Decreasing blend frac...")
