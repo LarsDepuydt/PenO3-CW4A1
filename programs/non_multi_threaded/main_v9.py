@@ -222,7 +222,7 @@ if USE_KEYPOINT_TRANSLATE:
 # else: fifth program argument is used
 
 TL, TR, combined_width, mask_realL, mask_realR = get_combine_objects(X_t, log=False)
-
+print("here")
 # write output image of calibration images
 '''
     # def combine(log = False):
@@ -239,7 +239,7 @@ TL, TR, combined_width, mask_realL, mask_realR = get_combine_objects(X_t, log=Fa
 SENDER = imagezmq.ImageSender(connect_to=PC_IP)
 
 while True:
-    imgR = cv2.remap(cv2.cvtColor(PICAM.read(), cv2.COLOR_BGR2BGRA), MAPL1, MAPL2, cv2.INTER_AREA, borderMode=cv2.BORDER_TRANSPARENT)
+    imgR = cv2.remap(cv2.cvtColor(PICAM.read(), cv2.COLOR_BGR2BGRA), MAPR1, MAPR2, cv2.INTER_AREA, borderMode=cv2.BORDER_TRANSPARENT)
     imgL = IMAGE_HUB.recv_image()[1]
     SENDER.send_image("", np.uint8(cv2.warpAffine(imgL, TL, (combined_width, HEIGHT)) * mask_realL + cv2.warpAffine(imgR, TR, (combined_width, HEIGHT)) * mask_realR))
     IMAGE_HUB.send_reply(b'OK')
