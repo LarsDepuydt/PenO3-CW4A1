@@ -11,8 +11,10 @@ function highlightButton(id) {
     removeTheClass(id)
 }
 
+
+
 function submitfun(e, val) {
-    // REFERENCE: geek website
+    // REFERENCE: form submission without page reload: https://www.geeksforgeeks.org/flask-form-submission-without-page-reload/
     console.log("Submitting: ", val)
     e.preventDefault();
     $.ajax({
@@ -25,7 +27,7 @@ function submitfun(e, val) {
         // }
     })
 }
-function submitfun2(e, val) {}
+
 document.getElementById("camera_feed").addEventListener('wheel', (e) => {
     if (e.deltaY > 0) {
         highlightButton("formZoomOut")
@@ -60,6 +62,32 @@ function checkKey(e) {
         submitfun(e, "panright")
     }
 }
+$(document).on('submit','#formPower',function(e){
+    e.preventDefault();
+    if (document.getElementById("powerbutton").classList.contains("poweredon")) {
+        $("#powerbutton").addClass('poweredoff');
+        $("#powerbutton").removeClass('poweredon');
+        console.log("powering off")
+        sendstr = "power_off"
+    }
+    else if (document.getElementById("powerbutton").classList.contains("poweredoff")) {
+        $("#powerbutton").addClass('poweredon');
+        $("#powerbutton").removeClass('poweredoff')
+        console.log("powering on")
+        sendstr = "power_on"
+    }
+    else {
+        $("#powerbutton").addClass('poweredon');
+        console.log("powering on")
+        sendstr = "power_on"
+    }
+    $.ajax({
+        type:'POST',
+        url:'/',
+        data:{button:sendstr},
+    })
+});
+
 $(document).on('submit','#formFullView',function(e){
     submitfun(e, "fullview")
 });

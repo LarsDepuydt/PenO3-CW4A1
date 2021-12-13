@@ -226,7 +226,6 @@ def get_x_combine_assets_transparent_borders_precrop(xt, log=False):
     height, imgL_cropped_width = imgL.shape[:2]
     height, imgR_cropped_width = imgR.shape[:2]
 
-    combined_width = imgL_cropped_width + imgR_cropped_width - xt
     imgL_cropped_no_overlap_width = imgL_cropped_width - xt
 
     imgL_cropped_noblend_width = imgL_cropped_width - ceil((1 + BLURR_WIDTH)/2 * xt)
@@ -252,6 +251,8 @@ def get_x_combine_assets_transparent_borders_precrop(xt, log=False):
 
     TL= np.float32([[1, 0, 0], [0, 1, 0]])
     TR = np.float32([[1, 0, imgL_cropped_no_overlap_width], [0, 1, 0]])
+
+    height_real, combined_width = mask_realL.shape[:2]
 
     if log:
         cv2.imshow('mask_realL', mask_realL)
@@ -282,7 +283,11 @@ SENDER.send_image(RB_IP_MAIN, np.array([MAPL1, MAPL2]))
 print('Sent MAPL1 and MAPL2')
 
 #x_t, y_t = get_translation_parameters(imgL, imgR, log=False)
+<<<<<<< HEAD
 x_t = 110
+=======
+x_t = 472
+>>>>>>> ba081dd253c3237506d658bfff3aa9ff7528c6f2
 imgL = warp_image(imgL, MAPL1, MAPL2)
 imgR = warp_image(imgR, MAPR1, MAPR2)
 
