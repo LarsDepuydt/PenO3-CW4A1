@@ -109,6 +109,7 @@ def gen_command_files(maincmds, helpercmds, use_keypnt, res, blend_frac, x_t, pc
     
     maincmds[-1] += argstr
     maincmds = [x+'\n' for x in maincmds]
+    maincmds = maincmds.append("sleep 10")
     with open(CMD_FILE_SAVE_DIR + 'main_init.txt', mode='w') as f:
         f.writelines(maincmds)
 
