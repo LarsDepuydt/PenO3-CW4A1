@@ -17,9 +17,17 @@ SOURCE = 3
 LOG_FPS = False
 INIT_PIs = True
 DEBUG = True
+HEIGHT, WIDTH = 480, 1000
+
+MAIN_INIT_CMDS = [
+    'echo "On the main pi, initting main"', 
+    'cd Desktop/PenO3-CW4A1',
+    'cd venv/bin',
+    'source activate',
+    'cd ../../programs/non_multi_threaded',
+    'python main_v9.py']
 
 def initialize():
-    global camera
     if INIT_PIs:
         print("Initing pis")
         from os import path
@@ -28,9 +36,10 @@ def initialize():
         REMOTE_EXEC_SCRIPT_PATH = PROG_DIR + "/ssh_conn_exec_cmdfile_win.bat"
         MAIN_CMD_FILE = PROG_DIR + "/main_init.txt"
         HELPER_CMD_FILE = PROG_DIR + "/helper_init.txt"
-        run([REMOTE_EXEC_SCRIPT_PATH, "169.254.222.67", MAIN_CMD_FILE])
-        run([REMOTE_EXEC_SCRIPT_PATH, "169.254.165.116", HELPER_CMD_FILE])
+        run([REMOTE_EXEC_SCRIPT_PATH, "169.254.165.116", MAIN_CMD_FILE])
+        run([REMOTE_EXEC_SCRIPT_PATH, "169.254.222.67", HELPER_CMD_FILE])
     if SOURCE == 1:
+        global camera
         camera = cv2.VideoCapture(0)    # laptop webcam
         global w, h
         h, w = camera.read()[1].shape[:2]
@@ -51,8 +60,8 @@ def terminate():
     REMOTE_EXEC_SCRIPT_PATH = PROG_DIR + "/ssh_conn_exec_cmdfile_win.bat"
     MAIN_CMD_FILE = PROG_DIR + "/main_terminate.txt"
     HELPER_CMD_FILE = PROG_DIR + "/helper_terminate.txt"
-    run([REMOTE_EXEC_SCRIPT_PATH, "169.254.222.67", MAIN_CMD_FILE])
-    run([REMOTE_EXEC_SCRIPT_PATH, "169.254.165.116", HELPER_CMD_FILE])
+    run([REMOTE_EXEC_SCRIPT_PATH, "169.254.165.116", MAIN_CMD_FILE])
+    run([REMOTE_EXEC_SCRIPT_PATH, "169.254.222.67", HELPER_CMD_FILE])
 
 app = flask.Flask(__name__)
 
@@ -243,5 +252,6 @@ elif SOURCE == 3:
         first = False
 
 if __name__ == "__main__":
-    app.run(DEBUG)
+    app.run(debug=DEBUG)
+    
     

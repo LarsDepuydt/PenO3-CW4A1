@@ -131,17 +131,18 @@ form label img {
 	width: 16px;
 	height: 16px;
 }
-#bottomcontrols form {
+#bottomcontrols form,
+#topcontrols form {
 	display: inline;
 }
 
-form label.square {
+form label {
 	padding: 2px;
 	width: 36px;
 	height: 36px;
 	text-align: center
 }
-form label.square img {
+form label img {
 	width: 20px;
 	height: 20px;
 	vertical-align: middle;
@@ -169,6 +170,16 @@ form label:hover img,
 form label.activatedThroughJS img {
 	filter: invert(100%);
 }
+
+#powerbutton.poweredon {
+	background-color: var(--2);
+	color: #FFF;
+}
+#powerbutton.poweredon img {
+	filter: invert(100%);
+}
+
+
 form  label > input {
 	display: none;
 }

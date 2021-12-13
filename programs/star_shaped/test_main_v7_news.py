@@ -214,7 +214,9 @@ imgL = undistort(imgL)
 
 TL, TR, combined_width, mask_realL, mask_realR = get_x_combine_assets_transparent_borders_precrop(x_t, imgL, imgR, log=False)
 
-cv2.imwrite("output.png", combine())
+cv2.imshow("output", combine())
+cv2.waitKey(0)
+# cv2.imwrite("output.png", combine())
 
 
 #SENDER = imagezmq.ImageSender(connect_to=PC_IP)

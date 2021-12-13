@@ -9,8 +9,15 @@ CAMERA_MATRIX = [[320.68838395,   0, 315.79552501],
  [ 0, 0, 1]]
 FOCAL_LENGTH = 320
 
-INPUT_IMAGE = "/Users/lars/Downloads/PenO3-CW4A1/programs/cylindrical_projection/undistorded_images/right0_und.jpg"
-OUTPUT_IMAGE = "/Users/lars/Downloads/PenO3-CW4A1/programs/cylindrical_projection/right0_und_cyl_x.png"
+import os
+CURRENT_DIR = str(os.path.dirname(os.path.realpath(__file__))).replace("\\", "/")
+DIRS = CURRENT_DIR.split("/")
+for i, s in enumerate(DIRS):
+    if s == "PenO3-CW4A1":
+        REPO_ROOT = "/".join(DIRS[:i+1])
+print(REPO_ROOT)
+IMAGE_DIR = REPO_ROOT + "/programs/cylindrical_projection/undistorded_images/"
+INPUT_IMAGE = IMAGE_DIR + "right0_und.jpg"
 
 
 def cylindricalWarp(img, K):
@@ -47,4 +54,5 @@ if __name__ == '__main__':
     K = np.array([[FOCAL_LENGTH, 0, w/2], [0, FOCAL_LENGTH, h/2], [0, 0, 1]])  # mock intrinsics
     # [fx s x0; 0 fy y0; 0 0 1]
     img_cyl = cylindricalWarp(img, K)
-    cv2.imwrite(OUTPUT_IMAGE, img_cyl)
+    cv2.imshow("output", img_cyl)
+    cv2.waitKey(0)
