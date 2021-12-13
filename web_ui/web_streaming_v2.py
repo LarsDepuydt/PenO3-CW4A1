@@ -57,7 +57,7 @@ HELPER_INIT_CMDS = [
     'cd Desktop/PenO3-CW4A1/venv/bin',
     'source activate',
     'cd ../../programs/non_multi_threaded',
-    'python3 helper_v6.py']
+    'python3 helper_v9.py']
 
 def get_pc_ip():
     # REFERENCE: https://stackoverflow.com/a/59004409
