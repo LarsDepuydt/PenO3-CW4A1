@@ -3,6 +3,10 @@ import numpy as np
 import os
 import glob
 
+#####################################################################################
+# BRON: https://www.geeksforgeeks.org/camera-calibration-with-python-opencv/
+#####################################################################################
+
 # Define the dimensions of checkerboard
 CHECKERBOARD = (9, 6)
 
