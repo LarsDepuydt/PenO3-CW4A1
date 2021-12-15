@@ -51,8 +51,8 @@ def terminate():
     REMOTE_EXEC_SCRIPT_PATH = PROG_DIR + "/ssh_conn_exec_cmdfile_win.bat"
     MAIN_CMD_FILE = PROG_DIR + "/main_terminate.txt"
     HELPER_CMD_FILE = PROG_DIR + "/helper_terminate.txt"
-    run([REMOTE_EXEC_SCRIPT_PATH, "169.254.222.67", MAIN_CMD_FILE])
-    run([REMOTE_EXEC_SCRIPT_PATH, "169.254.165.116", HELPER_CMD_FILE])
+    run([REMOTE_EXEC_SCRIPT_PATH, "169.254.165.116", MAIN_CMD_FILE])
+    run([REMOTE_EXEC_SCRIPT_PATH, "169.254.222.67", HELPER_CMD_FILE])
 
 app = flask.Flask(__name__)
 
@@ -103,7 +103,7 @@ def gen_frames_cv2_videocapture():
             frame = buffer.tobytes()
             yield(b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
-def gen_frames_imagehub(first=False):
+def gen_frames_imagehub(first=True):
     global HEIGHT, WIDTH, h, w
     if first:
         HEIGHT, WIDTH = IMAGE_HUB.recv_image()[1].shape[:2]

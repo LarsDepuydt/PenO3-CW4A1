@@ -105,17 +105,17 @@ MAIN
 #camera_feed {
 	display: block;
 	margin: 0 auto;
-	width: 90%;
+	width: 100%;
 }
 #topcontrols {
 	display: block;
-	width: 90%;
-	margin: 0 auto 12px auto;
+	width: 100%;
+	margin-bottom: 12px;
 }
 #bottomcontrols {
 	display: block;
-	width: 90%;
-	margin: 12px auto 0 auto;
+	width: 100%;
+	margin-top: 12px;
 }
 
 form label {
@@ -131,30 +131,31 @@ form label img {
 	width: 16px;
 	height: 16px;
 }
-#bottomcontrols form {
+#bottomcontrols form,
+#topcontrols form {
 	display: inline;
 }
 
-form label.square {
+form label {
 	padding: 2px;
 	width: 36px;
 	height: 36px;
 	text-align: center
 }
-form label.square img {
+form label img {
 	width: 20px;
 	height: 20px;
 	vertical-align: middle;
 }
-#arrowcontrols {
+#bottomrightcontrols {
 	float: right;
 }
-#arrowcontrols div:first-child  {
+#bottomrightcontrols div:first-child  {
 	display: flex;
 	justify-content: center;
 	margin-bottom: 4px;
 }
-#arrowcontrols form {
+#bottomrightcontrols form {
 	display: inline-block;
 }
 
@@ -169,6 +170,16 @@ form label:hover img,
 form label.activatedThroughJS img {
 	filter: invert(100%);
 }
+
+#powerbutton.poweredon {
+	background-color: var(--2);
+	color: #FFF;
+}
+#powerbutton.poweredon img {
+	filter: invert(100%);
+}
+
+
 form  label > input {
 	display: none;
 }

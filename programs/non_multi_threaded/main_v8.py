@@ -15,8 +15,8 @@ STREAM_RESOLUTION      = (640, 480)
 RB_IP_MAIN =    'tcp://169.254.165.116:5555'
 RB_IP_HELPER =  'tcp://169.254.222.67:5555'
 #PC_IP =         'tcp://192.168.137.1:5555'
-#PC_IP = 'tcp://169.254.62.171:5555'
-PC_IP = 'tcp://169.254.236.78:5555'
+PC_IP = 'tcp://169.254.62.171:5555'
+#PC_IP = 'tcp://169.254.236.78:5555'
 PREVIOUS_CALIBRATION_DATA_PATH = "calibration_data.txt"
 
 BLURR_WIDTH = 1/10
@@ -45,12 +45,20 @@ elif CAMERAMODE ==2:
     PICAM = cv2.VideoCapture(0)
     PICAM.set(cv2.CAP_PROP_FRAME_WIDTH, CALIBRATION_RESOLUTION[0])
     PICAM.set(cv2.CAP_PROP_FRAME_HEIGHT, CALIBRATION_RESOLUTION[1])
-IMAGE_HUB = imagezmq.ImageHub()
+if CAMERAMODE == 3:
+    from picamera.array import PiRGBArray
+    from picamera import PiCamera
+    camera = PiCamera()
+    rawCapture = PiRGBArray(camera)
+    camera.capture(rawCapture, format="bgr")
+    
 
+    imL = rawCapture.array
+    cv2.imshow("iml", imL)
+    cv2.waitKey(0)
+IMAGE_HUB = imagezmq.ImageHub()
 sleep(2)  # allow camera sensor to warm up and wait to make sure helper is running
 SENDER = imagezmq.ImageSender(connect_to=RB_IP_HELPER)
-
-
 
 # ==============================
 # INITIALISATION
@@ -78,7 +86,9 @@ def get_cyl_wrap_assets_crop(K):
     X = Kinv.dot(X.T).T  # normalized coords
     theta_s = X[:, 0]
     phi_s = X[:, 1]
-    A = np.stack([np.cos(phi_s) * np.sin(theta_s), np.sin(phi_s), np.cos(phi_s) * np.cos(theta_s)], axis=-1).reshape(
+    #A = np.stack([np.cos(phi_s) * np.sin(theta_s), np.sin(phi_s), np.cos(phi_s) * np.cos(theta_s)], axis=-1).reshape(
+        #WIDTH * HEIGHT, 3)
+    A = np.stack([np.sin(theta_s), phi_s, np.cos(theta_s)], axis=-1).reshape(
         WIDTH * HEIGHT, 3)
     #B = K.dot(A.T).T
     ro = np.arctan2(np.sqrt(A[:,0]**2 + A[:,1]**2),A[:,2])
@@ -90,18 +100,6 @@ def get_cyl_wrap_assets_crop(K):
     B[(B[:, 0] < 0) | (B[:, 0] >= WIDTH) | (B[:, 1] < 0) | (B[:, 1] >= HEIGHT)] = -1
     B = B.reshape(HEIGHT, WIDTH, -1)
     x_L, x_R = [], []
-    for y, r in enumerate(B):
-        foundleft = False
-        for x, p in enumerate(r):
-            if not(foundleft) and sum(p) != -2:
-                x_L.append(x)
-                foundleft = True
-            elif x > WIDTH/2 and sum(p) == -2:
-                x_R.append(x)
-                break
-    x_L, x_R = min(x_L), max(x_R)
-    B = B[:, x_L:x_R]
-
     return x_L, x_R, B[:, :, 0].astype(np.float32), B[:, :, 1].astype(np.float32)
 
 def warp_image(img, map1, map2):
@@ -285,21 +283,27 @@ SENDER.send_image(RB_IP_MAIN, np.array([MAPL1, MAPL2]))
 print('Sent MAPL1 and MAPL2')
 
 #x_t, y_t = get_translation_parameters(imgL, imgR, log=False)
+<<<<<<< HEAD
+x_t = 110
+=======
 x_t = 472
+>>>>>>> ba081dd253c3237506d658bfff3aa9ff7528c6f2
 imgL = warp_image(imgL, MAPL1, MAPL2)
 imgR = warp_image(imgR, MAPR1, MAPR2)
 
 TL, TR, combined_width, mask_realL, mask_realR = get_x_combine_assets_transparent_borders_precrop(x_t, log=False)
 
-cv2.imwrite("output.png", combine())
+
 
 
 SENDER = imagezmq.ImageSender(connect_to=PC_IP)
 while True:
     imgR = cv2.remap(cv2.cvtColor(PICAM.read(), cv2.COLOR_BGR2BGRA), MAPL1, MAPL2, cv2.INTER_AREA, borderMode=cv2.BORDER_TRANSPARENT)
     imgL = IMAGE_HUB.recv_image()[1]
+    print('to pc')
     SENDER.send_image(RB_IP_MAIN, np.uint8(cv2.warpAffine(imgL, TL, (combined_width, HEIGHT)) * mask_realL + cv2.warpAffine(imgR, TR, (combined_width, HEIGHT)) * mask_realR))
     IMAGE_HUB.send_reply(b'OK')
+
 
 '''
 TO DO:
