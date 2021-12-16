@@ -4,7 +4,7 @@ import cv2
 import imagezmq
 from imutils.video import VideoStream
 from time import sleep
-from math import floor, ceil
+from math import ceil
 
 # ==============================
 # ARGUMENT PARSER
