@@ -19,7 +19,7 @@ if len(argv) > 1:
     PC_IP = "tcp://" + argv[5] + ":5555"
 else:
     USE_KEYPOINT_TRANSLATE = False
-    RESOLUTION = WIDTH, HEIGHT = [320, 240]
+    RESOLUTION = WIDTH, HEIGHT = [640, 480]
     BLEND_FRAC = 0.2
     X_TRANS_DIST = 50
     PC_IP = "tcp://" + "169.254.236.78" + ":5555"
@@ -240,4 +240,4 @@ while True:
     imgL = IMAGE_HUB.recv_image()[1]
     SENDER.send_image("", np.uint8(cv2.warpAffine(imgL, MASK_L, (combined_width, HEIGHT)) * mask_realL + cv2.warpAffine(imgR, MASK_R, (combined_width, HEIGHT)) * mask_realR))
     IMAGE_HUB.send_reply(b'OK')
-
+    
