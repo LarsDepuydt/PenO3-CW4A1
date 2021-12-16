@@ -55,13 +55,13 @@
 				</div>
 				<div id= "toprightcontrols">
 					<div id="blendfraccontrols">
-						<span></span>
-						<form method="post" action"/" id="formLowerBlendFrac"><label>
+						<div>Blend Fraction</div>
+						<form class="small" method="post" action"/" id="formLowerBlendFrac"><label>
 							<img src="{{url_for('static',filename='images/angle-down-solid.svg') }}" alt="">
 							<input type="submit" name="button" value="decreaseblendfrac">
 						</label></form>
 						<span>{{blend_frac}}</span>
-						<form method="post" action"/" id="formIncreaseBlendFrac"><label>
+						<form class="small" method="post" action"/" id="formIncreaseBlendFrac"><label>
 							<img src="{{url_for('static',filename='images/angle-up-solid.svg') }}" alt="">
 							<input type="submit" name="button" value="increaseblendfrac">
 						</label></form>

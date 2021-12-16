@@ -106,10 +106,10 @@ def gen_command_files(maincmds, helpercmds, use_keypnt, res, blend_frac, x_t, pc
 
 def gen_frames_imagehub():
     global zoom, h, w, frame_width, frame_height, origin, image_hub
-    if image_hub == -1:
-        print("Starting imageHub")
-        print("===" * 30)
-        image_hub = imagezmq.ImageHub()
+    if image_hub != -1:
+        image_hub.close()
+    print("(Re)starting ImageHub")
+    image_hub = imagezmq.ImageHub()
     frame_height, frame_width = image_hub.recv_image()[1].shape[:2]
     image_hub.send_reply(b'OK')
     while True:
@@ -118,16 +118,20 @@ def gen_frames_imagehub():
         yield(b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + cv2.imencode('.jpg', frame)[1].tobytes() + b'\r\n')
 
 def gen_frames_imagehub_log_fps():
+    global zoom, h, w, frame_width, frame_height, origin, image_hub
     img_hub_fps, web_app_fps, t_old = [], [], 0
     image_hub = imagezmq.ImageHub()#open_port='tcp://:5555')
+    if image_hub != -1:
+        image_hub.close()
+    print("(Re)starting ImageHub")
+    image_hub = imagezmq.ImageHub()
+    frame_height, frame_width = image_hub.recv_image()[1].shape[:2]
+    image_hub.send_reply(b'OK')
     while True:
-        frame = image_hub.recv_image()[1]
+        frame = image_hub.recv_image()[1][origin[1]:origin[1] + h, origin[0]:origin[0] + w]
         image_hub.send_reply(b'OK')
         t_after_image = time.perf_counter()
-        '''
-            ret, buffer = cv2.imencode('.jpg', frame)
-            frame = buffer.tobytes()
-            yield(b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')'''
+        yield(b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + cv2.imencode('.jpg', frame)[1].tobytes() + b'\r\n')
         yield(b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + cv2.imencode('.jpg', frame)[1].tobytes() + b'\r\n')
         
         t_after_yield = time.perf_counter()
@@ -136,10 +140,10 @@ def gen_frames_imagehub_log_fps():
         t_old = t_after_yield
 
         if len(web_app_fps) == 10:
-            print("Webapp    fps 10avg  : ", sum(web_app_fps)/10)
-            print("Webapp fps 1sample: ", web_app_fps[-1])
-            print("Imagehub  fps 10avg  : ", sum(img_hub_fps)/10)
-            print("Imagehub fps 1sample: ", img_hub_fps[-1])
+            print("Webapp fps 10avg     : ", sum(web_app_fps)/10)
+            print("Webapp fps 1sample   : ", web_app_fps[-1])
+            print("Imagehub fps 10avg   : ", sum(img_hub_fps)/10)
+            print("Imagehub fps 1sample : ", img_hub_fps[-1])
             web_app_fps, img_hub_fps = [], []
 
 def is_port_in_use(port):
@@ -158,7 +162,6 @@ app = flask.Flask(__name__)
 @app.route('/video_feed')
 def video_feed():
     return flask.Response(gen_frames_imagehub(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
 
 @app.route('/', methods=['POST', 'GET'])
 def index():

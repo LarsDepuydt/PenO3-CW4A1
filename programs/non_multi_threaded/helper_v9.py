@@ -20,9 +20,9 @@ if len(argv) > 1:
     PC_IP = "tcp://" + argv[5] + ":5555"
 else:
     USE_KEYPOINT_TRANSLATE = False
-    RESOLUTION = WIDTH, HEIGHT = [640, 480]
-    BLEND_FRAC = 0.2
-    X_TRANS_DIST = 50
+    RESOLUTION = WIDTH, HEIGHT = [320, 240]
+    BLEND_FRAC = 0.5
+    X_TRANS_DIST = 28
     PC_IP = "tcp://" + "169.254.236.78" + ":5555"
 
 # ==============================
