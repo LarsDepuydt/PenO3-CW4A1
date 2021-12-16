@@ -64,4 +64,6 @@ print("Received MAPLX and MAPLY")
 # ==============================
 
 while True:
-    SENDER.send_image("", cv2.remap(cv2.cvtColor(PICAM.read(), cv2.COLOR_BGR2BGRA), MAPLX, MAPLY, cv2.INTER_AREA, borderMode=cv2.BORDER_TRANSPARENT))
+    # SENDER.send_image("", cv2.remap(cv2.cvtColor(PICAM.read(), cv2.COLOR_BGR2BGRA), MAPLX, MAPLY, cv2.INTER_AREA, borderMode=cv2.BORDER_TRANSPARENT))
+    imgL2 = PICAM.read()
+    SENDER.send_image("", imgL)

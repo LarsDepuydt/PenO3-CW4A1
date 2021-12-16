@@ -16,6 +16,7 @@ while True:
     t_old = t
     if len(fps) == 50:
         print(sum(fps)/50)
+        fps = []
     cv2.imwrite("output.jpg", image)
     
     

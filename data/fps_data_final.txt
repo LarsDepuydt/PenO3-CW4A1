@@ -1,16 +1,25 @@
 All 50 fps averages
 
 Res = [320, 240]
-180:
+270:
     x_t = 28
     blend_frac = 0.5
-    All included            ..
+    All included            7.481536886681234
+                            7.39539110791662
+                            7.470236206647839
+                            7.37025647821311
+                            7.338197829131932
+                            7.493975043886862
+                            7.412638302686944
+                            7.3773832788859455
+                            7.572750555326978
+                            7.609419321700687
     No cv2.remaps           ..
     No combine              ..
     No send to pc           ..
     No receive from helper  ..
 
-360:
+180:
     x_t = 244
     blend_frac = 0.1
     All included            ..
