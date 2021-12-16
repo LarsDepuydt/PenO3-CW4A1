@@ -1,3 +1,4 @@
+print("HELPER V9 INITIALIZED")
 import numpy as np
 from sys import argv
 import cv2
