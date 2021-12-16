@@ -173,7 +173,7 @@ def index():
             initialize()
         elif request.form['button'] == 'setto270':
             print("SETTO270 button clicked")
-            x_t = 64
+            x_t = 65
             blend_frac = 0.5
             gen_command_files(MAIN_INIT_CMDS, HELPER_INIT_CMDS, 0, resolution, blend_frac, x_t, PC_IP)
             initialize()

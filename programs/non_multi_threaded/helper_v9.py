@@ -1,3 +1,4 @@
+print("HELPER V9 INITIALIZED")
 import numpy as np
 from sys import argv
 import cv2
@@ -11,11 +12,18 @@ from time import sleep
 # ==============================
 
 # args = "True" "width,height" "blend_frac" "x_t" "pc_ip"
-# USE_KEYPOINT_TRANSLATE = bool(argv[1])
-RESOLUTION = WIDTH, HEIGHT = [int(x) for x in argv[2].split(",")]
-# BLEND_FRAC = float(argv[3])
-# X_t = int(argv[4])
-# PC_IP = "tcp://" + argv[5] + ":5555"
+if len(argv) > 1:
+    USE_KEYPOINT_TRANSLATE = bool(int(argv[1]))
+    RESOLUTION = WIDTH, HEIGHT = [int(x) for x in argv[2].split(",")]
+    BLEND_FRAC = float(argv[3])
+    X_TRANS_DIST = int(argv[4])
+    PC_IP = "tcp://" + argv[5] + ":5555"
+else:
+    USE_KEYPOINT_TRANSLATE = False
+    RESOLUTION = WIDTH, HEIGHT = [320, 240]
+    BLEND_FRAC = 0.2
+    X_TRANS_DIST = 50
+    PC_IP = "tcp://" + "169.254.236.78" + ":5555"
 
 # ==============================
 # CONSTANTS
