@@ -11,14 +11,13 @@ from flask import request
 # CONSTANTS
 # ==============================
 
-
 RUNNING = False
 LOG_FPS = False
 DEBUG = True
 
 image_hub = False
 running = False
-resolution = [320, 240]
+resolution = [480, 360]
 blend_frac = 0.5
 x_t = 0
 calibrate = False
@@ -87,7 +86,8 @@ def gen_command_files(maincmds, helpercmds, use_keypnt, res, blend_frac, x_t, pc
 
     sp = '" "'
     argstr = ' "' +  str(use_keypnt) + sp + str(res[0])+","+str(res[1]) + sp + str(blend_frac) + sp + str(x_t) + sp + pc_ip + '"'
-    
+    print("ARGSTR", argstr)
+
     maincmds[-1] += argstr
     maincmds = [x+'\n' for x in maincmds]
     maincmds.append("sleep 10")
@@ -152,7 +152,7 @@ app = flask.Flask(__name__)
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
-    global zoom, h, w, frame_width, frame_height, origin, blend_frac
+    global zoom, h, w, frame_width, frame_height, origin, blend_frac, resolution
     if request.method == 'POST':
         if request.form['button'] == 'power_on':
             print("POWER button clicked: powering on")

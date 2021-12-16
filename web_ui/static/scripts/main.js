@@ -118,6 +118,9 @@ $(document).on('submit','#form180',function(e){
 $(document).on('submit','#form270',function(e){
     powerToggle(e, false)
 });
+$(document).on('submit','#formColdBoot',function(e){
+    submitfun(e, "boldBoot")
+});
 
 $(document).on('submit','#formFullView',function(e){
     submitfun(e, "fullview")

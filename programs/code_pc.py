@@ -1,6 +1,5 @@
 import imagezmq
 import cv2
-import time
 
 # ontvangt foto's
 

@@ -147,6 +147,11 @@ form label img {
 	height: 20px;
 	vertical-align: middle;
 }
+#topcontrols,
+#bottomcontrols {
+	display: flex;
+	justify-content: space-between;
+}
 #bottomrightcontrols {
 	float: right;
 }
