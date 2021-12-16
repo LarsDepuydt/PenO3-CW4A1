@@ -233,12 +233,16 @@ MASK_L, MASK_R, combined_width, mask_realL, mask_realR = get_combine_objects(X_T
     # cv2.imwrite("output.png", combine())
 '''
 
+imgL_translation = cv2.warpAffine(imgL, MASK_L, (combined_width, HEIGHT))
+imgR_translation = cv2.warpAffine(imgR, MASK_R, (combined_width, HEIGHT))
+out = np.uint8(imgL_translation * mask_realL + imgR_translation * mask_realR)
+
 SENDER = imagezmq.ImageSender(connect_to=PC_IP)
 
 while True:
-    # imgR = cv2.remap(cv2.cvtColor(PICAM.read(), cv2.COLOR_BGR2BGRA), MAPRX, MAPRY, cv2.INTER_AREA, borderMode=cv2.BORDER_TRANSPARENT)
-    imgR2 = cv2.cvtColor(PICAM.read(), cv2.COLOR_BGR2BGRA)
-    imgL2 = IMAGE_HUB.recv_image()[1]
-    SENDER.send_image("", np.uint8(cv2.warpAffine(imgL, MASK_L, (combined_width, HEIGHT)) * mask_realL + cv2.warpAffine(imgR, MASK_R, (combined_width, HEIGHT)) * mask_realR))
+    imgR = cv2.remap(cv2.cvtColor(PICAM.read(), cv2.COLOR_BGR2BGRA), MAPRX, MAPRY, cv2.INTER_AREA, borderMode=cv2.BORDER_TRANSPARENT)
+    imgL = IMAGE_HUB.recv_image()[1]
+    SENDER.send_image("", out)
+    # SENDER.send_image("", np.uint8(cv2.warpAffine(imgL, MASK_L, (combined_width, HEIGHT)) * mask_realL + cv2.warpAffine(imgR, MASK_R, (combined_width, HEIGHT)) * mask_realR))
     IMAGE_HUB.send_reply(b'OK')
     
