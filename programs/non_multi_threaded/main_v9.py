@@ -44,7 +44,7 @@ SENDER = imagezmq.ImageSender(connect_to=RB_IP_HELPER)
 # ==============================
 # INITIALISATION
 # ==============================
-
+print("here")
 SENDER.send_image(RB_IP_MAIN, np.array(["ready"]))
 print("Ready message was received by helper")
 

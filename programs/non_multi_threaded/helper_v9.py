@@ -30,19 +30,19 @@ KR = np.array([[FOCAL_LEN, 0, WIDTH/2], [0, FOCAL_LEN, HEIGHT/2], [0, 0, 1]], dt
 PICAM = VideoStream(usePiCamera=True, resolution=RESOLUTION).start()
 
 IMAGE_HUB = imagezmq.ImageHub()
-
+print("here")
 RB_IP_MAIN, ready = IMAGE_HUB.recv_image()
 if ready[0] == "ready":
     print("Received ready message")
-
+IMAGE_HUB.send_reply(b'OK') # main continues after this and also takes picture
 sleep(1)  # allow camera sensor to warm up and wait to make sure helper is running
 SENDER = imagezmq.ImageSender(connect_to=RB_IP_MAIN)
 
 # ==============================
 # INITIALISATION
 # ==============================
+print("here")
 
-IMAGE_HUB.send_reply(b'OK') # main continues after this and also takes picture
 imgL = cv2.cvtColor(PICAM.read(), cv2.COLOR_BGR2BGRA)
 SENDER.send_image("", imgL)
 print("Left calibration image was received by main")
