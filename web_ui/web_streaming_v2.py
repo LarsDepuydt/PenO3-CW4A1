@@ -11,25 +11,6 @@ from flask import request
 # CONSTANTS
 # ==============================
 
-'''
-TEST this to enable camera by default:
-/boot/config.txt: 
-start_x=1             # essential
-gpu_mem=128           # at least, or maybe more if you wish
-disable_camera_led=1  # optional, if you don't want the led to glow
-'''
-
-'''
-TEST this to set static eth0 ip on pi's
-/etc/network/interfaces:
-https://elinux.org/RPi_Setting_up_a_static_IP_in_Debian
-auto lo
-iface lo inet loopback
-iface eth0 inet static
-address        192.168.1.200
-netmask        255.255.255.0
-gateway        192.168.1.1
-'''
 
 RUNNING = False
 LOG_FPS = False

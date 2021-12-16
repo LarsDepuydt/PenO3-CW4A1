@@ -4,48 +4,38 @@ import cv2
 import imagezmq
 from imutils.video import VideoStream
 from time import sleep
-from math import floor, ceil
+from math import ceil
 
 # ==============================
 # ARGUMENT PARSER
 # ==============================
-# args = "True" "width,height" "blend_frac" "x_t" "pc_ip"
+# args = "True" "width,height" "blend_frac" "X_TRANS_DIST" "pc_ip"
 USE_KEYPOINT_TRANSLATE = bool(int(argv[1]))
 RESOLUTION = WIDTH, HEIGHT = [int(x) for x in argv[2].split(",")]
 BLEND_FRAC = float(argv[3])
-X_t = int(argv[4])
+X_TRANS_DIST = int(argv[4])
 PC_IP = "tcp://" + argv[5] + ":5555"
-print(USE_KEYPOINT_TRANSLATE)
-print(RESOLUTION)
-print(BLEND_FRAC)
-print(X_t)
-print(PC_IP)
 
 # ==============================
 # CONSTANTS
 # ==============================
 
-CAMERAMODE = 1 # 1 = imutils.VideoStream, 2 = cv2.VideoCapture
 RB_IP_MAIN =    'tcp://169.254.165.116:5555'
 RB_IP_HELPER =  'tcp://169.254.222.67:5555'
 
 KEYPOINT_COUNT = 2000  # set number of keypoints
-MAX_MATCH_Y_DISP = int() # maximum vertical displacement of valid match in pixels
+MAX_MATCH_Y_DISP = int(30) # maximum vertical displacement of valid match in pixels
 MIN_MATCH_COUNT = 5  # set minimum number of better_matches
 KEYPOINT_MASK_X_BOUND = 0.4 # only search for keypoints in this fraction of pixel towards the bound
 
 FOCAL_LEN = 315 # focal length = 3.15mm volgens waveshare.com/imx219-d160.htm
 s = 0 # skew parameter
 KL = np.array([[FOCAL_LEN, s, WIDTH/2], [0, FOCAL_LEN, HEIGHT/2], [0, 0, 1]], dtype=np.uint16)  # mock intrinsics
-KR = np.array([[FOCAL_LEN, 0, WIDTH/2], [0, FOCAL_LEN, HEIGHT/2], [0, 0, 1]], dtype=np.uint16)  # mock intrinsics
+KR = np.array([[FOCAL_LEN, s, WIDTH/2], [0, FOCAL_LEN, HEIGHT/2], [0, 0, 1]], dtype=np.uint16)  # mock intrinsics
 # [fx s x0; 0 fy y0; 0 0 1]
 
-if CAMERAMODE == 1:
-    PICAM = VideoStream(usePiCamera=True, resolution=RESOLUTION).start()
-elif CAMERAMODE ==2:
-    PICAM = cv2.VideoCapture(0)
-    PICAM.set(cv2.CAP_PROP_FRAME_WIDTH, WIDTH)
-    PICAM.set(cv2.CAP_PROP_FRAME_HEIGHT, HEIGHT)
+PICAM = VideoStream(usePiCamera=True, resolution=RESOLUTION).start()
+
 IMAGE_HUB = imagezmq.ImageHub()
 
 sleep(1)  # allow camera sensor to warm up and wait to make sure helper is running
@@ -54,7 +44,7 @@ SENDER = imagezmq.ImageSender(connect_to=RB_IP_HELPER)
 # ==============================
 # INITIALISATION
 # ==============================
-
+print("here")
 SENDER.send_image(RB_IP_MAIN, np.array(["ready"]))
 print("Ready message was received by helper")
 
@@ -97,7 +87,7 @@ def get_projection_objects(K):
     x_L, x_R = min(x_L), max(x_R)
     B = B[:, x_L:x_R]
 
-    return x_L, x_R, B[:, :, 0].astype(np.float32), B[:, :, 1].astype(np.float32)
+    return B[:, :, 0].astype(np.float32), B[:, :, 1].astype(np.float32)
 
 def get_translation_parameters(imgL, imgR, log=False):
     '''
@@ -140,13 +130,13 @@ def get_translation_parameters(imgL, imgR, log=False):
     print("keypoints: ", len(keyptsL), "| matches: ", len(matches), "| good matches:", len(good_matches), "| better matches:", len(better_matches))
     assert len(better_matches) >= MIN_MATCH_COUNT
 
-    X_t, avg_y_disp = 0, 0
+    X_TRANS_DIST, avg_y_disp = 0, 0
     for m in better_matches:
         xL, yL= keyptsL[m.queryIdx].pt
         xR, yR= keyptsR[m.trainIdx].pt
-        X_t += abs(w-xL + xR)
+        X_TRANS_DIST += abs(w-xL + xR)
         avg_y_disp += abs(yR-yL)
-    X_t = int(X_t / len(better_matches))
+    X_TRANS_DIST = int(X_TRANS_DIST / len(better_matches))
     avg_y_disp = int(avg_y_disp / len(better_matches))
 
     if log:
@@ -158,7 +148,7 @@ def get_translation_parameters(imgL, imgR, log=False):
         cv2.imshow("Better Matches", cv2.drawMatches(imgL, keyptsL, imgR, keyptsR, better_matches, None, matchColor=(255, 0, 255)))
         cv2.waitKey(0)
     
-    return X_t, avg_y_disp
+    return X_TRANS_DIST, avg_y_disp
 
 def get_combine_objects(xt, log=False):
     '''
@@ -190,8 +180,8 @@ def get_combine_objects(xt, log=False):
     mask_realL = np.concatenate((mask_imgL_cropped_noblend, maskL, mask_post_imgL), axis=1)
     mask_realR = np.concatenate((mask_pre_imgR, maskR, mask_imgR_cropped_noblend), axis=1)
 
-    TL= np.float32([[1, 0, 0], [0, 1, 0]])
-    TR = np.float32([[1, 0, imgL_cropped_no_overlap_width], [0, 1, 0]])
+    MASK_L= np.float32([[1, 0, 0], [0, 1, 0]])
+    MASK_R = np.float32([[1, 0, imgL_cropped_no_overlap_width], [0, 1, 0]])
 
     height_real, combined_width = mask_realL.shape[:2]
 
@@ -200,34 +190,33 @@ def get_combine_objects(xt, log=False):
         cv2.imshow('mask_realR', mask_realR)
         print('combined width:', combined_width)
         print('height', height)
-        print('TL', TL)
-        print('TR', TR)
-        print('xt', X_t)
+        print('MASK_L', MASK_L)
+        print('MASK_R', MASK_R)
+        print('xt', X_TRANS_DIST)
         cv2.waitKey(0)
 
-    return TL, TR, combined_width, mask_realL, mask_realR
+    return MASK_L, MASK_R, combined_width, mask_realL, mask_realR
 
+MAPRX, MAPRY = get_projection_objects(KR)
+MAPLX, MAPLY = get_projection_objects(KL)
 
-xR_L, xR_R, MAPR1, MAPR2 = get_projection_objects(KR)
-xL_L, xL_R, MAPL1, MAPL2 = get_projection_objects(KL)
+SENDER.send_image("", np.array([MAPLX, MAPLY]))
+print('MAPLX and MAPLY were received by helper')
 
-SENDER.send_image("", np.array([MAPL1, MAPL2]))
-print('MAPL1 and MAPL2 were received by helper')
-
-imgL = cv2.remap(imgL, MAPL1, MAPL2, cv2.INTER_AREA, borderMode=cv2.BORDER_TRANSPARENT)
-imgR = cv2.remap(imgR, MAPR1, MAPR2, cv2.INTER_AREA, borderMode=cv2.BORDER_TRANSPARENT)
+imgL = cv2.remap(imgL, MAPLX, MAPLY, cv2.INTER_AREA, borderMode=cv2.BORDER_TRANSPARENT)
+imgR = cv2.remap(imgR, MAPRX, MAPRY, cv2.INTER_AREA, borderMode=cv2.BORDER_TRANSPARENT)
 
 if USE_KEYPOINT_TRANSLATE:
-    X_t, Y_t = get_translation_parameters(imgL, imgR, log=False)
+    X_TRANS_DIST, Y_trans_dist = get_translation_parameters(imgL, imgR, log=False)
 # else: fifth program argument is used
 
-TL, TR, combined_width, mask_realL, mask_realR = get_combine_objects(X_t, log=False)
-print("here")
+MASK_L, MASK_R, combined_width, mask_realL, mask_realR = get_combine_objects(X_TRANS_DIST, log=False)
+
 # write output image of calibration images
 '''
     # def combine(log = False):
-    #     imgL_translation = cv2.warpAffine(imgL, TL, (combined_width, HEIGHT))
-    #     imgR_translation = cv2.warpAffine(imgR, TR, (combined_width, HEIGHT))
+    #     imgL_translation = cv2.warpAffine(imgL, MASK_L, (combined_width, HEIGHT))
+    #     imgR_translation = cv2.warpAffine(imgR, MASK_R, (combined_width, HEIGHT))
         
     #     final = np.uint8(imgL_translation * mask_realL + imgR_translation * mask_realR)
     #     if log:
@@ -239,8 +228,8 @@ print("here")
 SENDER = imagezmq.ImageSender(connect_to=PC_IP)
 
 while True:
-    imgR = cv2.remap(cv2.cvtColor(PICAM.read(), cv2.COLOR_BGR2BGRA), MAPR1, MAPR2, cv2.INTER_AREA, borderMode=cv2.BORDER_TRANSPARENT)
+    imgR = cv2.remap(cv2.cvtColor(PICAM.read(), cv2.COLOR_BGR2BGRA), MAPRX, MAPRY, cv2.INTER_AREA, borderMode=cv2.BORDER_TRANSPARENT)
     imgL = IMAGE_HUB.recv_image()[1]
-    SENDER.send_image("", np.uint8(cv2.warpAffine(imgL, TL, (combined_width, HEIGHT)) * mask_realL + cv2.warpAffine(imgR, TR, (combined_width, HEIGHT)) * mask_realR))
+    SENDER.send_image("", np.uint8(cv2.warpAffine(imgL, MASK_L, (combined_width, HEIGHT)) * mask_realL + cv2.warpAffine(imgR, MASK_R, (combined_width, HEIGHT)) * mask_realR))
     IMAGE_HUB.send_reply(b'OK')
 
