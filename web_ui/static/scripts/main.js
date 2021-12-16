@@ -62,9 +62,8 @@ function checkKey(e) {
         submitfun(e, "panright")
     }
 }
-function powerToggle(e, buttonAction){
+function powerToggle(buttonAction){
     // buttonaction = False if not powerbutton (=> other buttons can only turn on stream)
-    e.preventDefault();
     if (buttonAction) {
         if (document.getElementById("powerbutton").classList.contains("poweredon")) {
             $("#powerbutton").addClass('poweredoff');
@@ -85,7 +84,6 @@ function powerToggle(e, buttonAction){
         }
     }
     else {
-        sendstr = "power_on"
         if (document.getElementById("powerbutton").classList.contains("poweredon")) {
             console.log('powering on again')
         }
@@ -99,27 +97,24 @@ function powerToggle(e, buttonAction){
             console.log("powering on")
         }
     }
-    $.ajax({
-        type:'POST',
-        url:'/',
-        data:{button:sendstr},
-    })
+    return sendstr
 }
 
 $(document).on('submit','#formPower',function(e){
-    powerToggle(e, true)
+    sendstr = powerToggle(true)
+    submitfun(e, sendstr)
 });
 $(document).on('submit','#formCalibrate',function(e){
-    powerToggle(e, false)
+    powerToggle(false)
+    submitfun(e, 'calibrate')
 });
 $(document).on('submit','#form180',function(e){
-    powerToggle(e, false)
+    powerToggle(false)
+    submitfun(e, 'setto180')
 });
 $(document).on('submit','#form270',function(e){
-    powerToggle(e, false)
-});
-$(document).on('submit','#formColdBoot',function(e){
-    submitfun(e, "boldBoot")
+    powerToggle(false)
+    submitfun(e, 'setto270')
 });
 
 $(document).on('submit','#formFullView',function(e){

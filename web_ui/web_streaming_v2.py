@@ -15,9 +15,9 @@ RUNNING = False
 LOG_FPS = False
 DEBUG = True
 
-image_hub = False
+image_hub = -1
 running = False
-resolution = [480, 360]
+resolution = [320, 240]
 blend_frac = 0.5
 x_t = 0
 calibrate = False
@@ -48,6 +48,7 @@ def get_pc_ip():
     return out[i1:i2]
 
 PC_IP = get_pc_ip()
+PC_IP = "169.254.236.78"
 
 # ==============================
 # FUNCTIONS
@@ -88,6 +89,9 @@ def gen_command_files(maincmds, helpercmds, use_keypnt, res, blend_frac, x_t, pc
     argstr = ' "' +  str(use_keypnt) + sp + str(res[0])+","+str(res[1]) + sp + str(blend_frac) + sp + str(x_t) + sp + pc_ip + '"'
     print("ARGSTR", argstr)
 
+    open(CMD_FILE_SAVE_DIR + 'main_init.txt', 'w').close()
+    open(CMD_FILE_SAVE_DIR + 'helper_init.txt', 'w').close()
+
     maincmds[-1] += argstr
     maincmds = [x+'\n' for x in maincmds]
     maincmds.append("sleep 10")
@@ -102,8 +106,9 @@ def gen_command_files(maincmds, helpercmds, use_keypnt, res, blend_frac, x_t, pc
 
 def gen_frames_imagehub():
     global zoom, h, w, frame_width, frame_height, origin, image_hub
-    if not(image_hub):
+    if image_hub == -1:
         print("Starting imageHub")
+        print("===" * 30)
         image_hub = imagezmq.ImageHub()
     frame_height, frame_width = image_hub.recv_image()[1].shape[:2]
     image_hub.send_reply(b'OK')
@@ -150,6 +155,11 @@ def is_port_in_use(port):
 flask.Response()
 app = flask.Flask(__name__)
 
+@app.route('/video_feed')
+def video_feed():
+    return flask.Response(gen_frames_imagehub(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+
 @app.route('/', methods=['POST', 'GET'])
 def index():
     global zoom, h, w, frame_width, frame_height, origin, blend_frac, resolution
@@ -162,18 +172,23 @@ def index():
             terminate()
         elif request.form['button'] == 'calibrate':
             print("CALIBRATION button clicked")
+            terminate()
             blend_frac = 0.2
             gen_command_files(MAIN_INIT_CMDS, HELPER_INIT_CMDS, 1, resolution, blend_frac, 0, PC_IP)
             initialize()
         elif request.form['button'] == 'setto180':
             print("SETTO180 button clicked")
-            x_t = 540
+            terminate()
+            x_t = int(0.8 * resolution[0])
+            x_t = 244
             blend_frac = 0.1
             gen_command_files(MAIN_INIT_CMDS, HELPER_INIT_CMDS, 0, resolution, blend_frac, x_t, PC_IP)
             initialize()
         elif request.form['button'] == 'setto270':
             print("SETTO270 button clicked")
-            x_t = 65
+            terminate()
+            x_t = int(0.08 * resolution[0])
+            x_t = 28
             blend_frac = 0.5
             gen_command_files(MAIN_INIT_CMDS, HELPER_INIT_CMDS, 0, resolution, blend_frac, x_t, PC_IP)
             initialize()
@@ -247,11 +262,12 @@ def index():
         pass
     return flask.render_template('index.html', blend_frac=blend_frac)
 
-if LOG_FPS:
+
+if False:
     @app.route('/video_feed')
     def video_feed():
         return flask.Response(gen_frames_imagehub_log_fps(), mimetype='multipart/x-mixed-replace; boundary=frame')
-else:
+elif False:
     @app.route('/video_feed')
     def video_feed():
         return flask.Response(gen_frames_imagehub(), mimetype='multipart/x-mixed-replace; boundary=frame')
