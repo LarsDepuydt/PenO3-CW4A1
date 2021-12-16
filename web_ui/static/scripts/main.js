@@ -62,30 +62,61 @@ function checkKey(e) {
         submitfun(e, "panright")
     }
 }
-$(document).on('submit','#formPower',function(e){
+function powerToggle(e, buttonAction){
+    // buttonaction = False if not powerbutton (=> other buttons can only turn on stream)
     e.preventDefault();
-    if (document.getElementById("powerbutton").classList.contains("poweredon")) {
-        $("#powerbutton").addClass('poweredoff');
-        $("#powerbutton").removeClass('poweredon');
-        console.log("powering off")
-        sendstr = "power_off"
-    }
-    else if (document.getElementById("powerbutton").classList.contains("poweredoff")) {
-        $("#powerbutton").addClass('poweredon');
-        $("#powerbutton").removeClass('poweredoff')
-        console.log("powering on")
-        sendstr = "power_on"
+    if (buttonAction) {
+        if (document.getElementById("powerbutton").classList.contains("poweredon")) {
+            $("#powerbutton").addClass('poweredoff');
+            $("#powerbutton").removeClass('poweredon');
+            console.log("powering off")
+            sendstr = "power_off"
+        }
+        else if (document.getElementById("powerbutton").classList.contains("poweredoff")) {
+            $("#powerbutton").addClass('poweredon');
+            $("#powerbutton").removeClass('poweredoff')
+            console.log("powering on")
+            sendstr = "power_on"
+        }
+        else {
+            $("#powerbutton").addClass('poweredon');
+            console.log("powering on")
+            sendstr = "power_on"
+        }
     }
     else {
-        $("#powerbutton").addClass('poweredon');
-        console.log("powering on")
         sendstr = "power_on"
+        if (document.getElementById("powerbutton").classList.contains("poweredon")) {
+            console.log('powering on again')
+        }
+        else if (document.getElementById("powerbutton").classList.contains("poweredoff")) {
+            $("#powerbutton").addClass('poweredon');
+            $("#powerbutton").removeClass('poweredoff')
+            console.log("powering on")
+        }
+        else {
+            $("#powerbutton").addClass('poweredon');
+            console.log("powering on")
+        }
     }
     $.ajax({
         type:'POST',
         url:'/',
         data:{button:sendstr},
     })
+}
+
+$(document).on('submit','#formPower',function(e){
+    powerToggle(e, true)
+});
+$(document).on('submit','#formCalibrate',function(e){
+    powerToggle(e, false)
+});
+$(document).on('submit','#form180',function(e){
+    powerToggle(e, false)
+});
+$(document).on('submit','#form270',function(e){
+    powerToggle(e, false)
 });
 
 $(document).on('submit','#formFullView',function(e){

@@ -13,7 +13,6 @@ from time import sleep
 # args = "True" "width,height" "blend_frac" "x_t" "pc_ip"
 # USE_KEYPOINT_TRANSLATE = bool(argv[1])
 RESOLUTION = WIDTH, HEIGHT = [int(x) for x in argv[2].split(",")]
-print(RESOLUTION)
 # BLEND_FRAC = float(argv[3])
 # X_t = int(argv[4])
 # PC_IP = "tcp://" + argv[5] + ":5555"
@@ -22,20 +21,14 @@ print(RESOLUTION)
 # CONSTANTS
 # ==============================
 
-CAMERAMODE = 1 # 1 = imutils.VideoStream, 2 = cv2.VideoCapture
-
 FOCAL_LEN = 315 # focal length = 3.15mm volgens waveshare.com/imx219-d160.htm
 s = 0 # skew parameter
 KL = np.array([[FOCAL_LEN, s, WIDTH/2], [0, FOCAL_LEN, HEIGHT/2], [0, 0, 1]], dtype=np.uint16)  # mock intrinsics
 KR = np.array([[FOCAL_LEN, 0, WIDTH/2], [0, FOCAL_LEN, HEIGHT/2], [0, 0, 1]], dtype=np.uint16)  # mock intrinsics
 # [fx s x0; 0 fy y0; 0 0 1]
 
-if CAMERAMODE == 1:
-    PICAM = VideoStream(usePiCamera=True, resolution=RESOLUTION).start()
-elif CAMERAMODE ==2:
-    PICAM = cv2.VideoCapture(0)
-    PICAM.set(cv2.CAP_PROP_FRAME_WIDTH, WIDTH)
-    PICAM.set(cv2.CAP_PROP_FRAME_HEIGHT, HEIGHT)
+PICAM = VideoStream(usePiCamera=True, resolution=RESOLUTION).start()
+
 IMAGE_HUB = imagezmq.ImageHub()
 
 RB_IP_MAIN, ready = IMAGE_HUB.recv_image()
@@ -54,13 +47,13 @@ imgL = cv2.cvtColor(PICAM.read(), cv2.COLOR_BGR2BGRA)
 SENDER.send_image("", imgL)
 print("Left calibration image was received by main")
 
-MAPL1, MAPL2 = IMAGE_HUB.recv_image()[1]
+MAPLX, MAPLY = IMAGE_HUB.recv_image()[1]
 IMAGE_HUB.send_reply(b'OK')
-print("Received MAPL1 and MAPL2")
+print("Received MAPLX and MAPLY")
 
 # ==============================
 # LOOP
 # ==============================
 
 while True:
-    SENDER.send_image("", cv2.remap(cv2.cvtColor(PICAM.read(), cv2.COLOR_BGR2BGRA), MAPL1, MAPL2, cv2.INTER_AREA, borderMode=cv2.BORDER_TRANSPARENT))
+    SENDER.send_image("", cv2.remap(cv2.cvtColor(PICAM.read(), cv2.COLOR_BGR2BGRA), MAPLX, MAPLY, cv2.INTER_AREA, borderMode=cv2.BORDER_TRANSPARENT))
