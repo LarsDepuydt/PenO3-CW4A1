@@ -239,14 +239,9 @@ out = np.uint8(imgL_translation * mask_realL + imgR_translation * mask_realR)
 
 SENDER = imagezmq.ImageSender(connect_to=PC_IP)
 
-h_l, w_l = imgL.shape[:2]
-MASK_L = MASK_L[:, :w_l]
-MASK_R = MASK_R[:, w_l:]
-print(MASK_L.shape[:2], MASK_R.shape[:2], imgL.shape[:2], imgR.shape[:2])
-
 while True:
     imgR = cv2.remap(cv2.cvtColor(PICAM.read(), cv2.COLOR_BGR2BGRA), MAPRX, MAPRY, cv2.INTER_AREA, borderMode=cv2.BORDER_TRANSPARENT)
     imgL = IMAGE_HUB.recv_image()[1]
-    SENDER.send_image("", np.uint8(np.concatenate(imgL * MASK_L, imgR * MASK_R)))
-    #SENDER.send_image("", np.uint8(cv2.warpAffine(imgL, MASK_L, (combined_width, HEIGHT)) * mask_realL + cv2.warpAffine(imgR, MASK_R, (combined_width, HEIGHT)) * mask_realR))
+    SENDER.send_image("", np.uint8(cv2.warpAffine(imgL, MASK_L, (combined_width, HEIGHT)) * mask_realL + cv2.warpAffine(imgR, MASK_R, (combined_width, HEIGHT)) * mask_realR))
     IMAGE_HUB.send_reply(b'OK')
+    
