@@ -1,8 +1,10 @@
+from re import I
 import cv2
 import time
 import imagezmq
 import flask
 from flask import request
+import numpy as np
 
 # REFERENCE: https://www.pyimagesearch.com/2019/09/02/opencv-stream-video-to-web-browser-html-page/
 # REFERENCE: https://towardsdatascience.com/video-streaming-in-web-browsers-with-opencv-flask-93a38846fe00
@@ -14,6 +16,7 @@ from flask import request
 RUNNING = False
 LOG_FPS = False
 DEBUG = True
+first = True
 
 image_hub = -1
 running = False
@@ -23,6 +26,7 @@ x_t = 0
 calibrate = False
 
 frame_width, frame_height = 1000, 240 # placeholder for frame_width and frame_height
+fill_height = int(0.9*frame_height)
 w, h = frame_width, frame_height # shown frame width (for zooming)
 zoom = 0
 origin = [0, 0]
@@ -39,6 +43,14 @@ HELPER_INIT_CMDS = [
     'cd ../../programs/non_multi_threaded',
     'python3 helper_v9.py']
 
+MAIN_TERM_CMDS = [
+    'echo "IN MAIN PI: terminating all python"'
+    'sudo pkill python']
+
+HELPER_TERM_CMDS = [
+    'echo "IN HELPER PI: terminating all python"'
+    'sudo pkill python']
+
 def get_pc_ip():
     # REFERENCE: https://stackoverflow.com/a/59004409
     import subprocess
@@ -49,6 +61,8 @@ def get_pc_ip():
 
 PC_IP = get_pc_ip()
 PC_IP = "169.254.236.78"
+MAIN_PI_IP = "169.254.165.116"
+HELPER_PI_IP = "169.254.222.67"
 
 # ==============================
 # FUNCTIONS
@@ -60,9 +74,9 @@ def initialize():
     from subprocess import run
     PROG_DIR =  str(str(path.dirname(path.realpath(__file__)))[:-6] + "programs/non_multi_threaded").replace("\\", "/")
     REMOTE_EXEC_SCRIPT_PATH = PROG_DIR + "/ssh_conn_exec_cmdfile_win.bat"
-    MAIN_CMD_FILE = PROG_DIR + "/main_init.txt"
+    MAIN_CMD_FILE_PATH = PROG_DIR + "/main_init.txt"
     HELPER_CMD_FILE = PROG_DIR + "/helper_init.txt"
-    run([REMOTE_EXEC_SCRIPT_PATH, "169.254.165.116", MAIN_CMD_FILE])
+    run([REMOTE_EXEC_SCRIPT_PATH, "169.254.165.116", MAIN_CMD_FILE_PATH])
     run([REMOTE_EXEC_SCRIPT_PATH, "169.254.222.67", HELPER_CMD_FILE])
 
 def terminate():
@@ -70,9 +84,9 @@ def terminate():
     from subprocess import run
     PROG_DIR =  str(str(path.dirname(path.realpath(__file__)))[:-6] + "programs/non_multi_threaded").replace("\\", "/")
     REMOTE_EXEC_SCRIPT_PATH = PROG_DIR + "/ssh_conn_exec_cmdfile_win.bat"
-    MAIN_CMD_FILE = PROG_DIR + "/main_terminate.txt"
+    MAIN_CMD_FILE_PATH = PROG_DIR + "/main_terminate.txt"
     HELPER_CMD_FILE = PROG_DIR + "/helper_terminate.txt"
-    run([REMOTE_EXEC_SCRIPT_PATH, "169.254.165.116", MAIN_CMD_FILE])
+    run([REMOTE_EXEC_SCRIPT_PATH, "169.254.165.116", MAIN_CMD_FILE_PATH])
     run([REMOTE_EXEC_SCRIPT_PATH, "169.254.222.67", HELPER_CMD_FILE])
 
 def gen_command_files(maincmds, helpercmds, use_keypnt, res, blend_frac, x_t, pc_ip):
@@ -92,41 +106,52 @@ def gen_command_files(maincmds, helpercmds, use_keypnt, res, blend_frac, x_t, pc
     open(CMD_FILE_SAVE_DIR + 'main_init.txt', 'w').close()
     open(CMD_FILE_SAVE_DIR + 'helper_init.txt', 'w').close()
 
+    maincmds = maincmds[:] # copy so it doesn't edit the global variable
     maincmds[-1] += argstr
     maincmds = [x+'\n' for x in maincmds]
-    maincmds.append("sleep 10")
+    maincmds.append("sleep 5")
     with open(CMD_FILE_SAVE_DIR + 'main_init.txt', mode='w') as f:
         f.writelines(maincmds)
 
+    helpercmds = helpercmds[:]
     helpercmds[-1] += argstr
     helpercmds = [x + '\n' for x in helpercmds]
-    helpercmds.append("sleep 10")
+    helpercmds.append("sleep 5")
     with open(CMD_FILE_SAVE_DIR + 'helper_init.txt', mode='w') as f:
         f.writelines(helpercmds)
 
 def gen_frames_imagehub():
-    global zoom, h, w, frame_width, frame_height, origin, image_hub
+    global zoom, h, w, frame_width, frame_height, origin, image_hub, fill_height
     if image_hub != -1:
         image_hub.close()
     print("(Re)starting ImageHub")
     image_hub = imagezmq.ImageHub()
-    frame_height, frame_width = image_hub.recv_image()[1].shape[:2]
+    img = image_hub.recv_image()[1]
     image_hub.send_reply(b'OK')
+    frame_height, frame_width = img.shape[:2]
+    for i, r in img:
+        if i < frame_height/2:
+            if r[0] == np.array([0, 0, 0]):
+                fill_height = i + 1
     while True:
         frame = image_hub.recv_image()[1][origin[1]:origin[1] + h, origin[0]:origin[0] + w]
         image_hub.send_reply(b'OK')
         yield(b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + cv2.imencode('.jpg', frame)[1].tobytes() + b'\r\n')
 
 def gen_frames_imagehub_log_fps():
-    global zoom, h, w, frame_width, frame_height, origin, image_hub
+    global zoom, h, w, frame_width, frame_height, origin, image_hub, fill_height
     img_hub_fps, web_app_fps, t_old = [], [], 0
-    image_hub = imagezmq.ImageHub()#open_port='tcp://:5555')
     if image_hub != -1:
         image_hub.close()
     print("(Re)starting ImageHub")
     image_hub = imagezmq.ImageHub()
-    frame_height, frame_width = image_hub.recv_image()[1].shape[:2]
+    img = image_hub.recv_image()[1]
     image_hub.send_reply(b'OK')
+    frame_height, frame_width = img.shape[:2]
+    for i, r in img:
+        if i < frame_height/2:
+            if r[0] == np.array([0, 0, 0]):
+                fill_height = i + 1
     while True:
         frame = image_hub.recv_image()[1][origin[1]:origin[1] + h, origin[0]:origin[0] + w]
         image_hub.send_reply(b'OK')
@@ -139,10 +164,10 @@ def gen_frames_imagehub_log_fps():
         img_hub_fps.append(1/(t_after_image - t_old))
         t_old = t_after_yield
 
-        if len(web_app_fps) == 10:
-            print("Webapp fps 10avg     : ", sum(web_app_fps)/10)
+        if len(web_app_fps) == 50:
+            print("Webapp fps 50avg     : ", sum(web_app_fps)/50)
             print("Webapp fps 1sample   : ", web_app_fps[-1])
-            print("Imagehub fps 10avg   : ", sum(img_hub_fps)/10)
+            print("Imagehub fps 50avg   : ", sum(img_hub_fps)/50)
             print("Imagehub fps 1sample : ", img_hub_fps[-1])
             web_app_fps, img_hub_fps = [], []
 
@@ -165,34 +190,34 @@ def video_feed():
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
-    global zoom, h, w, frame_width, frame_height, origin, blend_frac, resolution
+    global zoom, h, w, frame_width, frame_height, origin, blend_frac, resolution, first
+    if first:
+        terminate()
+        first = False
     if request.method == 'POST':
-        if request.form['button'] == 'power_on':
+        if request.form['button'] == 'poweron':
             print("POWER button clicked: powering on")
             initialize()
-        elif request.form['button'] == 'power_off':
+        elif request.form['button'] == 'poweroff':
             print("POWER button clicked: powering off")
             terminate()
         elif request.form['button'] == 'calibrate':
             print("CALIBRATION button clicked")
             terminate()
-            blend_frac = 0.2
             gen_command_files(MAIN_INIT_CMDS, HELPER_INIT_CMDS, 1, resolution, blend_frac, 0, PC_IP)
             initialize()
-        elif request.form['button'] == 'setto180':
+        elif request.form['button'] == 'set180':
             print("SETTO180 button clicked")
             terminate()
-            x_t = int(0.8 * resolution[0])
+            # x_t = int(0.8 * resolution[0])
             x_t = 244
-            blend_frac = 0.1
             gen_command_files(MAIN_INIT_CMDS, HELPER_INIT_CMDS, 0, resolution, blend_frac, x_t, PC_IP)
             initialize()
         elif request.form['button'] == 'setto270':
             print("SETTO270 button clicked")
             terminate()
-            x_t = int(0.08 * resolution[0])
+            # x_t = int(0.08 * resolution[0])
             x_t = 28
-            blend_frac = 0.5
             gen_command_files(MAIN_INIT_CMDS, HELPER_INIT_CMDS, 0, resolution, blend_frac, x_t, PC_IP)
             initialize()
         elif request.form['button'] == 'decreaseblendfrac':
@@ -208,13 +233,17 @@ def index():
             if blend_frac >= 0.9:
                 blend_frac = 1
         elif request.form['button'] == 'fullview':
+            print('FULL VIEW button clicked')
             zoom = 0
             w = frame_width
             h = frame_height
             origin = [0, 0]
-            print('FULL VIEW button clicked')
         elif request.form['button'] == 'fillview':
             print('FILL VIEW button clicked')
+            zoom = 0
+            origin = [0, 0]
+            w = frame_width
+            h = fill_height
         elif request.form['button'] == 'zoomin':
             if zoom < 0.4: # crash if allow higher zoom
                 zoom += 0.05

@@ -1,3 +1,4 @@
+
 function highlightButton(id) {
     console.log("Highlighting button:", id)
     document.getElementById(id).childNodes[0].classList.add('activatedThroughJS')
@@ -11,9 +12,7 @@ function highlightButton(id) {
     removeTheClass(id)
 }
 
-
-
-function submitfun(e, val) {
+function submitfun(e, val, refresh=false) {
     // REFERENCE: form submission without page reload: https://www.geeksforgeeks.org/flask-form-submission-without-page-reload/
     console.log("Submitting: ", val)
     e.preventDefault();
@@ -38,6 +37,7 @@ document.getElementById("camera_feed").addEventListener('wheel', (e) => {
         submitfun(e, "zoomin")
     }
 })
+
 document.onkeydown = checkKey;
 function checkKey(e) {
     e = e || window.event;
@@ -62,59 +62,53 @@ function checkKey(e) {
         submitfun(e, "panright")
     }
 }
+
 function powerToggle(buttonAction){
-    // buttonaction = False if not powerbutton (=> other buttons can only turn on stream)
-    if (buttonAction) {
-        if (document.getElementById("powerbutton").classList.contains("poweredon")) {
-            $("#powerbutton").addClass('poweredoff');
-            $("#powerbutton").removeClass('poweredon');
-            console.log("powering off")
-            sendstr = "power_off"
-        }
-        else if (document.getElementById("powerbutton").classList.contains("poweredoff")) {
-            $("#powerbutton").addClass('poweredon');
-            $("#powerbutton").removeClass('poweredoff')
-            console.log("powering on")
-            sendstr = "power_on"
-        }
-        else {
-            $("#powerbutton").addClass('poweredon');
-            console.log("powering on")
-            sendstr = "power_on"
-        }
+    if (document.getElementById("powerbutton").classList.contains("poweredon")) {
+        $("#powerbutton").addClass('poweredoff');
+        $("#powerbutton").removeClass('poweredon');
+        console.log("powering off")
+        return "poweroff"
+    }
+    else if (document.getElementById("powerbutton").classList.contains("poweredoff")) {
+        $("#powerbutton").addClass('poweredon');
+        $("#powerbutton").removeClass('poweredoff')
+        console.log("powering on")
+        return "poweron"
     }
     else {
-        if (document.getElementById("powerbutton").classList.contains("poweredon")) {
-            console.log('powering on again')
-        }
-        else if (document.getElementById("powerbutton").classList.contains("poweredoff")) {
-            $("#powerbutton").addClass('poweredon');
-            $("#powerbutton").removeClass('poweredoff')
-            console.log("powering on")
-        }
-        else {
-            $("#powerbutton").addClass('poweredon');
-            console.log("powering on")
-        }
+        console.log("powerbutton had no poweredon or powerdoff class?!")
     }
-    return sendstr
+}
+
+function powerRestart(){
+    if (document.getElementById("powerbutton").classList.contains("poweredon")) {
+        console.log('reinitializing')
+    }
+    else if (document.getElementById("powerbutton").classList.contains("poweredoff")) {
+        $("#powerbutton").addClass('poweredon');
+        $("#powerbutton").removeClass('poweredoff')
+        console.log("powering on")
+    }
+    else {
+        console.log("powerbutton did not have poweredon or powerdoff class?!")
+    }
 }
 
 $(document).on('submit','#formPower',function(e){
-    sendstr = powerToggle(true)
-    submitfun(e, sendstr)
+    submitfun(e, powerToggle(), true)
 });
 $(document).on('submit','#formCalibrate',function(e){
-    powerToggle(false)
-    submitfun(e, 'calibrate')
+    powerRestart()
+    submitfun(e, 'calibrate', true)
 });
 $(document).on('submit','#form180',function(e){
-    powerToggle(false)
-    submitfun(e, 'setto180')
+    powerRestart()
+    submitfun(e, 'setto180', true)
 });
 $(document).on('submit','#form270',function(e){
-    powerToggle(false)
-    submitfun(e, 'setto270')
+    powerRestart()
+    submitfun(e, 'setto270', true)
 });
 
 $(document).on('submit','#formFullView',function(e){
