@@ -1,4 +1,4 @@
-print("HELPER V9 INITIALIZED")
+print("MAIN V9 INITIALIZED")
 import numpy as np
 from sys import argv
 import cv2
@@ -20,8 +20,8 @@ if len(argv) > 1:
 else:
     USE_KEYPOINT_TRANSLATE = False
     RESOLUTION = WIDTH, HEIGHT = [320, 240]
-    BLEND_FRAC = 0.2
-    X_TRANS_DIST = 50
+    BLEND_FRAC = 0.5
+    X_TRANS_DIST = 28
     PC_IP = "tcp://" + "169.254.236.78" + ":5555"
 
 # ==============================
@@ -233,6 +233,10 @@ MASK_L, MASK_R, combined_width, mask_realL, mask_realR = get_combine_objects(X_T
     # cv2.imwrite("output.png", combine())
 '''
 
+imgL_translation = cv2.warpAffine(imgL, MASK_L, (combined_width, HEIGHT))
+imgR_translation = cv2.warpAffine(imgR, MASK_R, (combined_width, HEIGHT))
+out = np.uint8(imgL_translation * mask_realL + imgR_translation * mask_realR)
+
 SENDER = imagezmq.ImageSender(connect_to=PC_IP)
 
 while True:
@@ -240,4 +244,4 @@ while True:
     imgL = IMAGE_HUB.recv_image()[1]
     SENDER.send_image("", np.uint8(cv2.warpAffine(imgL, MASK_L, (combined_width, HEIGHT)) * mask_realL + cv2.warpAffine(imgR, MASK_R, (combined_width, HEIGHT)) * mask_realR))
     IMAGE_HUB.send_reply(b'OK')
-
+    

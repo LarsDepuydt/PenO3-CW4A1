@@ -54,17 +54,22 @@
 					</label></form>
 				</div>
 				<div id= "toprightcontrols">
-					<div id="blendfraccontrols"></div>
-						<span></span>
-						<form method="post" action"/" id="formLowerBlendFrac"><label>
+					<div id="blendfraccontrols">
+						<div>Blend Fraction</div>
+						<form class="small" method="post" action"/" id="formLowerBlendFrac"><label>
 							<img src="{{url_for('static',filename='images/angle-down-solid.svg') }}" alt="">
 							<input type="submit" name="button" value="decreaseblendfrac">
 						</label></form>
 						<span>{{blend_frac}}</span>
-						<form method="post" action"/" id="formIncreaseBlendFrac"><label>
+						<form class="small" method="post" action"/" id="formIncreaseBlendFrac"><label>
 							<img src="{{url_for('static',filename='images/angle-up-solid.svg') }}" alt="">
 							<input type="submit" name="button" value="increaseblendfrac">
 						</label></form>
+					</div>
+					<!-- <form method="post" action"/" id="fromColdBoot"><label>
+						<img src="{{url_for('static',filename='images/ice-cream-solid.svg') }}" alt="">
+						<input type="submit" name="button" value="coldBoot">
+					</label></form> -->
 				</div>
 			</div>
 			<img id="camera_feed" src="{{ url_for('video_feed') }}" alt="Video stream inactive. Press <power button> twice to restart video stream.">
