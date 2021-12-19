@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width">
+	<meta http-equiv="Cache-Control" content="no-cache">
+	<meta name="author" content="Robin A.">
+	<link rel="icon" type="image/png" href="" sizes="32x32">
+	<link rel="icon" type="image/png" href="" sizes="16x16">
+	<link rel="stylesheet" href="{{ url_for('static',filename='styles/main2.css') }}" type="text/css">
+	<title>Test</title>
+	<script src="../static/jquery-3.5.1.min.js"></script>
+</head>
+<body>
+    <form method="post" action"/" id="form">
+        <label>
+            <input type="submit" name="button" value="v">
+        </label>
+    </form>
+
+	<div id="movebox">
+        <img src="{{url_for('route1')}}">
+        <img src="{{url_for('route2')}}">
+    </div>
+
+	<!-- <script src="../static/scripts/main.js"></script> -->
+	<script>
+        $(document).on('submit','#form',function(e){
+            console.log("button clicked")
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'/',
+                data:{button:"click"},
+            })
+        });
+    </script>
+</body>
+</html>
