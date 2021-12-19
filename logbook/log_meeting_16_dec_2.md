@@ -22,7 +22,7 @@ Person | Hour 1                   | Hour 2 | Hour 3 | Hour 4 | After hours (spec
 **Jasper Laitem** | task1                    | = | task2 | task3
 **Jonas Buts**    |                          |     |      |
 **Lars Depuydt**  |                          |     |      |
-**Robin Anné**    |                          |     |      |
+**Robin Anné**    | Spherical projection implementation | = | Displaying cylindrical and spherical projection maps in Excel| = 
 **Ruben Janssen** | look into multithreading |  =   |  look into ssh keys    | look into multithreading
 **Wout Bergmans** | Layout rework | = | = | =
 

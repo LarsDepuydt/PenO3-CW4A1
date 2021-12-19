@@ -1,20 +1,7 @@
 # Log Team Meeting 21
 16 December 2021
 **_This file is unfinished._**
-## Decisions
-* item1
 
-## Finished Tasks
-* item1
-* item2
-
-## Future Tasks
-* item1
-* item2
-  
-## Running Tasks (general)
-* item1
-* item2
 
 ## Running Tasks (individual)
 Person | Hour 1 | Hour 2 | Hour 3 | Hour 4 | After hours (specify time)
@@ -22,7 +9,7 @@ Person | Hour 1 | Hour 2 | Hour 3 | Hour 4 | After hours (specify time)
 **Jasper Laitem** | task1 | = | task2 | task3
 **Jonas Buts**    |    |     |      |
 **Lars Depuydt**  |    |     |      |
-**Robin Anné**    | Fix interface | = | = | =
+**Robin Anné**    | Fix interface bugs | = | = | = | Report writing GUI chapter, reading and editing other sections, gathering framerate data, gathering images (6h)
 **Ruben Janssen** |  look into multithreading |  =   |  look into ssh keys    | look into multithreading
 **Wout Bergmans** | Paper revision | = | = | =
 
