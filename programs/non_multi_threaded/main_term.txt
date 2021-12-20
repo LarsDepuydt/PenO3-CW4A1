@@ -1,0 +1,3 @@
+echo "IN MAIN PI: terminating all python"
+sudo pkill python
+sleep 10

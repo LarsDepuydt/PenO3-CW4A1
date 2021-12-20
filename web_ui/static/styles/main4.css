@@ -39,11 +39,11 @@ header {
 	width: 100%;
 	background-color: var(--2);
 	color: var(--1);
-	height: 60px;
+	height: 8vh;
 	
 }
 #headercontainer {
-	height: 60px;
+	height: 100%;
 	margin: 0px 10%;
 	display: flex;
 	justify-content: space-between;
@@ -74,111 +74,126 @@ nav label {
 /*=======================
 MAIN
 */
+/* 
+HEADER 8
+MARGIN 4
+MAIDIV 84
+	TOPBUT 5
+	MARGIN 1
+	CAMERA ? = 57
+	MARGIN 1
+	BOTBUT 10
+MARGIN 4
+*/
 
 #main_container {
 	top: 0;
-	width: 100%;
+	width: 90%;
 	background-color: var(--1);
 	height: 100%;
+	margin: 0 5% 0 5%;
 }
 
 #main_container > div {
 	position: relative;
-	margin-top: 32px;
-	width: 100%;
-	background-color: var(--1);
-}
-
-#camera_feed {
-	display: block;
-	margin: 0 auto;
-	max-height: 60vh;
+	margin-top: 4vh;
+	margin-bottom: 4vh;
 	max-width: 100%;
-}
-#topcontrols {
-	display: block;
-	width: 100%;
-	margin-bottom: 12px;
-}
-#bottomcontrols {
-	display: block;
-	width: 100%;
-	margin-top: 12px;
-}
-
-form label {
-	font-size: 24px;
-	display: inline-block;
-	padding: 2px 6px;
-	margin: 2px 2px;
-	background-color: rgba(0, 0, 0, 0);
-	border: solid 1px var(--2);
-	border-radius: 2px;
-}
-form label img {
-	width: 16px;
-	height: 16px;
-}
-#bottomcontrols form,
-#topcontrols form {
-	display: inline-block;
-}
-
-form label {
-	padding: 2px;
-	width: 36px;
-	height: 36px;
-	text-align: center
-}
-form label img {
-	width: 20px;
-	height: 20px;
-	vertical-align: middle;
-}
-form.small {
-	width: 21px;
-	height: 21px;
-}
-form.small label {
-	top: 0;
-	width: 20px;
-	height: 20px;
-}
-form.small label img {
-	display: block;
-	width: 100%;
-	height: 100%;
-}
-#blendfraccontrols span {
-	position: relative;
-	top: -4px;
+	max-height: 84vh;
+	background-color: var(--1);
+	font-size: 0; /* prevents whitespace between inline-blocks*/
 }
 #topcontrols,
 #bottomcontrols {
 	display: flex;
 	justify-content: space-between;
 }
-#bottomrightcontrols {
-	float: right;
+#topcontrols {
+	height: 5vh;
+	margin: 0 auto;
 }
-#bottomrightcontrols div:first-child  {
-	display: flex;
-	justify-content: center;
-	margin-bottom: 4px;
-}
-#bottomrightcontrols form {
-	display: inline-block;
+#camera_feed {
+	position: relative;
+	display: block;
+	margin: 1vh auto;
+	height: 67vh;
+	max-height: 67vh;
+	max-width: 100%;
 }
 
-form label:hover,
-form label.activatedThroughJS {
+#bottomcontrols {
+	height: 10vh;
+	margin: 0 auto;
+}
+
+form {
+	z-index: 2; /* above nav when sidemenu */
+	display: inline-block;
+	height: 5vh;
+	width: 5vh;
+	background-color: rgba(0, 0, 0, 0);
+	border: solid 1px var(--2);
+	border-radius: 2px;
+	margin: 0 0.1vh;
+}
+
+form label {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+form label img {
+	width: 60%;
+	height: 60%;
+	margin: 20%;
+}
+form  label > input {
+	display: none;
+}
+
+.listcontrol > div {
+	height: 2.5vh;
+	font-size: 2vh;
+	text-align: center;
+	text-transform: uppercase;
+}
+.listcontrol > div:nth-child(2) {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+.listcontrol form {
+	width: 2.5vh;
+	height: 2.5vh;
+}
+.listcontrol img {
+	width: 80%;
+	height: 80%;
+	margin: 10%;
+}
+
+#bottomrightcontrols form  {
+	width: 4.95vh;
+	height: 4.95vh;
+}
+#bottomrightcontrols > div:first-child {
+	margin-bottom: 0.1vh;
+}
+#bottomrightcontrols > div {
+	display: flex;
+	justify-content: center;
+}
+
+form:hover,
+form.activatedThroughJS {
 	cursor: pointer;
 	transition: all ease-in-out 150ms;
 	background-color: var(--2);
 	color: #FFF;
 }
-form label:hover img,
-form label.activatedThroughJS img {
+form:hover img,
+form.activatedThroughJS img {
 	filter: invert(100%);
 }
 
@@ -191,21 +206,20 @@ form label.activatedThroughJS img {
 	filter: invert(100%);
 }
 
-
-form  label > input {
-	display: none;
+@media only screen and (max-width: 1000px) {
+	#camera_feed {
+		height: auto;
+		width: 100%;
+	}
 }
 
-
-
-
 @media only screen and (max-width: 1000px) {
-	header {
+	/* header {
 		height: 60px;
 	}
 	#headercontainer {
 		height: 60px;
-	}
+	} */
 	#navigation {
 		display: inline-block;
 		position: absolute;

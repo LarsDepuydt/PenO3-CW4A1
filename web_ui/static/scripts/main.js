@@ -1,13 +1,38 @@
 
+function resizeToMatch(id1, id2) {
+    const resize_ob = new ResizeObserver(function(entries) {
+        // REFERENCE: https://usefulangle.com/post/319/javascript-detect-element-resize
+        let rect = entries[0].contentRect;
+        let width = rect.width;
+        document.getElementById(id2).setAttribute('style', 'width:' + width + 'px;');
+    });
+    resize_ob.observe(document.querySelector("#" + id1));
+};
+// const resize_ob = new ResizeObserver(function(entries) {
+//     // REFERENCE: https://usefulangle.com/post/319/javascript-detect-element-resize
+// 	let rect = entries[0].contentRect;
+// 	let width = rect.width;
+//     document.getElementById('topcontrols').setAttribute('style', 'width:' + width + 'px;');
+// });
+// const reseze_ob = new ResizeObserver(function(entries) {
+//     let rect = entries[0].contentRect;
+//     let width = rect.width;
+//     document.getElementById('bottomcontrols').setAttribute('style', 'width' + width + 'px');
+// });
+
+resizeToMatch('camera_feed', 'topcontrols')
+resizeToMatch('camera_feed', 'bottomcontrols')
+
+
 function highlightButton(id) {
     console.log("Highlighting button:", id)
-    document.getElementById(id).childNodes[0].classList.add('activatedThroughJS')
+    document.getElementById(id).classList.add('activatedThroughJS')
     function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
     async function removeTheClass(id) {
         await sleep(150); // sleeps for 150ms, allowing animation to finish, before removing class
-        document.getElementById(id).childNodes[0].classList.remove('activatedThroughJS')
+        document.getElementById(id).classList.remove('activatedThroughJS')
     }
     removeTheClass(id)
 }

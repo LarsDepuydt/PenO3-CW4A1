@@ -1,4 +1,2 @@
 TODO
-- Add 3rd argument to scripts to exec scripts without opening terminal windows
-- Check if INITIALIZE_ALL can run from shortcut
-- add calibration and preset functionality from pc
+- See if you can hide terminals entirely

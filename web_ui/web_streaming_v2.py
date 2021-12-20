@@ -2,7 +2,6 @@ import cv2
 import time
 import imagezmq
 import flask
-from flask import request
 import numpy as np
 from colorama import Fore, Back, Style
 
@@ -13,35 +12,32 @@ from colorama import Fore, Back, Style
 # CONSTANTS
 # ==============================
 
-RUNNING = False
-LOG_FPS = False
-DEBUG = True
-LOG_COMMANDLINE = False
-first = True
-reload_video_feed = True
+X_T_FRAC = {180: 0.7625, 360: 0.0875}
 
-image_hub = -1
-running = False
-resolution = [320, 240]
-blend_frac = 0.5
-x_t = 0
-calibrate = False
+LOG_FPS          = False
+DEBUG            = False
+SLEEP_PI_CMDLINE = True
 
-
-frame_width, frame_height = 1000, 240 # placeholder for frame_width and frame_height
+running     = False
+image_hub   = -1
+resolution  = [320, 240]
+blend_frac  = 0.5
+x_t         = 0
+calibrate   = False
+frame_width, frame_height = 1000, 240    # placeholder for frame_width and frame_height
 fill_height = int(0.9*frame_height)
-w, h = frame_width, frame_height # shown frame width (for zooming)
-zoom = 0
-origin = [0, 0]
+w, h        = frame_width, frame_height  # shown frame width (for zooming)
+zoom        = 0
+origin      = [0, 0]
 
 from os import path
-REPO_ROOT               =  str(path.dirname(path.realpath(__file__)))[:-6].replace("\\", "/")
-PROG_DIR                = REPO_ROOT+ "programs/non_multi_threaded"
+REPO_ROOT               =  str(path.dirname(path.realpath(__file__)))[:-7].replace("\\", "/")
+PROG_DIR                = REPO_ROOT+ "/programs/non_multi_threaded"
 REMOTE_EXEC_SCRIPT_PATH = PROG_DIR + "/ssh_conn_exec_cmdfile_win.bat"
 MAIN_INIT_CMD_FILE_PATH = PROG_DIR + "/main_init.txt"
-HELP_INIT_CMD_FILE_PATH = PROG_DIR + "/helper_init.txt"
-MAIN_TERM_CMD_FILE_PATH = PROG_DIR + "/main_terminate.txt"
-HELP_TERM_CMD_FILE_PATH = PROG_DIR + "/helper_terminate.txt"
+HELP_INIT_CMD_FILE_PATH = PROG_DIR + "/help_init.txt"
+MAIN_TERM_CMD_FILE_PATH = PROG_DIR + "/main_term.txt"
+HELP_TERM_CMD_FILE_PATH = PROG_DIR + "/help_term.txt"
 
 MAIN_INIT_CMDS = [
     'echo "On the main pi, initting main"',
@@ -56,11 +52,11 @@ HELP_INIT_CMDS = [
     'python3 helper_v9.py']
 
 MAIN_TERM_CMDS = [
-    'echo "IN MAIN PI: terminating all python"'
+    'echo "IN MAIN PI: terminating all python"',
     'sudo pkill python']
 
 HELP_TERM_CMDS = [
-    'echo "IN HELPER PI: terminating all python"'
+    'echo "IN HELPER PI: terminating all python"',
     'sudo pkill python']
 
 def get_pc_ip():
@@ -74,7 +70,8 @@ def get_pc_ip():
 PC_IP = get_pc_ip()
 PC_IP = "169.254.236.78"
 MAIN_PI_IP = "169.254.165.116"
-HELPER_PI_IP = "169.254.222.67"
+HELP_PI_IP = "169.254.222.67"
+
 
 # ==============================
 # FUNCTIONS
@@ -84,21 +81,35 @@ def log_fun():
     import inspect
     print(Fore.CYAN + "FUNCTION " + Fore.RESET + str(inspect.stack()[1][3]) + "()")
 
-def initialize():
-    log_fun()
-    global reload_video_feed
-    reload_video_feed = True
-    from subprocess import check_output # instead of run, because this one doesn't print anything
-    check_output([REMOTE_EXEC_SCRIPT_PATH, "169.254.165.116", MAIN_INIT_CMD_FILE_PATH], shell=True)
-    check_output([REMOTE_EXEC_SCRIPT_PATH, "169.254.222.67", HELP_INIT_CMD_FILE_PATH])
+def check_availability_pis():
+    from subprocess import check_output
+    out_main = str(check_output("ping -n 2 " + MAIN_PI_IP))
+    out_help = str(check_output("ping -n 2 " + HELP_PI_IP))
+    error = False
+    if out_main.find("host unreachable") != -1:
+        print(Fore.RED + "ERROR " + Fore.RESET + "Main pi unreachable")
+        error = True
+    else:
+        print(Fore.GREEN + "SUCCES " + Fore.RESET + "Main pi is reachable")
+    if out_help.find("host unreachable") != -1:
+        print(Fore.RED + "ERROR " + Fore.RESET + "Help pi unreachable")
+        error = True
+    else:
+        print(Fore.GREEN + "SUCCES " + Fore.RESET + "Help pi is reachable")
+    return not(error)
 
-def terminate():
+def initialize_pis():
+    log_fun()
+    global running
+    running = True
+    from subprocess import run, DEVNULL
+    run([REMOTE_EXEC_SCRIPT_PATH, 'MAIN PI - INITIALIZING', MAIN_PI_IP, MAIN_INIT_CMD_FILE_PATH], stdout=DEVNULL)
+    run([REMOTE_EXEC_SCRIPT_PATH, 'HELP PI - INITIALIZING', HELP_PI_IP, HELP_INIT_CMD_FILE_PATH], stdout=DEVNULL)
+
+def terminate_pis():
     log_fun()
     from time import sleep
-    from subprocess import check_output # instead of run because this one doesn't print anything
-    global running, reload_video_feed
-
-    reload_video_feed = False
+    global running
     # wait until gen_frames_imagehub() has gone out of loop and closed imagehub: 
     running = False
     while True:             
@@ -106,104 +117,121 @@ def terminate():
             break
         else:
             sleep(0.5)
+    from subprocess import run, DEVNULL
+    run([REMOTE_EXEC_SCRIPT_PATH, "MAIN PI - TERMINATING", MAIN_PI_IP, MAIN_TERM_CMD_FILE_PATH], stdout=DEVNULL, shell=True)
+    run([REMOTE_EXEC_SCRIPT_PATH, "HELP PI - TERMINATING", HELP_PI_IP, HELP_TERM_CMD_FILE_PATH], stdout=DEVNULL)
 
-    check_output([REMOTE_EXEC_SCRIPT_PATH, "169.254.165.116", MAIN_TERM_CMD_FILE_PATH])
-    check_output([REMOTE_EXEC_SCRIPT_PATH, "169.254.222.67",  HELP_TERM_CMD_FILE_PATH])
-
-def gen_init_cmd_files(maincmds, helpercmds, use_keypnt, res, blend_frac, x_t, pc_ip):
+def gen_init_cmd_files(use_keypnt, res, blend_frac, x_t, pc_ip):
     log_fun()
-    import os.path
-    CURRENT_DIR = str(os.path.dirname(os.path.realpath(__file__))).replace("\\", "/")
-    DIRS = CURRENT_DIR.split("/")
-    for i, s in enumerate(DIRS):
-        if s == "PenO3-CW4A1":
-            REPO_ROOT = "/".join(DIRS[:i+1])
-    CMD_FILE_SAVE_DIR = REPO_ROOT + "/programs/non_multi_threaded/"
-    # print("Saving command files to: ", CMD_FILE_SAVE_DIR)
-
     sp = '" "'
     argstr = ' "' +  str(use_keypnt) + sp + str(res[0])+","+str(res[1]) + sp + str(blend_frac) + sp + str(x_t) + sp + pc_ip + '"'
-    # print("ARGSTR", argstr)
+    
+    def write_file(cmds, filepath):
+        cmds = cmds[:]
+        cmds[-1] += argstr
+        cmds = [x + '\n' for x in cmds]
+        if SLEEP_PI_CMDLINE:
+            cmds.append("sleep 10")
+        with open(filepath, mode='w') as f:
+            f.writelines(cmds)
+            
+    write_file(MAIN_INIT_CMDS, MAIN_INIT_CMD_FILE_PATH)
+    write_file(HELP_INIT_CMDS, HELP_INIT_CMD_FILE_PATH)
 
-    maincmds = maincmds[:] # copy so it doesn't edit the global variable
-    maincmds[-1] += argstr
-    maincmds = [x+'\n' for x in maincmds]
-    if LOG_COMMANDLINE:
-        maincmds.append("sleep 10")
-    with open(CMD_FILE_SAVE_DIR + 'main_init.txt', mode='w') as f:
-        f.writelines(maincmds)
-
-    if LOG_COMMANDLINE:
-        maincmds.append("sleep 10")
-    helpercmds = helpercmds[:]
-    helpercmds[-1] += argstr
-    helpercmds = [x + '\n' for x in helpercmds]
-    helpercmds.append("sleep 5")
-    with open(CMD_FILE_SAVE_DIR + 'helper_init.txt', mode='w') as f:
-        f.writelines(helpercmds)
-
-def gen_frames_imagehub():
+def gen_term_cmd_files():
     log_fun()
-    global running, zoom, h, w, frame_width, frame_height, origin, image_hub, fill_height
-    running = True
-    image_hub = imagezmq.ImageHub()
-    img = image_hub.recv_image()[1]
-    image_hub.send_reply(b'OK')
-    frame_height, frame_width = img.shape[:2]
-    for i, r in img:
-        if i < frame_height/2:
-            if r[0] == np.array([0, 0, 0]):
-                fill_height = i + 1
-    while running:
-        frame = image_hub.recv_image()[1][origin[1]:origin[1] + h, origin[0]:origin[0] + w]
-        image_hub.send_reply(b'OK')
-        yield(b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + cv2.imencode('.jpg', frame)[1].tobytes() + b'\r\n')
-    image_hub.close()
-    image_hub = -1
+    def write_file(cmds, filepath):
+        cmds = cmds[:]
+        cmds = [x + '\n' for x in cmds]
+        if SLEEP_PI_CMDLINE:
+            cmds.append("sleep 10")
+        with open(filepath, mode='w') as f:
+            f.writelines(cmds)
+    
+    write_file(MAIN_TERM_CMDS, MAIN_TERM_CMD_FILE_PATH)
+    write_file(HELP_TERM_CMDS, HELP_TERM_CMD_FILE_PATH)
 
-def gen_frames_imagehub_log_fps():
+def gen_frames():
     log_fun()
+    from time import sleep
     global running, zoom, h, w, frame_width, frame_height, origin, image_hub, fill_height
-    running = True
-    img_hub_fps, web_app_fps, t_old = [], [], 0
-    image_hub = imagezmq.ImageHub()
-    img = image_hub.recv_image()[1]
-    image_hub.send_reply(b'OK')
-    frame_height, frame_width = img.shape[:2]
-    for i, r in img:
-        if i < frame_height/2:
-            if r[0] == np.array([0, 0, 0]):
-                fill_height = i + 1
-    while running:
-        frame = image_hub.recv_image()[1][origin[1]:origin[1] + h, origin[0]:origin[0] + w]
-        image_hub.send_reply(b'OK')
-        t_after_image = time.perf_counter()
-        yield(b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + cv2.imencode('.jpg', frame)[1].tobytes() + b'\r\n')
-        yield(b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + cv2.imencode('.jpg', frame)[1].tobytes() + b'\r\n')
-        
-        t_after_yield = time.perf_counter()
-        web_app_fps.append(1/(t_after_yield - t_after_image))
-        img_hub_fps.append(1/(t_after_image - t_old))
-        t_old = t_after_yield
+    while True:
+        if not(running):
+            print(Fore.MAGENTA + "RUNNING " + Fore.RESET + "PlaceHolder")
+            img = cv2.imread(REPO_ROOT + PLACEHOLDER_PATH)
+            while not(running):
+                yield b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + cv2.imencode('.jpg', img)[1].tobytes() + b'\r\n'
+                sleep(0.5)
+        else:
+            print(Fore.MAGENTA + "RUNNING " + Fore.RESET + "ImageHub")
+            image_hub = imagezmq.ImageHub()
+            print("waiting for image")
+            img = image_hub.recv_image()[1]
+            print("Received image")
+            image_hub.send_reply(b'OK')
+            frame_height, frame_width = img.shape[:2]
+            for i, r in enumerate(img):
+                if i < frame_height/2:
+                    print(r[0])
+                    if (int(r[0][0]), int(r[0][1]), int(r[0][2]))  == [0, 0, 0]:
+                        fill_height = i + 1
+            while running:
+                frame = image_hub.recv_image()[1][origin[1]:origin[1] + h, origin[0]:origin[0] + w]
+                image_hub.send_reply(b'OK')
+                yield(b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + cv2.imencode('.jpg', frame)[1].tobytes() + b'\r\n')
+            image_hub.close()
+            image_hub = -1
 
-        if len(web_app_fps) == 50:
-            print("Webapp fps 50avg     : ", sum(web_app_fps)/50)
-            print("Webapp fps 1sample   : ", web_app_fps[-1])
-            print("Imagehub fps 50avg   : ", sum(img_hub_fps)/50)
-            print("Imagehub fps 1sample : ", img_hub_fps[-1])
-            web_app_fps, img_hub_fps = [], []
-    image_hub.close()
-    image_hub = -1
+def gen_frames_log_fps():
+    log_fun()
+    from time import sleep
+    global running, zoom, h, w, frame_width, frame_height, origin, image_hub, fill_height
+    while True:
+        if not(running):
+            print(Fore.MAGENTA + "RUNNING " + Fore.RESET + "PlaceHolder")
+            img = cv2.imread(REPO_ROOT + PLACEHOLDER_PATH)
+            while not(running):
+                yield b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + cv2.imencode('.jpg', img)[1].tobytes() + b'\r\n'
+                sleep(0.5)
+        else:
+            print(Fore.MAGENTA + "RUNNING " + Fore.RESET + "ImageHub")
+            img_hub_fps, web_app_fps, t_old = [], [], 0
+            image_hub = imagezmq.ImageHub()
+            img = image_hub.recv_image()[1]
+            image_hub.send_reply(b'OK')
+            frame_height, frame_width = img.shape[:2]
+            for i, r in img:
+                if i < frame_height/2:
+                    if r[0] == np.array([0, 0, 0]):
+                        fill_height = i + 1
+            while running:
+                frame = image_hub.recv_image()[1][origin[1]:origin[1] + h, origin[0]:origin[0] + w]
+                image_hub.send_reply(b'OK')
+                t_after_image = time.perf_counter()
+                yield(b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + cv2.imencode('.jpg', frame)[1].tobytes() + b'\r\n')
+                
+                t_after_yield = time.perf_counter()
+                web_app_fps.append(1/(t_after_yield - t_after_image))
+                img_hub_fps.append(1/(t_after_image - t_old))
+                t_old = t_after_image
 
-def gen_placeholder_frame():
-    img = cv2.imread(REPO_ROOT + "/web_ui/static/images/video_feed_placeholder.png")
-    return b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + cv2.imencode('.jpg', img)[1].tobytes() + b'\r\n'
+                if len(web_app_fps) == 50:
+                    print("Webapp fps 50avg     : ", sum(web_app_fps)/50)
+                    print("Webapp fps 1sample   : ", web_app_fps[-1])
+                    print("Imagehub fps 50avg   : ", sum(img_hub_fps)/50)
+                    print("Imagehub fps 1sample : ", img_hub_fps[-1])
+                    web_app_fps, img_hub_fps = [], []
+            image_hub.close()
+            image_hub = -1
 
-def is_port_in_use(port):
-    # REFERENCE: https://codereview.stackexchange.com/questions/116450/find-available-ports-on-localhost
-    import socket
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        return s.connect_ex(('localhost', port)) == 0
+''' is_port_in_use(port)
+    def is_port_in_use(port):
+        log_fun()
+        # REFERENCE: https://codereview.stackexchange.com/questions/116450/find-available-ports-on-localhost
+        import socket
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            return s.connect_ex(('localhost', port)) == 0
+    '''
 
 # ==============================
 # FLASK
@@ -212,36 +240,33 @@ def is_port_in_use(port):
 flask.Response()
 app = flask.Flask(__name__)
 
-# terminate()
-
-
 @app.route('/', methods=['POST', 'GET'])
 def index():
     global zoom, h, w, frame_width, frame_height, origin, blend_frac, resolution
-    if request.method == 'POST':
+    if flask.request.method == 'POST':
+        cmd = flask.request.form['button']
         print(Fore.YELLOW + "POST", end=" " + Fore.RESET)
-        cmd = request.form['button']
         print(cmd)
         if   cmd == 'poweron':
-            initialize()
+            initialize_pis()
         elif cmd == 'poweroff':
-            terminate()
+            terminate_pis()
         elif cmd == 'calibrate':
-            terminate()
-            gen_init_cmd_files(MAIN_INIT_CMDS, HELP_INIT_CMDS, 1, resolution, blend_frac, 0, PC_IP)
-            initialize()
+            terminate_pis()
+            gen_init_cmd_files(1, resolution, blend_frac, 0, PC_IP)
+            initialize_pis()
         elif cmd == 'setto180':
-            terminate()
+            terminate_pis()
             # x_t = int(0.8 * resolution[0])
             x_t = 244
-            gen_init_cmd_files(MAIN_INIT_CMDS, HELP_INIT_CMDS, 0, resolution, blend_frac, x_t, PC_IP)
-            initialize()
+            gen_init_cmd_files(0, resolution, blend_frac, x_t, PC_IP)
+            initialize_pis()
         elif cmd == 'setto270':
-            terminate()
+            terminate_pis()
             # x_t = int(0.08 * resolution[0])
             x_t = 28
-            gen_init_cmd_files(MAIN_INIT_CMDS, HELP_INIT_CMDS, 0, resolution, blend_frac, x_t, PC_IP)
-            initialize()
+            gen_init_cmd_files(0, resolution, blend_frac, x_t, PC_IP)
+            initialize_pis()
         elif cmd == 'decreaseblendfrac':
             if blend_frac > 0.1:
                 blend_frac = round(blend_frac-0.1, 1)
@@ -299,25 +324,23 @@ def index():
             elif origin[1] + h < frame_height:
                 origin[1] = frame_height - h
     else:
-        print(Fore.YELLOW + "GET REQUEST" + Fore.RESET)
-    return flask.render_template('index.html', blend_frac=blend_frac)
+        print(Fore.YELLOW + "GET" + Fore.RESET)
+    return flask.render_template('index4.html', blend_frac=blend_frac)
 
+if LOG_FPS:
+    @app.route('/video_feed')
+    def video_feed():
+        return flask.Response(gen_frames_log_fps(), mimetype='multipart/x-mixed-replace; boundary=frame')
+else:
+    @app.route('/video_feed')
+    def video_feed():
+        return flask.Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-def refresh_video_feed(on=True):
-    log_fun()
-    if not(on):
-        @app.route('/video_feed')
-        def video_feed():
-            return flask.Response(gen_placeholder_frame(), mimetype='multipart/x-mixed-replace; boundary=frame')
-    if LOG_FPS:
-        @app.route('/video_feed')
-        def video_feed():
-            return flask.Response(gen_frames_imagehub_log_fps(), mimetype='multipart/x-mixed-replace; boundary=frame')
-    else:
-        @app.route('/video_feed')
-        def video_feed():
-            return flask.Response(gen_frames_imagehub(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-refresh_video_feed(False)
 if __name__ == "__main__":
+    gen_term_cmd_files()
+    if check_availability_pis():
+        terminate_pis()
+        PLACEHOLDER_PATH = "/web_ui/static/images/video_feed_placeholder.png"
+    else:
+        PLACEHOLDER_PATH = "/web_ui/static/images/video_feed_placeholder_pis_unavailable.png"
     app.run(debug=DEBUG)
