@@ -1,3 +1,0 @@
-echo "IN MAIN PI: terminating main"
-# pkill -f main_v6.py
-sudo pkill python

@@ -1,3 +1,0 @@
-echo "IN HELPER PI: terminating helper"
-#pkill -f helper_v6.py
-sudo pkill python
