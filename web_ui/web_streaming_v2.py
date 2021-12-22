@@ -251,12 +251,14 @@ def index():
             terminate_pis()
             # x_t = int(0.8 * resolution[0])
             x_t = 244
+            blend_frac = 0.1
             gen_init_cmd_files(0, resolution, blend_frac, x_t, PC_IP)
             initialize_pis()
         elif cmd == 'setto270':
             terminate_pis()
             # x_t = int(0.08 * resolution[0])
             x_t = 28
+            blend_frac = 0.2
             gen_init_cmd_files(0, resolution, blend_frac, x_t, PC_IP)
             initialize_pis()
         elif cmd == 'decreaseblendfrac':
