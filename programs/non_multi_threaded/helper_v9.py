@@ -29,7 +29,7 @@ else:
 # CONSTANTS
 # ==============================
 
-FOCAL_LEN = 210 # focal length = 3.15mm volgens waveshare.com/imx219-d160.htm
+FOCAL_LEN = 250 # focal length = 3.15mm volgens waveshare.com/imx219-d160.htm
 s = 0 # skew parameter
 KL = np.array([[FOCAL_LEN, s, WIDTH/2], [0, FOCAL_LEN, HEIGHT/2], [0, 0, 1]], dtype=np.uint16)  # mock intrinsics
 KR = np.array([[FOCAL_LEN, 0, WIDTH/2], [0, FOCAL_LEN, HEIGHT/2], [0, 0, 1]], dtype=np.uint16)  # mock intrinsics
