@@ -36,7 +36,7 @@ MAX_MATCH_Y_DISP = int(30) # maximum vertical displacement of valid match in pix
 MIN_MATCH_COUNT = 5  # set minimum number of better_matches
 KEYPOINT_MASK_X_BOUND = 0.4 # only search for keypoints in this fraction of pixel towards the bound
 
-FOCAL_LEN = 230 # focal length = 3.15mm volgens waveshare.com/imx219-d160.htm
+FOCAL_LEN = 320 # focal length = 3.15mm volgens waveshare.com/imx219-d160.htm
 s = 0 # skew parameter
 KL = np.array([[FOCAL_LEN, s, WIDTH/2], [0, FOCAL_LEN, HEIGHT/2], [0, 0, 1]], dtype=np.uint16)  # mock intrinsics
 KR = np.array([[FOCAL_LEN, s, WIDTH/2], [0, FOCAL_LEN, HEIGHT/2], [0, 0, 1]], dtype=np.uint16)  # mock intrinsics
