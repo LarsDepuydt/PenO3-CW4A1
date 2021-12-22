@@ -118,7 +118,7 @@ def terminate_pis():
         else:
             sleep(0.5)
     from subprocess import run, DEVNULL
-    run([REMOTE_EXEC_SCRIPT_PATH, "MAIN PI - TERMINATING", MAIN_PI_IP, MAIN_TERM_CMD_FILE_PATH], stdout=DEVNULL, shell=True)
+    run([REMOTE_EXEC_SCRIPT_PATH, "MAIN PI - TERMINATING", MAIN_PI_IP, MAIN_TERM_CMD_FILE_PATH], stdout=DEVNULL)
     run([REMOTE_EXEC_SCRIPT_PATH, "HELP PI - TERMINATING", HELP_PI_IP, HELP_TERM_CMD_FILE_PATH], stdout=DEVNULL)
 
 def gen_init_cmd_files(use_keypnt, res, blend_frac, x_t, pc_ip):
@@ -224,14 +224,6 @@ def gen_frames_log_fps():
             image_hub.close()
             image_hub = -1
 
-''' is_port_in_use(port)
-    def is_port_in_use(port):
-        log_fun()
-        # REFERENCE: https://codereview.stackexchange.com/questions/116450/find-available-ports-on-localhost
-        import socket
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            return s.connect_ex(('localhost', port)) == 0
-    '''
 
 # ==============================
 # FLASK
