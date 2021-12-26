@@ -23,7 +23,7 @@ Person | Hour 1 | Hour 2 | Hour 3 | Hour 4 | After hours (specify time)
 **Jonas Buts**    |    |     |      |
 **Lars Depuydt**  |    |     |      |
 **Robin Anné**    | Spherical projection mapping troubleshooting | = | = (displaying in Excel) | = 
-**Ruben Janssen** |  look into multithreading |  =   |  look into ssh keys    | look into multithreading
+**Ruben Janssen** |  blendparameter  |  =   |  =   | =
 **Wout Bergmans** | Analyse | = | Multithreading attempt Main | =
 
 #

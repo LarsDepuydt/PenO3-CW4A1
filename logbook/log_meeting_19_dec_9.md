@@ -23,7 +23,7 @@ Person | Hour 1                   | Hour 2 | Hour 3 | Hour 4 | After hours (spec
 **Jonas Buts**    |                          |        |      |
 **Lars Depuydt**  |                          |        |      |
 **Robin Anné**    | Spherical projection implementation | = | pi-to-pi and pi-to-pc interconnect | = 
-**Ruben Janssen** | look into multithreading | =      |  look into ssh keys    | look into multithreading
+**Ruben Janssen** | paper | =  | = | =
 **Wout Bergmans** | Paper | = | = | =
 
 #
