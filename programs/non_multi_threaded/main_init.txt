@@ -1,4 +1,4 @@
 echo "On the main pi, initting main"
 cd Desktop/PenO3-CW4A1/programs/non_multi_threaded
-python3 main_v9.py "0" "320,240" "0.2" "28" "169.254.236.78"
+python3 main_v9.py "1" "320,240" "0.2" "0" "169.254.236.78"
 sleep 10

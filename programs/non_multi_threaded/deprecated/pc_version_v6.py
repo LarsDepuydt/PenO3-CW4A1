@@ -54,8 +54,13 @@ SENDER = imagezmq.ImageSender(connect_to=RB_IP_HELPER)
 # INITIALISATION
 # ==============================
 
-imgL = cv2.cvtColor(cv2.imread("../../cylindrical_projection/sterio_vision/images/left/left0.png"), cv2.COLOR_BGR2BGRA)
-imgR = cv2.cvtColor(cv2.imread("../../cylindrical_projection/sterio_vision/images/right/right0.png"), cv2.COLOR_BGR2BGRA)
+from os import path
+REPO_ROOT               =  str(path.dirname(path.realpath(__file__)))[:-39].replace("\\", "/")
+IM_DIR                  = REPO_ROOT+ "/programs/cylindrical_projection/sterio_vision/images"
+print(IM_DIR)
+
+imgL = cv2.cvtColor(cv2.imread(IM_DIR + "/left/left0.png"), cv2.COLOR_BGR2BGRA)
+imgR = cv2.cvtColor(cv2.imread(IM_DIR + "/right/right0.png"), cv2.COLOR_BGR2BGRA)
 
 def get_cyl_wrap_assets_no_crop(K):
     """
